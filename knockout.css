@@ -7,3 +7,14 @@
 div[data-bind*="foreach:filteredItems"] > div:nth-child(-n+9) {
     display: none !important;
 }
+
+// Add the CSS rule to hide first 9 knockout items
+var style = document.createElement('style');
+style.textContent = `
+    .insights-stories.ko .col-md-4:nth-child(-n+9) {
+        display: none !important;
+    }
+`;
+document.head.appendChild(style);
+
+console.log('CSS rule added to hide first 9 knockout items');
