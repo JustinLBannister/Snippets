@@ -1,0 +1,9 @@
+/* Hide the first 9 items in the knockout section */
+.insights-stories.ko .col-md-4:nth-child(-n+9) {
+    display: none !important;
+}
+
+/* Alternative: Hide first 9 items with more specificity */
+div[data-bind*="foreach:filteredItems"] > div:nth-child(-n+9) {
+    display: none !important;
+}
