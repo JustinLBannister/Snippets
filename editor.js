@@ -34,21 +34,23 @@ if (window.location.href.includes('cmteamsite.fg.rbc.com/iw-cc/site/page/edit/pa
     console.log('TeamSite editor navigation z-index adjusted for better editing experience');
 }
 
-// Check what's happening with the data
+// Clear console, then run this:
 var vm = ko.contextFor(document.getElementById('load-more')).$root;
 
-console.log('=== DEBUGGING DUPLICATE ===');
-console.log('show():', vm.show());
-console.log('Total items:', vm.filteredItems().length);
+console.log('=== DUPLICATE DEBUG ===');
+console.log('Current show():', vm.show());
+console.log('Items in initial section:', $('.initial .col-xs-12').length);
+console.log('Items in knockout section (visible):', $('.insights-stories.ko .col-md-4:visible').length);
 
-// Check the first few items in knockout section
-console.log('First 3 knockout items:');
-for(let i = 0; i < 3; i++) {
-    console.log(`Index ${i}:`, vm.filteredItems()[i]?.title);
-}
+// Check which items are visible in knockout section
+$('.insights-stories.ko .col-md-4:visible').each(function(index) {
+    var title = $(this).find('h2').text().substring(0, 30);
+    console.log(`Knockout item ${index}:`, title);
+});
 
-// Check items around index 9
-console.log('Items around index 9:');
-for(let i = 8; i < 12; i++) {
-    console.log(`Index ${i}:`, vm.filteredItems()[i]?.title);
+// In fetchYear success callback, modify this part:
+// Instead of: e.items().push(o)
+// Do this:
+if (e.items().length >= 9) {
+    e.items().push(o); // Only add items after the first 9
 }
