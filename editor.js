@@ -33,3 +33,22 @@ if (window.location.href.includes('cmteamsite.fg.rbc.com/iw-cc/site/page/edit/pa
     
     console.log('TeamSite editor navigation z-index adjusted for better editing experience');
 }
+
+// Check what's happening with the data
+var vm = ko.contextFor(document.getElementById('load-more')).$root;
+
+console.log('=== DEBUGGING DUPLICATE ===');
+console.log('show():', vm.show());
+console.log('Total items:', vm.filteredItems().length);
+
+// Check the first few items in knockout section
+console.log('First 3 knockout items:');
+for(let i = 0; i < 3; i++) {
+    console.log(`Index ${i}:`, vm.filteredItems()[i]?.title);
+}
+
+// Check items around index 9
+console.log('Items around index 9:');
+for(let i = 8; i < 12; i++) {
+    console.log(`Index ${i}:`, vm.filteredItems()[i]?.title);
+}
