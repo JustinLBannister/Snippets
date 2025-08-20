@@ -54,3 +54,32 @@ $('.insights-stories.ko .col-md-4:visible').each(function(index) {
 if (e.items().length >= 9) {
     e.items().push(o); // Only add items after the first 9
 }
+
+var vm = ko.contextFor(document.getElementById('load-more')).$root;
+
+vm.loadMore = function() {
+    console.log('Moving initial items to knockout section');
+    $("#load-more").text("Loading...");
+    
+    setTimeout(function() {
+        // Move the initial items to the knockout container
+        var initialItems = $('.news-listing .col-xs-12.col-sm-6.col-md-4').detach();
+        var knockoutContainer = $('div[data-bind="foreach:filteredItems"]');
+        
+        // Prepend initial items to knockout section
+        knockoutContainer.prepend(initialItems);
+        
+        // Remove the now-empty initial section
+        $('.initial').remove();
+        
+        // Load data and show more items
+        if (vm.items().length < 1) {
+            vm.fetchYear(vm.year);
+        }
+        
+        vm.show(vm.show() === 9 ? 15 : vm.show() + 6);
+        $("#load-more").text("See more");
+        
+        console.log('Initial items moved, no scroll jumping');
+    }, 50);
+};
