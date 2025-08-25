@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secondary Navigation Example</title>
+  <style>
+    body, html {
+        margin: 0;
+        padding: 0;
+    }
+    /* ─────────────────────────────────────────────
+    Base Nav Styles
+    ───────────────────────────────────────────── */
+    .secondary-nav {
+    overflow-x: auto;
+    }
+
+    .secondary-nav__wrapper {
+    overflow-x: auto;
+    white-space: nowrap;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+
+    /* Hide scrollbar cross-browser */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    }
+
+    .secondary-nav__wrapper::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+    }
+
+    /* ─────────────────────────────────────────────
+    Nav List
+    ───────────────────────────────────────────── */
+    .secondary-nav__list {
+    display: flex;
+    flex-wrap: nowrap;
+    list-style: none;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 0;
+    gap: 8px; /* optional spacing between items */
+    }
+
+    .secondary-nav__item {
+    flex: 0 0 auto;
+    position: relative;
+    }
+
+    /* ─────────────────────────────────────────────
+    Link Styles - Mobile First Base
+    ───────────────────────────────────────────── */
+    .secondary-nav__item a {
+    display: inline-block;
+    text-decoration: none;
+    padding: 12px 12px;
+    font-family: "Roboto", sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    color: #424242;
+    line-height: 1.4;
+    white-space: nowrap;
+    transition: color 0.2s ease, font-weight 0.2s ease;
+    }
+
+    /* Active Item + Triangle - Mobile First Base */
+    .secondary-nav__item.active a,
+    .secondary-nav__item a[aria-current="page"] {
+    font-weight: 700;
+    color: #000; /* Optional darker for active */
+    }
+
+    /* Show yellow triangle only for current page link */
+    .secondary-nav__item a[aria-current="page"]::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%) rotate(180deg);
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 6px solid #f7c750;
+      z-index: 1;
+    }
+
+    /* ─────────────────────────────────────────────
+    Scroll Progress Bar
+    ───────────────────────────────────────────── */
+    .secondary-nav__progress-bar {
+    position: relative;
+    height: 3px;
+    background-color: #c0c0c0;
+    overflow: hidden;
+    width: 100%;
+    }
+
+    .secondary-nav__progress-fill {
+    position: absolute;
+    height: 100%;
+    width: 0%;
+    background-color: #184997;
+    transition: width 0.2s ease-out;
+    }
+
+    /* ─────────────────────────────────────────────
+    Larger screen overrides
+    ───────────────────────────────────────────── */
+    @media (min-width: 1200px) {
+      .secondary-nav__item a {
+        padding: 13px 15px;
+        font-size: 13px;
+      }
+
+      .secondary-nav__item a[aria-current="page"]::after {
+        border-left: 7.5px solid transparent;
+        border-right: 7.5px solid transparent;
+        border-bottom: 8px solid #f7c750;
+      }
+
+      .secondary-nav__list {
+        justify-content: center;
+      }
+    }
+</style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Set aria-current="page" on matching nav link
+      const links = document.querySelectorAll('.secondary-nav__item a');
+      const path = window.location.pathname;
+
+      links.forEach(link => {
+        if (link.getAttribute('href') === path) {
+          link.setAttribute('aria-current', 'page');
+        }
+      });
+
+      const wrapper = document.querySelector(".secondary-nav__wrapper");
+      const list = document.querySelector(".secondary-nav__list");
+      const fill = document.querySelector(".secondary-nav__progress-fill");
+
+      if (!wrapper || !list || !fill) return;
+
+      function updateProgressBar() {
+        const scrollLeft = wrapper.scrollLeft;
+        const maxScroll = list.scrollWidth - wrapper.clientWidth;
+        const percent = maxScroll > 0 ? (scrollLeft / maxScroll) * 100 : 0;
+        fill.style.width = `${percent}%`;
+      }
+
+      function centerItem(el) {
+        const itemCenter = el.offsetLeft + el.offsetWidth / 2;
+        const wrapperCenter = wrapper.clientWidth / 2;
+        wrapper.scrollLeft = itemCenter - wrapperCenter;
+      }
+
+      wrapper.addEventListener("scroll", updateProgressBar);
+      updateProgressBar();
+      fill.style.display = list.scrollWidth <= wrapper.clientWidth ? "none" : "block";
+
+      // Add window resize event to update progress bar and recenter scroll
+      window.addEventListener("resize", () => {
+        updateProgressBar();
+        fill.style.display = list.scrollWidth <= wrapper.clientWidth ? "none" : "block";
+
+        // Recenter only if current item is not fully visible
+        const currentItem = wrapper.querySelector('a[aria-current="page"]');
+        if (currentItem) {
+          const parentLi = currentItem.closest('.secondary-nav__item');
+          if (parentLi) {
+            centerItem(parentLi);
+            updateProgressBar();
+          }
+        }
+      });
+
+      // Scroll to current item on load
+      const currentItem = wrapper.querySelector('a[aria-current="page"]');
+      if (currentItem) {
+        const parentLi = currentItem.closest('.secondary-nav__item');
+        if (parentLi) {
+          centerItem(parentLi);
+          updateProgressBar();
+        }
+      }
+    });
+  </script>
+</head>
+<body>
+
+<nav class="secondary-nav secondary-nav--expertise" aria-label="Secondary Navigation" itemscope itemtype="https://schema.org/SiteNavigationElement">
+  <div class="secondary-nav__wrapper">
+    <ul class="secondary-nav__list" data-nav-section="expertise">
+      <li class="secondary-nav__item secondary-nav__item--commodities" data-nav-item="commodities" itemprop="name">
+        <a href="/en/expertise/commodities.page" itemprop="url">Commodities</a>
+      </li>
+      <li class="secondary-nav__item secondary-nav__item--debt-origination" data-nav-item="debt-origination" itemprop="name">
+        <a href="/en/expertise/debt-origination.page" itemprop="url">Debt Origination</a>
+      </li>
+      <li class="secondary-nav__item secondary-nav__item--electronic-trading" data-nav-item="electronic-trading" itemprop="name">
+        <a href="/en/expertise/electronic-trading/ai-trading.page" itemprop="url">Electronic Trading</a>
+      </li>
+      <li class="secondary-nav__item secondary-nav__item--equities" data-nav-item="equities" itemprop="name">
+        <a href="/en/expertise/equities.page" aria-current="page" itemprop="url">Equities</a>
+      </li>
+      <li class="secondary-nav__item secondary-nav__item--equity-linked-products" data-nav-item="equity-linked-products" itemprop="name">
+        <a href="/en/expertise/equity-linked-products.page" itemprop="url">Equity Linked Products</a>
+      </li>
+      <li class="secondary-nav__item secondary-nav__item--foreign-exchange" data-nav-item="foreign-exchange" itemprop="name">
+        <a href="/en/expertise/foreign-exchange.page" itemprop="url">Foreign Exchange</a>
+      </li>
+      <li class="secondary-nav__item secondary-nav__item--fixed-income" data-nav-item="fixed-income" itemprop="name">
+        <a href="/en/expertise/fixed-income.page" itemprop="url">Fixed Income</a>
+      </li>
+      <li class="secondary-nav__item secondary-nav__item--global-etf-services" data-nav-item="global-etf-services" itemprop="name">
+        <a href="/en/expertise/global-etf-services.page" itemprop="url">Global ETF Services</a>
+      </li>
+      <li class="secondary-nav__item secondary-nav__item--prime-brokerage" data-nav-item="prime-brokerage" itemprop="name">
+        <a href="/en/expertise/prime-brokerage.page" itemprop="url">Prime Brokerage</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<div class="secondary-nav__progress-bar">
+  <div class="secondary-nav__progress-fill"></div>
+</div>
+
+</body>
+</html>
