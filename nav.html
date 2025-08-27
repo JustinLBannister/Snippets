@@ -129,15 +129,20 @@
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-        // Set aria-current="page" on matching nav link
-        const links = document.querySelectorAll('.secondary-nav__item a');
-        const path = window.location.pathname;
+        // Set aria-current="page" on matching h1 title
+        const pageTitle = document.querySelector("h1");
+        const links = document.querySelectorAll(".secondary-nav__item a");
 
-        links.forEach(link => {
-            if (link.getAttribute('href') === path) {
-            link.setAttribute('aria-current', 'page');
+        if (pageTitle) {
+            const titleText = pageTitle.textContent.trim().toLowerCase();
+
+            links.forEach(link => {
+            const linkText = link.textContent.trim().toLowerCase();
+            if (linkText === titleText) {
+                link.setAttribute("aria-current", "page");
             }
-        });
+            });
+        }
 
         const wrapper = document.querySelector(".secondary-nav__wrapper");
         const list = document.querySelector(".secondary-nav__list");
