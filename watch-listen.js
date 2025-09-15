@@ -1,136 +1,63 @@
-// Track what player is currently active
-var activePlayer = null; // 'video', 'audio', or null
-
-function play_video() {
-    var video_url = '//players.brightcove.net/6021289101001/eY0NaFfEF_default/index.html?videoId=6377123802112';
-    
-    // Remove any existing video player to prevent duplicates
-    $(".page-banner .podcast-playing").remove();
-    
-    // Close audio player if it's open
-    $(".podcast-player-wrapper").remove();
-    
-    var video_html = '<div class="podcast-playing img-stretch video-play" style="background: #000; min-height: 100px">' +
-        '<button aria-label="Close Player" class="btn-close-video"><img src="/assets/rbccm/images/campaign/x.svg" alt="Close"></button>' +
-        '<div style="position: relative;display: block;max-width: 1200px;margin: 0 auto;">' +
-        '<div style="padding-top: 56.25%;">' +
-        '<iframe frameborder="0" src="' + video_url + '" allowfullscreen="" allow="autoplay; encrypted-media; fullscreen" ' +
-        'style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px; width: 100%; height: 100%;"></iframe>' +
-        '</div></div></div>';
-
-    $(".page-banner").first().find(".header--story").hide();
-    $(".page-banner").first().append(video_html);
-    
-    // Note: The original code references 'height' variable that isn't defined
-    // You may want to define it or remove this line
-    // $(".page-banner").first().find(".podcast-playing").css("min-height", height + "px").show();
-    $(".page-banner").first().find(".podcast-playing").show();
-    
-    activePlayer = 'video';
-}
+// Complete simplified script - just hide players without clearing iframe sources
 
 $(document).ready(function () {
-    // Video play button
-    $(".watch-video-link").click(function () {
-        play_video();
-    });
-
-    // Video close button - now using unique class
-    $(document).on('click', '.btn-close-video', function () {
-        $(this).parent(".podcast-playing").remove();
-        $(".page-banner").first().find(".header--story").show();
-        activePlayer = null;
-    });
     
-    // Audio play button from the inline player
-    $(document).on("click", ".audio-play", function () {
-        // Close video if it's playing
-        if (activePlayer === 'video') {
-            $(".page-banner .podcast-playing").remove();
-            $(".page-banner").first().find(".header--story").show();
+    // When clicking "Watch video" - hide audio players without clearing their sources
+    $(document).on("click", ".watch-video-link", function (e) {
+        
+        // Just hide inline audio player if it's visible
+        if ($(".story-podcast-playing:visible").length > 0) {
+            console.log("Hiding inline audio player before starting video");
+            $(".story-podcast-playing:visible").hide();
+            // The iframe source remains intact, audio pauses when hidden
         }
         
-        // Hide any currently visible inline podcast players
-        $('.story-podcast-playing:visible').each(function () {
-            var iframe = $(this).find("iframe");
-            iframe.data("src", iframe.attr("src"));
-            iframe.attr("src", "");
-            $(this).hide();
-        });
-
-        // Show the selected inline podcast player
-        var targetid = this.getAttribute("data-target");
-        var podcastElement = $(document.getElementById(targetid));
-        var iframe = podcastElement.find("iframe");
-
-        if (!podcastElement.is(":visible")) {
-            podcastElement.show();
-            iframe.attr("src", iframe.data("src") || iframe.attr("src"));
-        }
-        
-        activePlayer = 'audio-inline';
-    });
-
-    // Inline audio close button
-    $(document).on("click", ".close-btn", function () {
-        var podcastElement = $(this).closest(".story-podcast-playing");
-        var iframe = podcastElement.find("iframe");
-        
-        podcastElement.hide();
-        iframe.data("src", iframe.attr("src"));
-        iframe.attr("src", "");
-        
-        // Only restore header if video wasn't playing
-        if (activePlayer !== 'video') {
-            activePlayer = null;
-        }
-    });
-    
-    // Bottom audio player button
-    $(".btn-play-audio").click(function (event) {
-        event.stopPropagation();
-        
-        // Close video if it's playing
-        if (activePlayer === 'video') {
-            $(".page-banner .podcast-playing").remove();
-            $(".page-banner").first().find(".header--story").show();
-        }
-        
-        // Hide inline podcast players
-        $('.story-podcast-playing:visible').each(function () {
-            var iframe = $(this).find("iframe");
-            iframe.data("src", iframe.attr("src"));
-            iframe.attr("src", "");
-            $(this).hide();
-        });
-
-        // Toggle bottom audio player
+        // Remove bottom audio player if it exists
         if ($(".podcast-player-wrapper").length > 0) {
+            console.log("Removing bottom audio player before starting video");
             $(".podcast-player-wrapper").remove();
-            activePlayer = null;
-        } else {
-            var podcastIframe = $("#podcast1 iframe")[0].outerHTML;
-            podcastIframe = podcastIframe.replace(/height="[^"]*"/, 'height="200"');
-            
-            $("body").append(
-                '<div class="podcast-player-wrapper" style="position:fixed;bottom:0;width:100%;background-color:#f9f9f9;z-index:9999;">' +
-                '<button aria-label="Close Player" style="float: right;" class="btn-close-audio"><img src="/assets/rbccm/images/campaign/player-x.svg" alt="Close"></button>' +
-                podcastIframe + '</div>'
-            );
-            
-            activePlayer = 'audio-bottom';
         }
+        
+        // Let the video's play_video() function handle showing video and hiding header--story
     });
-
-    // Bottom audio close button - now using unique class
-    $(document).on('click', '.btn-close-audio', function () {
-        $(".podcast-player-wrapper").remove();
-        activePlayer = null;
+    
+    // When clicking "Start Listening" button - close video if it's open
+    $(document).on("click", ".audio-play", function (e) {
+        
+        // Check if video player is open and trigger its close button
+        if ($(".page-banner .podcast-playing").length > 0) {
+            console.log("Closing video player before starting audio");
+            // This will properly restore the header--story banner
+            $(".page-banner .podcast-playing .btn-close-player").trigger("click");
+        }
+        
+        // The normal audio player code will show the player with iframe intact
     });
-
-    // Auto-play video if URL has 'watch' parameter
-    var query = window.location.search;
-    if (query.includes('watch')) {
-        play_video();
-    }
+    
+    // When clicking bottom audio player button - close video if it's open
+    $(document).on("click", ".btn-play-audio", function (e) {
+        
+        // Check if video player is open and trigger its close button
+        if ($(".page-banner .podcast-playing").length > 0) {
+            console.log("Closing video player before starting bottom audio");
+            // This will properly restore the header--story banner
+            $(".page-banner .podcast-playing .btn-close-player").trigger("click");
+        }
+        
+        // The normal audio player code will handle showing the bottom player
+    });
+    
 });
+
+// Console commands for testing:
+// 
+// Test sequence:
+// 1. $(".watch-video-link").click();  // Opens video
+// 2. $(".audio-play").click();  // Closes video, opens audio
+// 3. $(".watch-video-link").click();  // Hides audio, opens video
+// 4. $(".audio-play").click();  // Closes video, shows audio (should still work!)
+// 
+// Check what's visible:
+// console.log("Video:", $(".page-banner .podcast-playing").length > 0);
+// console.log("Audio:", $(".story-podcast-playing:visible").length > 0);
+// console.log("Header:", $(".header--story:visible").length > 0);
