@@ -20,7 +20,8 @@ $(document).ready(function() {
         slidesToShow: 1,
         slidesToScroll: 1,
         arrows: false,
-        initialSlide: 1
+        initialSlide: 1,
+        variableWidth: true  // Let slides maintain their natural width
     });
     
     // Function to handle visibility based on viewport
