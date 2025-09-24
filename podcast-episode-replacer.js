@@ -1,110 +1,133 @@
-// Podcast replacer that waits for dynamic content to load
+// Custom podcast overlay player with hardcoded episode
 (function() {
-    console.log('⏳ Waiting for page content to load...');
+    console.log('Creating custom podcast overlay...');
     
-    // Function to check if content is loaded and process
-    function attemptReplacement(attemptNumber = 1) {
-        console.log(`🔍 Attempt #${attemptNumber} - Checking for news items...`);
-        
-        // Get all news items
-        const newsItems = document.querySelectorAll('.news-listing .white-box');
-        
-        if (newsItems.length === 0) {
-            if (attemptNumber < 10) {
-                console.log(`   No items found yet. Waiting 500ms and trying again...`);
-                setTimeout(() => attemptReplacement(attemptNumber + 1), 500);
-                return;
-            } else {
-                console.log('❌ No news items found after 5 seconds. Page structure may be different.');
-                // Try alternative selectors
-                console.log('🔍 Trying alternative selectors...');
-                const altItems = document.querySelectorAll('.news-listing [class*="tile"]');
-                console.log(`   Found ${altItems.length} items with alternative selector`);
-                return;
-            }
+    // Hardcoded episode URL
+    const episodeUrl = 'https://player.captivate.fm/episode/c5ceca3b-a4f5-4edf-ad41-f8d5ad6cac5f/';
+    
+    // Create the overlay player
+    function createPodcastOverlay() {
+        // Remove existing overlay if present
+        const existing = document.getElementById('custom-podcast-overlay');
+        if (existing) {
+            existing.remove();
         }
         
-        console.log(`📰 Found ${newsItems.length} news items`);
+        // Create wrapper link
+        const wrapperLink = document.createElement('a');
+        wrapperLink.href = 'javascript:void(0)';
+        wrapperLink.setAttribute('aria-label', 'Player');
+        wrapperLink.id = 'custom-podcast-overlay';
+        wrapperLink.style.cssText = `
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: none;
+            text-decoration: none;
+        `;
         
-        // Find the first item that actually has a podcast episode
-        let firstEpisodeUrl = null;
-        let foundAtIndex = -1;
-        let itemsChecked = [];
+        // Create overlay container
+        const overlay = document.createElement('div');
+        overlay.className = 'story-podcast-playing';
+        overlay.style.cssText = `
+            background-color: rgb(244, 244, 244);
+            box-shadow: rgba(0, 0, 0, 0.1) 0px -2px 10px;
+            padding: 0;
+        `;
         
-        for (let i = 0; i < newsItems.length; i++) {
-            const iframe = newsItems[i].querySelector('.story-podcast-playing iframe');
-            const title = newsItems[i].querySelector('h2')?.textContent?.trim() || `Item ${i + 1}`;
-            
-            if (iframe && iframe.src && iframe.src.includes('captivate.fm')) {
-                firstEpisodeUrl = iframe.src;
-                foundAtIndex = i + 1;
-                console.log(`✅ Found podcast in item #${foundAtIndex}: "${title}"`);
-                break;
-            } else {
-                itemsChecked.push(`   #${i + 1}: ${title} - No podcast`);
-            }
-        }
+        // Create close button with proper styling
+        const closeButton = document.createElement('button');
+        closeButton.setAttribute('aria-label', 'Close Player');
+        closeButton.className = 'btn-close-player close-btn';
         
-        // Log items checked
-        if (itemsChecked.length > 0 && foundAtIndex === -1) {
-            console.log('📋 Items checked:');
-            itemsChecked.forEach(item => console.log(item));
-        }
+        // Create close button image
+        const closeImg = document.createElement('img');
+        closeImg.src = '/assets/rbccm/images/campaign/player-x.svg';
+        closeImg.alt = 'Close';
+        closeButton.appendChild(closeImg);
         
-        if (!firstEpisodeUrl) {
-            console.log('❌ No podcast episodes found in any news items');
-            return {
-                success: false,
-                message: 'No podcast episodes available'
-            };
-        }
+        // Create iframe
+        const iframe = document.createElement('iframe');
+        iframe.width = '100%';
+        iframe.height = '200';
+        iframe.scrolling = 'no';
+        iframe.frameBorder = 'no';
+        iframe.allow = 'autoplay';
+        iframe.src = episodeUrl;
         
-        // Extract episode ID
-        const extractEpisodeId = (url) => {
-            const match = url.match(/episode\/([a-f0-9-]+)\//);
-            return match ? match[1] : 'unknown';
+        // Close button functionality
+        closeButton.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            wrapperLink.style.display = 'none';
+            iframe.src = ''; // Stop playback
+            setTimeout(() => {
+                iframe.src = episodeUrl; // Reset for next play
+            }, 100);
         };
         
-        const newEpisodeId = extractEpisodeId(firstEpisodeUrl);
-        console.log(`🎙️ Episode ID to use: ${newEpisodeId}`);
+        // Assemble structure
+        overlay.appendChild(closeButton);
+        overlay.appendChild(iframe);
+        wrapperLink.appendChild(overlay);
+        document.body.appendChild(wrapperLink);
         
-        // Find the hero/main podcast player
-        const heroPlayer = document.querySelector('.podcast-playing.story-podcast-playing iframe');
-        
-        if (!heroPlayer) {
-            console.log('⏳ Hero player not found, waiting for it...');
-            if (attemptNumber < 10) {
-                setTimeout(() => attemptReplacement(attemptNumber + 1), 500);
-                return;
-            }
-            console.log('❌ Hero player not found after multiple attempts');
-            return;
-        }
-        
-        // Get current episode
-        const oldEpisodeId = extractEpisodeId(heroPlayer.src);
-        
-        if (oldEpisodeId === newEpisodeId) {
-            console.log('ℹ️ Hero player already has this episode');
-            return;
-        }
-        
-        // Replace the source
-        console.log('🔄 Replacing hero player episode...');
-        console.log(`   Old: ${oldEpisodeId}`);
-        console.log(`   New: ${newEpisodeId}`);
-        
-        heroPlayer.src = firstEpisodeUrl;
-        
-        console.log('✨ Successfully updated hero podcast player!');
-        return {
-            success: true,
-            foundAtPosition: foundAtIndex,
-            oldEpisodeId: oldEpisodeId,
-            newEpisodeId: newEpisodeId
-        };
+        console.log('Podcast overlay created');
+        return overlay;
     }
     
-    // Start the replacement process
-    attemptReplacement();
+    // Set up button handler
+    function setupButton() {
+        const button = document.querySelector('.btn-play-audio');
+        if (!button) {
+            console.log('Button .btn-play-audio not found');
+            return false;
+        }
+        
+        console.log('Found button:', button);
+        
+        // Clone button to remove existing handlers
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        
+        // Add click handler
+        newButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Start listening clicked - showing overlay');
+            
+            const overlay = document.getElementById('custom-podcast-overlay');
+            if (overlay) {
+                overlay.style.display = 'block';
+                console.log('Podcast overlay now visible');
+            }
+            
+            return false;
+        });
+        
+        console.log('Button handler attached');
+        return true;
+    }
+    
+    // Initialize
+    createPodcastOverlay();
+    
+    // Setup button with retry
+    let attempts = 0;
+    function trySetup() {
+        if (setupButton()) {
+            console.log('Custom podcast player ready!');
+        } else if (attempts < 5) {
+            attempts++;
+            console.log(`Button setup attempt ${attempts} failed, retrying...`);
+            setTimeout(trySetup, 500);
+        } else {
+            console.log('Could not find button after 5 attempts');
+        }
+    }
+    
+    trySetup();
 })();
