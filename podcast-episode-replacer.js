@@ -5,6 +5,15 @@
     // Hardcoded episode URL
     const episodeUrl = 'https://player.captivate.fm/episode/c5ceca3b-a4f5-4edf-ad41-f8d5ad6cac5f/';
     
+    // Wait for DOM to be ready
+    function waitForDOM(callback) {
+        if (document.body) {
+            callback();
+        } else {
+            setTimeout(() => waitForDOM(callback), 100);
+        }
+    }
+    
     // Create the overlay player
     function createPodcastOverlay() {
         // Remove existing overlay if present
@@ -72,7 +81,16 @@
         overlay.appendChild(closeButton);
         overlay.appendChild(iframe);
         wrapperLink.appendChild(overlay);
-        document.body.appendChild(wrapperLink);
+        
+        // Safely append to body
+        if (document.body) {
+            document.body.appendChild(wrapperLink);
+            console.log('Podcast overlay created and added to DOM');
+            return wrapperLink;
+        } else {
+            console.error('document.body not available');
+            return null;
+        }
         
         console.log('Podcast overlay created');
         return overlay;
@@ -112,22 +130,24 @@
         return true;
     }
     
-    // Initialize
-    createPodcastOverlay();
-    
-    // Setup button with retry
-    let attempts = 0;
-    function trySetup() {
-        if (setupButton()) {
-            console.log('Custom podcast player ready!');
-        } else if (attempts < 5) {
-            attempts++;
-            console.log(`Button setup attempt ${attempts} failed, retrying...`);
-            setTimeout(trySetup, 500);
-        } else {
-            console.log('Could not find button after 5 attempts');
+    // Initialize with DOM safety
+    waitForDOM(() => {
+        createPodcastOverlay();
+        
+        // Setup button with retry
+        let attempts = 0;
+        function trySetup() {
+            if (setupButton()) {
+                console.log('Custom podcast player ready!');
+            } else if (attempts < 5) {
+                attempts++;
+                console.log(`Button setup attempt ${attempts} failed, retrying...`);
+                setTimeout(trySetup, 500);
+            } else {
+                console.log('Could not find button after 5 attempts');
+            }
         }
-    }
-    
-    trySetup();
+        
+        trySetup();
+    });
 })();
