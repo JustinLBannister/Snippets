@@ -40,8 +40,16 @@ function mktoFormChain(config) {
         var loadForm = MktoForms2.loadForm.bind(MktoForms2,config.podId,config.munchkinId,formId),
             formEls = arrayify(document.querySelectorAll("[" + MKTOFORM_ID_ATTRNAME + '="' + formId + '"]'));
         
+        // FIX #2: Check if there are any containers for this form
+        if (formEls.length === 0) {
+            console.log('No container found for form ' + formId + '. Skipping.');
+            return;
+        }
+        
         (function loadFormCb(formEls) {
             var formEl = formEls.shift();
+            if (!formEl) return; // Extra safety check
+            
             formEl.id = "mktoForm_" + formId;
             loadForm(function(form) {
                 formEl.id = "";
@@ -53,14 +61,11 @@ function mktoFormChain(config) {
     });
 }
 
-// FIXED: Wait for MktoForms2 to be available before calling mktoFormChain
+// FIX #1: Wait for MktoForms2 to be available
 (function initMarketoForm() {
     if (typeof MktoForms2 === 'undefined') {
-        // MktoForms2 not loaded yet, check again in 50ms
         setTimeout(initMarketoForm, 50);
         return;
     }
-    
-    // MktoForms2 is loaded, safe to initialize
     mktoFormChain(mktoFormConfig);
 })();
