@@ -420,63 +420,235 @@
 </xsl:stylesheet>
 
 /**
- * Tile Filtering System
- * Filters content tiles based on checkbox selections
- * Tiles must have data-category attributes to be filterable
+ * Smart Tile Consolidation and Filtering for Change a Life Section
+ * Container ID agnostic - works based on structure not hardcoded IDs
+ * Only affects tiles in the Change a Life section, not other page tiles
  */
 
 $(document).ready(function() {
-    // Cache the filter checkboxes
-    var $filterCheckboxes = $('input[type="checkbox"]');
     
-    /**
-     * Main filtering function
-     * Processes selected checkboxes and shows/hides tiles accordingly
-     */
-    var filterFunc = function() {
-        // Make sure hidden tiles' container is unhidden
-        $("#content .iw_component>div").show();
-        $("#load-more-wrap").hide();
-        
-        // Collect all selected filters grouped by name
-        var selectedFilters = {};
-        
-        $filterCheckboxes.filter(':checked').each(function() {
-            if (!selectedFilters.hasOwnProperty(this.name)) {
-                selectedFilters[this.name] = [];
-            }
-            selectedFilters[this.name].push(this.value);
-        });
-        
-        // Get all filterable tile elements
-        var $filteredResults = $('#content .tile--box>div');
-        
-        // Apply filters
-        $.each(selectedFilters, function(name, filterValues) {
-            $filteredResults = $filteredResults.filter(function() {
-                var matched = false;
-                var currentFilterValues = $(this).data('category').split(' ');
-                
-                // Check if any of the tile's categories match the selected filters
-                $.each(currentFilterValues, function(_, currentFilterValue) {
-                    // OR logic: only need to match one category
-                    if ($.inArray(currentFilterValue, filterValues) != -1) {
-                        matched = true;
-                        return false; // Break the loop
-                    }
-                });
-                
-                return matched;
-            });
-        });
-        
-        // Hide all tiles first
-        $("#content .col-md-4").hide();
-        
-        // Show only the filtered tiles
-        $('#content .tile--box>div').filter($filteredResults).parent().parent().show();
+    // Configuration - adjust these selectors if needed
+    var CONFIG = {
+        filterDropdown: '#etTopicDropdown',  // The filter dropdown
+        componentClass: '.iw_component',      // Class for component containers
+        tileClass: '.col-md-4',              // Class for tiles
+        tileBoxClass: '.tile--box',          // Class that identifies Change a Life tiles
+        foundationStoriesId: '#foundation-stories', // Other sections to exclude
+        consolidatedMarker: 'cal-consolidated-tile' // Marker class for moved tiles
     };
     
-    // Attach the filter function to checkbox change events
+    // Step 1: Find the Change a Life section based on proximity to filter
+    function findChangeALifeSection() {
+        // The Change a Life tiles are in iw_component divs that follow the filter dropdown
+        // Find the filter dropdown's parent component
+        var $filterComponent = $(CONFIG.filterDropdown).closest(CONFIG.componentClass);
+        
+        if ($filterComponent.length === 0) {
+            console.error('Filter component not found');
+            return null;
+        }
+        
+        // Get the parent container that holds all Change a Life components
+        var $parentContainer = $filterComponent.parent();
+        
+        // Find all iw_component siblings (including the filter component itself)
+        var $allComponents = $parentContainer.find(CONFIG.componentClass);
+        
+        // Find the first visible component with tiles (should be right after filter)
+        var $mainComponent = null;
+        $allComponents.each(function() {
+            var $this = $(this);
+            // Skip if it's the filter component itself
+            if ($this.find(CONFIG.filterDropdown).length > 0) {
+                return true; // continue
+            }
+            // Check if it's visible and has tiles
+            if ($this.is(':visible') && $this.find(CONFIG.tileClass + CONFIG.tileBoxClass).length > 0) {
+                $mainComponent = $this;
+                return false; // break
+            }
+        });
+        
+        return $mainComponent;
+    }
+    
+    // Step 2: Consolidate tiles from hidden sections
+    function consolidateTiles() {
+        console.log('Starting smart tile consolidation...');
+        
+        // Find the main Change a Life section
+        var $mainComponent = findChangeALifeSection();
+        
+        if (!$mainComponent || $mainComponent.length === 0) {
+            console.error('Main Change a Life section not found!');
+            return;
+        }
+        
+        var $mainRow = $mainComponent.find('.container .row').first();
+        console.log('Found main Change a Life row');
+        
+        // Find parent container of all components
+        var $parentContainer = $mainComponent.parent();
+        
+        // Find all hidden components with tiles in the same container
+        var hiddenTileCount = 0;
+        $parentContainer.find(CONFIG.componentClass).each(function() {
+            var $component = $(this);
+            
+            // Skip if it's visible or has the filter dropdown
+            if ($component.is(':visible') || $component.find(CONFIG.filterDropdown).length > 0) {
+                return true; // continue
+            }
+            
+            // Skip if it's not a Change a Life component (check for tile--box class)
+            if ($component.find(CONFIG.tileBoxClass).length === 0) {
+                return true; // continue
+            }
+            
+            // This is a hidden Change a Life component - consolidate its tiles
+            var $tiles = $component.find(CONFIG.tileClass);
+            
+            $tiles.each(function() {
+                var $tile = $(this).clone(true, true);
+                
+                // Mark as consolidated and initially hide
+                $tile.addClass(CONFIG.consolidatedMarker);
+                $tile.attr('data-consolidated', 'true');
+                $tile.hide();
+                
+                // Append to main row
+                $mainRow.append($tile);
+                hiddenTileCount++;
+            });
+            
+            console.log('Consolidated ' + $tiles.length + ' tiles from hidden section');
+            
+            // Remove the empty hidden component wrapper
+            $component.closest('.ls-cmp-wrap').remove();
+        });
+        
+        console.log('Total Change a Life tiles consolidated: ' + hiddenTileCount);
+    }
+    
+    // Step 3: Filter function that only affects Change a Life tiles
+    var $filterCheckboxes = $(CONFIG.filterDropdown + ' input[type="checkbox"]');
+    var $exploreButton = $('#load-more');
+    var $exploreButtonWrap = $('#load-more-wrap');
+    
+    var filterFunc = function(showAllTiles) {
+        console.log('Filter triggered for Change a Life tiles');
+        
+        // Get selected categories
+        var selectedCategories = [];
+        $filterCheckboxes.filter(':checked').each(function() {
+            selectedCategories.push($(this).val());
+        });
+        
+        console.log('Selected categories:', selectedCategories);
+        
+        // Find the main Change a Life component
+        var $mainComponent = findChangeALifeSection();
+        if (!$mainComponent) {
+            console.error('Cannot find Change a Life section for filtering');
+            return;
+        }
+        
+        // Only get tiles from the Change a Life section
+        var $calTiles = $mainComponent.find(CONFIG.tileClass);
+        
+        // Handle "Explore the series" button visibility
+        if (showAllTiles === true) {
+            // Button was clicked - show all tiles and hide button
+            $calTiles.show();
+            $exploreButtonWrap.hide();
+        } else if (selectedCategories.length === 0) {
+            // No filters - show only original tiles and show button
+            $calTiles.each(function() {
+                var $tile = $(this);
+                if ($tile.hasClass(CONFIG.consolidatedMarker)) {
+                    $tile.hide();
+                } else {
+                    $tile.show();
+                }
+            });
+            $exploreButtonWrap.show();
+        } else {
+            // Filters active - apply filters and show button
+            $exploreButtonWrap.show();
+            
+            $calTiles.each(function() {
+                var $tile = $(this);
+                var $categoryElement = $tile.find('[data-category]').first();
+                
+                if ($categoryElement.length > 0) {
+                    var categories = $categoryElement.attr('data-category');
+                    var shouldShow = false;
+                    
+                    if (categories) {
+                        var tileCategories = categories.split(' ');
+                        for (var i = 0; i < selectedCategories.length; i++) {
+                            if (tileCategories.indexOf(selectedCategories[i]) !== -1) {
+                                shouldShow = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    $tile.toggle(shouldShow);
+                } else {
+                    $tile.hide();
+                }
+            });
+        }
+        
+        // Log results
+        var visibleCalTiles = $calTiles.filter(':visible').length;
+        console.log('Visible Change a Life tiles:', visibleCalTiles);
+    };
+    
+    // Step 4: Initialize
+    
+    // Verify we're not affecting foundation stories or other sections
+    function verifyScopeIsolation() {
+        var foundationTiles = $(CONFIG.foundationStoriesId + ' ' + CONFIG.tileClass).length;
+        if (foundationTiles > 0) {
+            console.log('Found ' + foundationTiles + ' foundation story tiles - these will NOT be affected by filters');
+        }
+    }
+    
+    // Run consolidation
+    consolidateTiles();
+    
+    // Verify isolation
+    verifyScopeIsolation();
+    
+    // Attach filter handler
     $filterCheckboxes.on('change', filterFunc);
+    
+    // Handle "Explore the series" button click
+    $('#load-more').off('click').on('click', function(e) {
+        e.preventDefault();
+        console.log('Explore the series clicked - showing all tiles');
+        
+        // Clear all filter checkboxes
+        $filterCheckboxes.prop('checked', false);
+        
+        // Show all tiles and hide the button
+        filterFunc(true);
+    });
+    
+    // Prevent dropdown from closing on checkbox click
+    $(CONFIG.filterDropdown).on('click', function(e) {
+        e.stopPropagation();
+    });
+    
+    // Optional: Add clear filters button that resets to initial state
+    $('#clear-cal-filters').on('click', function() {
+        $filterCheckboxes.prop('checked', false);
+        filterFunc(false); // false = back to initial state with button visible
+    });
+    
 });
+
+// This script specifically targets only Change a Life tiles
+// Foundation stories and other tile sections remain unaffected
