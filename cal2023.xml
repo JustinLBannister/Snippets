@@ -496,6 +496,55 @@ $(document).ready(function() {
         return totalConsolidated > 0;
     }
     
+    // Height equalization function
+    function equalizeTileHeights() {
+        // Only equalize visible tiles
+        var $visibleTiles = $(CONFIG.mainSectionId + ' ' + CONFIG.tileClass + ':visible');
+        
+        if ($visibleTiles.length === 0) return;
+        
+        // Reset heights first to get natural heights
+        $visibleTiles.find('.white-box-text').css('height', '');
+        $visibleTiles.find('.img-stretch').css('height', '');
+        
+        // Group tiles by row (3 per row for col-md-4)
+        var tilesPerRow = 3;
+        var rows = [];
+        
+        $visibleTiles.each(function(index) {
+            var rowIndex = Math.floor(index / tilesPerRow);
+            if (!rows[rowIndex]) {
+                rows[rowIndex] = [];
+            }
+            rows[rowIndex].push($(this));
+        });
+        
+        // Equalize heights per row
+        rows.forEach(function(rowTiles) {
+            if (rowTiles.length > 0) {
+                // Find max height for text boxes in this row
+                var maxTextHeight = 0;
+                var maxImageHeight = 0;
+                
+                rowTiles.forEach(function($tile) {
+                    var textHeight = $tile.find('.white-box-text').outerHeight();
+                    var imageHeight = $tile.find('.img-stretch').outerHeight();
+                    
+                    maxTextHeight = Math.max(maxTextHeight, textHeight);
+                    maxImageHeight = Math.max(maxImageHeight, imageHeight);
+                });
+                
+                // Apply max heights to all tiles in this row
+                rowTiles.forEach(function($tile) {
+                    $tile.find('.white-box-text').height(maxTextHeight);
+                    $tile.find('.img-stretch').height(maxImageHeight);
+                });
+            }
+        });
+        
+        console.log('Equalized heights for ' + $visibleTiles.length + ' tiles');
+    }
+    
     // Filter function
     function filterFunc(showAll) {
         var $filterCheckboxes = $(CONFIG.filterDropdown + ' input[type="checkbox"]');
@@ -562,6 +611,11 @@ $(document).ready(function() {
         
         var visibleCount = $allTiles.filter(':visible').length;
         console.log('Visible tiles: ' + visibleCount);
+        
+        // Equalize heights after filtering
+        setTimeout(function() {
+            equalizeTileHeights();
+        }, 50); // Small delay to ensure DOM updates are complete
     }
     
     // Initialize everything
@@ -575,6 +629,20 @@ $(document).ready(function() {
             console.error('Failed to consolidate tiles - check the section IDs in CONFIG');
             return;
         }
+        
+        // Check if there's an existing tileScale function we should use
+        if (typeof tileScale === 'function') {
+            console.log('Found existing tileScale function - will use it for height equalization');
+            // Override our equalizeTileHeights to use the existing function
+            window.equalizeTileHeights = function() {
+                tileScale();
+            };
+        }
+        
+        // Equalize heights of initial tiles
+        setTimeout(function() {
+            equalizeTileHeights();
+        }, 100);
         
         // Set up event handlers
         var $filterCheckboxes = $(CONFIG.filterDropdown + ' input[type="checkbox"]');
@@ -600,6 +668,14 @@ $(document).ready(function() {
         // Prevent dropdown from closing
         $(CONFIG.filterDropdown).on('click', function(e) {
             e.stopPropagation();
+        });
+        
+        // Also equalize on window resize
+        $(window).on('resize.tileHeight', function() {
+            clearTimeout(window.resizeTimer);
+            window.resizeTimer = setTimeout(function() {
+                equalizeTileHeights();
+            }, 250);
         });
         
         console.log('Initialization complete!');
