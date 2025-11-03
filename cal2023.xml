@@ -434,8 +434,41 @@ $(document).ready(function() {
         tileClass: '.col-md-4',              // Class for tiles
         tileBoxClass: '.tile--box',          // Class that identifies Change a Life tiles
         foundationStoriesId: '#foundation-stories', // Other sections to exclude
-        consolidatedMarker: 'cal-consolidated-tile' // Marker class for moved tiles
+        consolidatedMarker: 'cal-consolidated-tile', // Marker class for moved tiles
+        initDelay: 1500,                     // Delay before initialization (ms)
+        maxRetries: 5,                       // Max retries to find components
+        retryDelay: 500                      // Delay between retries (ms)
     };
+    
+    // Initialize with delay and retry logic
+    function initWithRetry(retryCount) {
+        retryCount = retryCount || 0;
+        
+        // Check if filter dropdown exists
+        if ($(CONFIG.filterDropdown).length === 0) {
+            if (retryCount < CONFIG.maxRetries) {
+                console.log('Filter dropdown not found, retrying in ' + CONFIG.retryDelay + 'ms... (attempt ' + (retryCount + 1) + ')');
+                setTimeout(function() {
+                    initWithRetry(retryCount + 1);
+                }, CONFIG.retryDelay);
+            } else {
+                console.error('Filter dropdown not found after ' + CONFIG.maxRetries + ' attempts');
+            }
+            return;
+        }
+        
+        // Try to initialize
+        var success = initialize();
+        
+        if (!success && retryCount < CONFIG.maxRetries) {
+            console.log('Initialization failed, retrying in ' + CONFIG.retryDelay + 'ms... (attempt ' + (retryCount + 1) + ')');
+            setTimeout(function() {
+                initWithRetry(retryCount + 1);
+            }, CONFIG.retryDelay);
+        } else if (!success) {
+            console.error('Could not initialize tile filtering after ' + CONFIG.maxRetries + ' attempts');
+        }
+    }
     
     // Step 1: Find the Change a Life section based on proximity to filter
     function findChangeALifeSection() {
@@ -480,11 +513,17 @@ $(document).ready(function() {
         var $mainComponent = findChangeALifeSection();
         
         if (!$mainComponent || $mainComponent.length === 0) {
-            console.error('Main Change a Life section not found!');
-            return;
+            console.warn('Main Change a Life section not found - will retry');
+            return false; // Return false to trigger retry
         }
         
         var $mainRow = $mainComponent.find('.container .row').first();
+        
+        if ($mainRow.length === 0) {
+            console.warn('Main row not found in Change a Life section');
+            return false;
+        }
+        
         console.log('Found main Change a Life row');
         
         // Find parent container of all components
@@ -528,6 +567,15 @@ $(document).ready(function() {
         });
         
         console.log('Total Change a Life tiles consolidated: ' + hiddenTileCount);
+        return true; // Success
+    }
+    
+    // Verify we're not affecting foundation stories or other sections
+    function verifyScopeIsolation() {
+        var foundationTiles = $(CONFIG.foundationStoriesId + ' ' + CONFIG.tileClass).length;
+        if (foundationTiles > 0) {
+            console.log('Found ' + foundationTiles + ' foundation story tiles - these will NOT be affected by filters');
+        }
     }
     
     // Step 3: Filter function that only affects Change a Life tiles
@@ -606,47 +654,70 @@ $(document).ready(function() {
         console.log('Visible Change a Life tiles:', visibleCalTiles);
     };
     
-    // Step 4: Initialize
-    
-    // Verify we're not affecting foundation stories or other sections
-    function verifyScopeIsolation() {
-        var foundationTiles = $(CONFIG.foundationStoriesId + ' ' + CONFIG.tileClass).length;
-        if (foundationTiles > 0) {
-            console.log('Found ' + foundationTiles + ' foundation story tiles - these will NOT be affected by filters');
+    // Main initialization function
+    function initialize() {
+        try {
+            // Run consolidation
+            var consolidationSuccess = consolidateTiles();
+            
+            if (!consolidationSuccess) {
+                return false;
+            }
+            
+            // Verify isolation
+            verifyScopeIsolation();
+            
+            // Set up event handlers
+            setupEventHandlers();
+            
+            console.log('Change a Life tile filtering system initialized successfully');
+            return true;
+            
+        } catch (error) {
+            console.error('Error during initialization:', error);
+            return false;
         }
     }
     
-    // Run consolidation
-    consolidateTiles();
-    
-    // Verify isolation
-    verifyScopeIsolation();
-    
-    // Attach filter handler
-    $filterCheckboxes.on('change', filterFunc);
-    
-    // Handle "Explore the series" button click
-    $('#load-more').off('click').on('click', function(e) {
-        e.preventDefault();
-        console.log('Explore the series clicked - showing all tiles');
+    // Set up all event handlers
+    function setupEventHandlers() {
+        var $filterCheckboxes = $(CONFIG.filterDropdown + ' input[type="checkbox"]');
+        var $exploreButton = $('#load-more');
         
-        // Clear all filter checkboxes
-        $filterCheckboxes.prop('checked', false);
+        // Attach filter handler
+        $filterCheckboxes.off('change').on('change', function() {
+            filterFunc(false);
+        });
         
-        // Show all tiles and hide the button
-        filterFunc(true);
-    });
+        // Handle "Explore the series" button click
+        $exploreButton.off('click').on('click', function(e) {
+            e.preventDefault();
+            console.log('Explore the series clicked - showing all tiles');
+            
+            // Clear all filter checkboxes
+            $filterCheckboxes.prop('checked', false);
+            
+            // Show all tiles and hide the button
+            filterFunc(true);
+        });
+        
+        // Prevent dropdown from closing on checkbox click
+        $(CONFIG.filterDropdown).on('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        // Optional: Add clear filters button
+        $('#clear-cal-filters').on('click', function() {
+            $filterCheckboxes.prop('checked', false);
+            filterFunc(false); // false = back to initial state
+        });
+    }
     
-    // Prevent dropdown from closing on checkbox click
-    $(CONFIG.filterDropdown).on('click', function(e) {
-        e.stopPropagation();
-    });
-    
-    // Optional: Add clear filters button that resets to initial state
-    $('#clear-cal-filters').on('click', function() {
-        $filterCheckboxes.prop('checked', false);
-        filterFunc(false); // false = back to initial state with button visible
-    });
+    // Start initialization with delay
+    console.log('Waiting ' + CONFIG.initDelay + 'ms before initializing Change a Life filtering...');
+    setTimeout(function() {
+        initWithRetry(0);
+    }, CONFIG.initDelay);
     
 });
 
