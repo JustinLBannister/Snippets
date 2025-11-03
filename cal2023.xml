@@ -105,19 +105,6 @@
                 <xsl:attribute name="href"><xsl:value-of select="$group/Datum[@Name='Link']"/></xsl:attribute>
               </xsl:otherwise>
         </xsl:choose>
-               
-                <xsl:choose>
-              <xsl:when test="/Properties/Datum[@ID='PlayButton']/Option[@Selected='true']/Value = 'show' or $group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'audio' or $group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'video'">
-                    <xsl:choose>
-                      <xsl:when test="$group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'video'">
-                        <div class="play-overlay-sm"><em style="margin:auto;" class="fa fa-play">&nbsp;</em></div>
-                      </xsl:when>
-                      <xsl:when test="$group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'audio'">
-                        <div class="play-overlay-sm"><em style="margin-left:8px;" class="fa fa-microphone">&nbsp;</em></div>
-                      </xsl:when>
-                    </xsl:choose>
-          </xsl:when>
-        </xsl:choose>
                 <xsl:choose>
               <xsl:when test="/Properties/Datum[@ID='YellowTearEdge']/Option[@Selected='true']/Value = 'show'">
                 <div class="tear-edge"></div>
@@ -190,18 +177,6 @@
               <xsl:otherwise>
                 <xsl:attribute name="href"><xsl:value-of select="$group/Datum[@Name='Link']"/></xsl:attribute>
               </xsl:otherwise>
-        </xsl:choose>
-            <xsl:choose>
-              <xsl:when test="/Properties/Datum[@ID='PlayButton']/Option[@Selected='true']/Value = 'show' or $group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'audio' or $group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'video'">
-                <xsl:choose>
-                  <xsl:when test="$group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'video'">
-                    <div class="play-overlay-sm"><em class="fa fa-play">&nbsp;</em></div>
-                  </xsl:when>
-                  <xsl:when test="$group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'audio'">
-                    <div class="play-overlay-sm"><em class="fa fa-microphone">&nbsp;</em></div>
-                  </xsl:when>
-                </xsl:choose>
-          </xsl:when>
         </xsl:choose>
             <xsl:choose>
               <xsl:when test="/Properties/Datum[@ID='YellowTearEdge']/Option[@Selected='true']/Value = 'show'">
