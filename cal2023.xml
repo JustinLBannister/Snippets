@@ -418,3 +418,65 @@
 </xsl:template>
  
 </xsl:stylesheet>
+
+/**
+ * Tile Filtering System
+ * Filters content tiles based on checkbox selections
+ * Tiles must have data-category attributes to be filterable
+ */
+
+$(document).ready(function() {
+    // Cache the filter checkboxes
+    var $filterCheckboxes = $('input[type="checkbox"]');
+    
+    /**
+     * Main filtering function
+     * Processes selected checkboxes and shows/hides tiles accordingly
+     */
+    var filterFunc = function() {
+        // Make sure hidden tiles' container is unhidden
+        $("#content .iw_component>div").show();
+        $("#load-more-wrap").hide();
+        
+        // Collect all selected filters grouped by name
+        var selectedFilters = {};
+        
+        $filterCheckboxes.filter(':checked').each(function() {
+            if (!selectedFilters.hasOwnProperty(this.name)) {
+                selectedFilters[this.name] = [];
+            }
+            selectedFilters[this.name].push(this.value);
+        });
+        
+        // Get all filterable tile elements
+        var $filteredResults = $('#content .tile--box>div');
+        
+        // Apply filters
+        $.each(selectedFilters, function(name, filterValues) {
+            $filteredResults = $filteredResults.filter(function() {
+                var matched = false;
+                var currentFilterValues = $(this).data('category').split(' ');
+                
+                // Check if any of the tile's categories match the selected filters
+                $.each(currentFilterValues, function(_, currentFilterValue) {
+                    // OR logic: only need to match one category
+                    if ($.inArray(currentFilterValue, filterValues) != -1) {
+                        matched = true;
+                        return false; // Break the loop
+                    }
+                });
+                
+                return matched;
+            });
+        });
+        
+        // Hide all tiles first
+        $("#content .col-md-4").hide();
+        
+        // Show only the filtered tiles
+        $('#content .tile--box>div').filter($filteredResults).parent().parent().show();
+    };
+    
+    // Attach the filter function to checkbox change events
+    $filterCheckboxes.on('change', filterFunc);
+});
