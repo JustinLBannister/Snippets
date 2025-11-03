@@ -503,9 +503,9 @@ $(document).ready(function() {
         
         if ($visibleTiles.length === 0) return;
         
-        // Reset heights first to get natural heights
-        $visibleTiles.find('.white-box-text').css('height', '');
-        $visibleTiles.find('.img-stretch').css('height', '');
+        // Reset heights first to get natural heights - BUT EXCLUDE MODALS
+        $visibleTiles.find('.tile--box > div > div > .white-box-text').css('height', '');
+        $visibleTiles.find('.tile--box > div > div > .img-stretch').css('height', '');
         
         // Group tiles by row (3 per row for col-md-4)
         var tilesPerRow = 3;
@@ -527,20 +527,27 @@ $(document).ready(function() {
                 var maxImageHeight = 0;
                 
                 rowTiles.forEach(function($tile) {
-                    var textHeight = $tile.find('.white-box-text').outerHeight();
-                    var imageHeight = $tile.find('.img-stretch').outerHeight();
+                    // Be specific - only get the tile's content, not modal content
+                    var $textBox = $tile.find('.tile--box > div > div > .white-box-text').first();
+                    var $imageBox = $tile.find('.tile--box > div > div > .img-stretch').first();
+                    
+                    var textHeight = $textBox.outerHeight();
+                    var imageHeight = $imageBox.outerHeight();
                     
                     maxTextHeight = Math.max(maxTextHeight, textHeight);
                     maxImageHeight = Math.max(maxImageHeight, imageHeight);
                 });
                 
-                // Apply max heights to all tiles in this row
+                // Apply max heights to all tiles in this row - NOT to modals
                 rowTiles.forEach(function($tile) {
-                    $tile.find('.white-box-text').height(maxTextHeight);
-                    $tile.find('.img-stretch').height(maxImageHeight);
+                    $tile.find('.tile--box > div > div > .white-box-text').first().height(maxTextHeight);
+                    $tile.find('.tile--box > div > div > .img-stretch').first().height(maxImageHeight);
                 });
             }
         });
+        
+        // Ensure modals keep auto height
+        $('.modal .white-box-text').css('height', 'auto');
         
         console.log('Equalized heights for ' + $visibleTiles.length + ' tiles');
     }
