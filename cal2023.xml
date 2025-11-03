@@ -93,7 +93,7 @@
                 <xsl:attribute name="style">min-height: 295px; background-image: url('<xsl:value-of select="$group/Datum[@Name='Image']/Image/Path"/>');</xsl:attribute>
                 <xsl:attribute name="title"><xsl:value-of select="$group/Datum[@Name='Heading']"/></xsl:attribute>
                 <xsl:choose>
-              <xsl:when test="/Properties/Datum[@ID='PlayButton']/Option[@Selected='true']/Value = 'show' or $group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'audio'">
+              <xsl:when test="/Properties/Datum[@ID='PlayButton']/Option[@Selected='true']/Value = 'show' or $group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'audio' or $group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'video'">
                 <xsl:attribute name="href">#<xsl:value-of select="$group/Datum[@Name='Video ID']" disable-output-escaping="yes"/></xsl:attribute>
                         <xsl:attribute name="data-target">#<xsl:value-of select="$group/Datum[@Name='Video ID']" disable-output-escaping="yes"/></xsl:attribute>
                 <xsl:attribute name="data-toggle">modal</xsl:attribute>
@@ -105,6 +105,8 @@
                 <xsl:attribute name="href"><xsl:value-of select="$group/Datum[@Name='Link']"/></xsl:attribute>
               </xsl:otherwise>
         </xsl:choose>
+               
+                <!-- Overlay icons removed -->
                 <xsl:choose>
               <xsl:when test="/Properties/Datum[@ID='YellowTearEdge']/Option[@Selected='true']/Value = 'show'">
                 <div class="tear-edge"></div>
@@ -166,7 +168,7 @@
             <xsl:attribute name="style">min-height: 275px; background-image: url('<xsl:value-of select="$group/Datum[@Name='Image']/Image/Path"/>');</xsl:attribute>
             <xsl:attribute name="title"><xsl:value-of select="$group/Datum[@Name='Heading']"/></xsl:attribute>
             <xsl:choose>
-              <xsl:when test="/Properties/Datum[@ID='PlayButton']/Option[@Selected='true']/Value = 'show' or $group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'audio'">
+              <xsl:when test="/Properties/Datum[@ID='PlayButton']/Option[@Selected='true']/Value = 'show' or $group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'audio' or $group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'video'">
                 <xsl:attribute name="href">#<xsl:value-of select="$group/Datum[@Name='Video ID']" disable-output-escaping="yes"/></xsl:attribute>
                         <xsl:attribute name="data-target">#<xsl:value-of select="$group/Datum[@Name='Video ID']" disable-output-escaping="yes"/></xsl:attribute>
                 <xsl:attribute name="data-toggle">modal</xsl:attribute>
@@ -178,6 +180,7 @@
                 <xsl:attribute name="href"><xsl:value-of select="$group/Datum[@Name='Link']"/></xsl:attribute>
               </xsl:otherwise>
         </xsl:choose>
+            <!-- Overlay icons removed -->
             <xsl:choose>
               <xsl:when test="/Properties/Datum[@ID='YellowTearEdge']/Option[@Selected='true']/Value = 'show'">
                 <div class="tear-edge"></div>
