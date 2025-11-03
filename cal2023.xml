@@ -1,0 +1,442 @@
+<!DOCTYPE html-entities SYSTEM "http://www.interwoven.com/livesite/xsl/xsl-html.dtd">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <!-- Skin: Default XSL -->
+ 
+  <xsl:include href="http://www.interwoven.com/livesite/xsl/HTMLTemplates.xsl"/>
+  <xsl:include href="http://www.interwoven.com/livesite/xsl/StringTemplates.xsl"/>
+  <xsl:template match="/">
+ 
+<xsl:variable name="CHARACTER_LIMIT" select="/Properties/Datum[@ID='CharacterLimit']"/>
+ 
+<div>
+<xsl:attribute name="style">
+          <xsl:if test="/Properties/Datum[@ID='ShowComponent'] = 'false'">display: none;</xsl:if>
+        </xsl:attribute>
+ 
+    <div class="container">
+      <div class="row">
+        <xsl:attribute name="style">padding-top: <xsl:value-of select="/Properties/Datum[@ID='PaddingTop']"/>; padding-bottom:  <xsl:value-of select="/Properties/Datum[@ID='PaddingBottom']"/></xsl:attribute>
+ 
+        <xsl:for-each select="/Properties/Data/Group">
+ 
+          <div>
+            <xsl:attribute name="class">
+              <xsl:choose>
+                <xsl:when test="./Datum[@Name='Width']/Option[@Selected='true']/Value = 12 or ./Datum[@Name='Width']/Option[@Selected='true']/Value = '12r'">col-md-12</xsl:when>
+<xsl:when test="./Datum[@Name='Width']/Option[@Selected='true']/Value = 4">col-md-4</xsl:when>
+<xsl:when test="./Datum[@Name='Width']/Option[@Selected='true']/Value = 3">col-md-3</xsl:when>
+                <xsl:otherwise>col-sm-6</xsl:otherwise>
+              </xsl:choose>
+            </xsl:attribute>
+ 
+            <xsl:choose>
+              <xsl:when test="./Datum[@Name='Link'] != '' and /Properties/Datum[@ID='CTAStyle']/Option[@Selected='true']/Value = 'link'">
+                <a class="tile--box tile--white">
+                  <xsl:if test="/Properties/Datum[@ID='TileBackground'] != ''"><xsl:attribute name="style">
+                  background:<xsl:value-of select="/Properties/Datum[@ID='TileBackground']" />;</xsl:attribute></xsl:if>
+ 
+                  <xsl:attribute name="href"><xsl:value-of select="./Datum[@Name='Link']"/></xsl:attribute>
+                  <xsl:attribute name="title"><xsl:value-of select="./Datum[@Name='Heading']"/></xsl:attribute>
+                  <xsl:call-template name="tile">
+                    <xsl:with-param name="group" select="."/>
+                  </xsl:call-template>
+                </a>
+              </xsl:when>
+              <xsl:when test="/Properties/Datum[@ID='CTAStyle']/Option[@Selected='true']/Value = 'button' or /Properties/Datum[@ID='CTAStyle']/Option[@Selected='true']/Value = 'linkbutton' ">
+                <div class="tile--box tile--white tile--btn-cta">
+                  <xsl:if test="/Properties/Datum[@ID='TileBackground'] != ''"><xsl:attribute name="style">
+                  background:<xsl:value-of select="/Properties/Datum[@ID='TileBackground']" />;</xsl:attribute></xsl:if>
+                 <xsl:call-template name="tile">
+                  <xsl:with-param name="group" select="."/>
+                </xsl:call-template>
+              </div>
+            </xsl:when>
+            <xsl:otherwise>
+              <div class="tile--box tile--white">
+                <xsl:if test="/Properties/Datum[@ID='TileBackground'] != ''"><xsl:attribute name="style">
+                  background:<xsl:value-of select="/Properties/Datum[@ID='TileBackground']" />;</xsl:attribute></xsl:if>
+               <xsl:call-template name="tile">
+                <xsl:with-param name="group" select="."/>
+              </xsl:call-template>
+            </div>
+          </xsl:otherwise>
+        </xsl:choose>
+   
+      </div>
+    </xsl:for-each>
+ 
+  </div>
+ 
+</div>
+</div>
+</xsl:template>
+ 
+<xsl:template name="tile">
+  <xsl:param name="group"/>
+  <xsl:choose>
+    <xsl:when test="$group/Datum[@Name='Width']/Option[@Selected='true']/Value = 12 or $group/Datum[@Name='Width']/Option[@Selected='true']/Value = '12r'">
+ 
+      <div class="row row-no-gutter" style="margin: 0;">
+          <xsl:attribute name="data-category">
+           <xsl:value-of select="$group/Datum[@Name='Tag']"/>
+        </xsl:attribute>
+        <div style="padding: 0;">
+          <xsl:attribute name="class">col-xs-12 col-sm-6 dark-blue
+          <xsl:if test="$group/Datum[@Name='Width']/Option[@Selected='true']/Value = '12r'">
+            col-sm-push-6
+          </xsl:if>
+          </xsl:attribute>
+ 
+          <xsl:choose>
+            <xsl:when test="/Properties/Datum[@ID='CTAStyle']/Option[@Selected='true']/Value = 'button'">
+              <a class="img-stretch tile">
+                <xsl:attribute name="style">min-height: 295px; background-image: url('<xsl:value-of select="$group/Datum[@Name='Image']/Image/Path"/>');</xsl:attribute>
+                <xsl:attribute name="title"><xsl:value-of select="$group/Datum[@Name='Heading']"/></xsl:attribute>
+                <xsl:choose>
+              <xsl:when test="/Properties/Datum[@ID='PlayButton']/Option[@Selected='true']/Value = 'show'">
+                <xsl:attribute name="href">#<xsl:value-of select="$group/Datum[@Name='Video ID']" disable-output-escaping="yes"/></xsl:attribute>
+                        <xsl:attribute name="data-target">#<xsl:value-of select="$group/Datum[@Name='Video ID']" disable-output-escaping="yes"/></xsl:attribute>
+                <xsl:attribute name="data-toggle">modal</xsl:attribute>
+                <xsl:attribute name="class">img-stretch tile c-video-link
+ 
+</xsl:attribute>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:attribute name="href"><xsl:value-of select="$group/Datum[@Name='Link']"/></xsl:attribute>
+              </xsl:otherwise>
+        </xsl:choose>
+               
+                <xsl:choose>
+              <xsl:when test="/Properties/Datum[@ID='PlayButton']/Option[@Selected='true']/Value = 'show'">
+                    <xsl:choose>
+                      <xsl:when test="$group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'video'">
+                        <div class="play-overlay-sm"><em style="margin:auto;" class="fa fa-play">&nbsp;</em></div>
+                      </xsl:when>
+                      <xsl:when test="$group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'audio'">
+                        <div class="play-overlay-sm"><em style="margin-left:8px;" class="fa fa-microphone">&nbsp;</em></div>
+                      </xsl:when>
+                    </xsl:choose>
+          </xsl:when>
+        </xsl:choose>
+                <xsl:choose>
+              <xsl:when test="/Properties/Datum[@ID='YellowTearEdge']/Option[@Selected='true']/Value = 'show'">
+                <div class="tear-edge"></div>
+          </xsl:when>
+        </xsl:choose>
+        <span class="sr-only"><xsl:value-of select="$group/Datum[@Name='Heading']"/></span>
+              </a>
+            </xsl:when>
+            <xsl:otherwise>
+              <div class="img-stretch tile">
+                <xsl:attribute name="style">min-height: 295px; background-image: url('<xsl:value-of select="$group/Datum[@Name='Image']/Image/Path"/>');</xsl:attribute>
+              <xsl:choose>
+              <xsl:when test="/Properties/Datum[@ID='YellowTearEdge']/Option[@Selected='true']/Value = 'show'">
+                <div class="tear-edge"></div>
+          </xsl:when>
+        </xsl:choose>
+              </div>
+            </xsl:otherwise>
+          </xsl:choose>
+         
+        </div>
+ 
+        <div style="padding: 0;">
+          <xsl:attribute name="class">col-xs-12 col-sm-6
+          <xsl:if test="$group/Datum[@Name='Width']/Option[@Selected='true']/Value = '12r'">
+            col-sm-pull-6
+          </xsl:if></xsl:attribute>
+          <div class="white-box-text tile">
+            <xsl:call-template name="tile_text">
+              <xsl:with-param name="item" select="$group"/>
+            </xsl:call-template>
+          </div>
+        </div>
+ 
+      </div>
+ 
+    </xsl:when>
+ 
+
+    <xsl:otherwise>
+    <div>
+      <xsl:if test="./Datum[@Name='Width']/Option[@Selected='true']/Value = '6a'">
+        <xsl:attribute name="class">row</xsl:attribute>
+        </xsl:if>
+          <xsl:attribute name="data-category">
+           <xsl:value-of select="$group/Datum[@Name='Tag']"/>
+        </xsl:attribute>
+ 
+    <div>
+        <xsl:if test="./Datum[@Name='Width']/Option[@Selected='true']/Value = '6a'">
+        <xsl:attribute name="class">col-xs-12 col-sm-6</xsl:attribute>
+        </xsl:if>
+ 
+      <xsl:choose>
+        <xsl:when test="/Properties/Datum[@ID='CTAStyle']/Option[@Selected='true']/Value = 'button'">
+ 
+
+          <a class="img-stretch tile">
+            <xsl:attribute name="style">min-height: 275px; background-image: url('<xsl:value-of select="$group/Datum[@Name='Image']/Image/Path"/>');</xsl:attribute>
+            <xsl:attribute name="title"><xsl:value-of select="$group/Datum[@Name='Heading']"/></xsl:attribute>
+            <xsl:choose>
+              <xsl:when test="/Properties/Datum[@ID='PlayButton']/Option[@Selected='true']/Value = 'show'">
+                <xsl:attribute name="href">#<xsl:value-of select="$group/Datum[@Name='Video ID']" disable-output-escaping="yes"/></xsl:attribute>
+                        <xsl:attribute name="data-target">#<xsl:value-of select="$group/Datum[@Name='Video ID']" disable-output-escaping="yes"/></xsl:attribute>
+                <xsl:attribute name="data-toggle">modal</xsl:attribute>
+                <xsl:attribute name="class">img-stretch tile c-video-link
+ 
+              </xsl:attribute>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:attribute name="href"><xsl:value-of select="$group/Datum[@Name='Link']"/></xsl:attribute>
+              </xsl:otherwise>
+        </xsl:choose>
+            <xsl:choose>
+              <xsl:when test="/Properties/Datum[@ID='PlayButton']/Option[@Selected='true']/Value = 'show'">
+                <xsl:choose>
+                  <xsl:when test="$group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'video'">
+                    <div class="play-overlay-sm"><em class="fa fa-play">&nbsp;</em></div>
+                  </xsl:when>
+                  <xsl:when test="$group/Datum[@Name='Link type']/Option[@Selected='true']/Value = 'audio'">
+                    <div class="play-overlay-sm"><em class="fa fa-microphone">&nbsp;</em></div>
+                  </xsl:when>
+                </xsl:choose>
+          </xsl:when>
+        </xsl:choose>
+            <xsl:choose>
+              <xsl:when test="/Properties/Datum[@ID='YellowTearEdge']/Option[@Selected='true']/Value = 'show'">
+                <div class="tear-edge"></div>
+          </xsl:when>
+        </xsl:choose>
+<span class="sr-only"><xsl:value-of select="$group/Datum[@Name='Heading']"/></span>
+       
+          </a>
+        </xsl:when>
+        <xsl:otherwise>
+          <div class="img-stretch">
+            <xsl:attribute name="style">min-height: 275px; background-image: url('<xsl:value-of select="$group/Datum[@Name='Image']/Image/Path"/>');</xsl:attribute>
+   
+            <xsl:choose>
+              <xsl:when test="/Properties/Datum[@ID='YellowTearEdge']/Option[@Selected='true']/Value = 'show'">
+                <div class="tear-edge"></div>
+          </xsl:when>
+        </xsl:choose>
+          </div>
+        </xsl:otherwise>
+      </xsl:choose>
+      </div>
+     
+ 
+      <div>
+        <xsl:if test="./Datum[@Name='Width']/Option[@Selected='true']/Value = '6a'">
+        <xsl:attribute name="class">col-xs-12 col-sm-6</xsl:attribute>
+        </xsl:if>
+      <div class="white-box-text tile">
+        <xsl:call-template name="tile_text">
+          <xsl:with-param name="item" select="$group"/>
+        </xsl:call-template>
+      </div>
+      </div>
+  </div>
+ 
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+ 
+<xsl:template name="tile_text">
+  <xsl:param name="item"/>
+ 
+  <xsl:choose>
+       <xsl:when test="$item/Datum[@Name='Label']!=''">
+          <h4 class="uppercase wide-text content-label"><xsl:value-of select="$item/Datum[@Name='Label']" disable-output-escaping="yes"/></h4>
+       </xsl:when>
+       
+     </xsl:choose>
+ 
+  <xsl:choose>
+    <xsl:when test="/Properties/Datum[@ID='TitleStyle']/Option[@Selected='true']/Value = 'eyebrow'">
+     
+      <h3 class="content-label"><xsl:value-of select="$item/Datum[@Name='Heading']" disable-output-escaping="yes"/></h3>
+    </xsl:when>
+    <xsl:when test="/Properties/Datum[@ID='TitleStyle']/Option[@Selected='true']/Value = 'h3'">
+ 
+      <xsl:choose>
+        <xsl:when test="/Properties/Datum[@ID='CTAStyle']/Option[@Selected='true']/Value = 'button'">
+          <a>
+            <xsl:attribute name="href"><xsl:value-of select="$item/Datum[@Name='Link']"/></xsl:attribute>
+            <xsl:attribute name="title"><xsl:value-of select="$item/Datum[@Name='Heading']" disable-output-escaping="yes"/></xsl:attribute>
+            <xsl:attribute name="aria-label">Link to <xsl:value-of select="$item/Datum[@Name='Label']" disable-output-escaping="yes"/></xsl:attribute>
+            <h3 class="content-label"><xsl:value-of select="$item/Datum[@Name='Label']" disable-output-escaping="yes"/></h3>
+ 
+          </a>
+        </xsl:when>
+       
+        <xsl:otherwise>
+ 
+          <h3 class="content-label"><xsl:value-of select="$item/Datum[@Name='Heading']" disable-output-escaping="yes"/></h3>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:when test="/Properties/Datum[@ID='TitleStyle']/Option[@Selected='true']/Value = 'h3-no-underline'">
+ 
+      <xsl:choose>
+        <xsl:when test="/Properties/Datum[@ID='CTAStyle']/Option[@Selected='true']/Value = 'button'">
+          <a>
+            <xsl:attribute name="href"><xsl:value-of select="$item/Datum[@Name='Link']"/></xsl:attribute>
+            <xsl:attribute name="title"><xsl:value-of select="$item/Datum[@Name='Heading']" disable-output-escaping="yes"/></xsl:attribute>
+            <xsl:attribute name="aria-label">Link to <xsl:value-of select="$item/Datum[@Name='Heading']" disable-output-escaping="yes"/></xsl:attribute>
+            <h3><xsl:value-of select="$item/Datum[@Name='Heading']" disable-output-escaping="yes"/></h3>
+ 
+          </a>
+        </xsl:when>
+       
+        <xsl:otherwise>
+ 
+          <h3><xsl:value-of select="$item/Datum[@Name='Heading']" disable-output-escaping="yes"/></h3>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:otherwise>
+      <div class="uppercase wide-text"><xsl:value-of select="$item/Datum[@Name='Heading']" disable-output-escaping="yes"/></div>
+    </xsl:otherwise>
+  </xsl:choose>
+ 
+  <p>
+    <xsl:value-of select="$item/Datum[@Name='Description']" disable-output-escaping="yes"/>
+  </p>
+ 
+  <xsl:if test="$item/Datum[@Name='CTA'] != ''">
+    <div class="tile-footer">
+ 
+      <xsl:choose>
+        <xsl:when test="/Properties/Datum[@ID='CTAStyle']/Option[@Selected='true']/Value = 'link'">
+          <div class="learn-more">
+            <span><xsl:value-of select="$item/Datum[@Name='CTA']" disable-output-escaping="yes"/></span>
+          </div>
+        </xsl:when>
+        <xsl:when test="/Properties/Datum[@ID='CTAStyle']/Option[@Selected='true']/Value = 'button'">
+          <a class="btn btn-primary">
+            <xsl:attribute name="href">#<xsl:value-of select="$item/Datum[@Name='Video ID']" disable-output-escaping="yes"/></xsl:attribute>
+            <xsl:attribute name="data-target">#<xsl:value-of select="$item/Datum[@Name='Video ID']" disable-output-escaping="yes"/></xsl:attribute>
+          <xsl:attribute name="data-toggle">modal</xsl:attribute>
+          <xsl:attribute name="class">btn btn-primary c-video-link</xsl:attribute>
+            <xsl:attribute name="title"><xsl:value-of select="$item/Datum[@Name='CTA']"/> - <xsl:value-of select="$item/Datum[@Name='Heading']" disable-output-escaping="yes"/></xsl:attribute>
+            <xsl:attribute name="aria-label"><xsl:value-of select="$item/Datum[@Name='CTA']"/> - <xsl:value-of select="$item/Datum[@Name='Label']" disable-output-escaping="yes"/></xsl:attribute>
+            <xsl:value-of select="$item/Datum[@Name='CTA']" disable-output-escaping="yes"/>
+          </a>        
+          <xsl:if test="/Properties/Datum[@Name='Share Function']/Option[@Selected='true']/Value = 'enable'">
+         
+        <xsl:variable name="encodedURL" select="encode-for-uri($item/Datum[@Name='Heading'])" />
+ 
+                 
+          <div class="share-wrap">
+          <button class="btn btn-outline">
+            <xsl:attribute name="title">Share Video - <xsl:value-of select="$item/Datum[@Name='Heading']" disable-output-escaping="yes"/></xsl:attribute>
+            <xsl:attribute name="aria-label">Share Video - <xsl:value-of select="$item/Datum[@Name='Heading']" disable-output-escaping="yes"/></xsl:attribute>
+            Share Video
+          </button>
+   
+         
+           <div class="share-hover dark">
+     <h5>Share this video</h5>
+     <div class="share-btns">
+ 
+      <a class="btn-social" target="_blank" rel="noopener" title="Share on LinkedIn">
+      <xsl:attribute name="data-bind">attr : {href : LIShare}</xsl:attribute>
+       <xsl:attribute name="href">https://www.linkedin.com/sharing/share-offsite/?url=https://www.rbccm.com/en/citizenship/change-a-life.page?latest</xsl:attribute><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+      <a class="btn-social" target="_blank" rel="noopener" title="Share on Twitter">
+       <xsl:attribute name="data-bind">attr : {href : 'https://twitter.com/share?url=' + shareContent}</xsl:attribute>
+      <xsl:attribute name="href">https://twitter.com/share?url=https://www.rbccm.com/en/citizenship/change-a-life.page&amp;text=When%20you%20change%20a%20kid's%20life%2C%20you%20change%20yours%20%23ChangeALife</xsl:attribute>
+      <i class="fa fa-twitter" aria-hidden="true"></i></a>
+      <a class="btn-social" title="Share by Email">
+      <xsl:attribute name="data-bind">attr: {href : 'mailto:?subject=Change%20A%20Life&amp;body=When%20you%20change%20a%20kid's%20life%2C%20you%20change%20yours%2E%20%23ChangeALife%20https%3A%2F%2Fwww%2Erbccm%2Ecom%2Fen%2Fcitizenship%2Fchange-a-life'}</xsl:attribute>
+      <xsl:attribute name="href">mailto:?subject=Change%20A%20Life&amp;body=When%20you%20change%20a%20kid's%20life%2C%20you%20change%20yours%2E%20Learn%20more%20-%20<xsl:value-of select="$encodedURL"/>%20https%3A%2F%2Fwww%2Erbccm%2Ecom%2Fen%2Fcitizenship%2Fchange-a-life</xsl:attribute>
+      <i class="fa fa-envelope-o" aria-hidden="true"></i></a>
+    </div>
+  </div>
+  </div>
+         
+ 
+         
+          </xsl:if>
+         
+          <xsl:if test="$item/Datum[@Name='Article Link'] != ''">
+          <br />
+           <a class="btn btn-primary">
+            <xsl:attribute name="href"><xsl:value-of select="$item/Datum[@Name='Article Link']"/></xsl:attribute>
+            <xsl:attribute name="title">Read Article - <xsl:value-of select="$item/Datum[@Name='Heading']" disable-output-escaping="yes"/></xsl:attribute>
+            <xsl:attribute name="aria-label">Read Article - <xsl:value-of select="$item/Datum[@Name='Label']" disable-output-escaping="yes"/></xsl:attribute>
+            Read Article
+          </a>
+          </xsl:if>
+        </xsl:when>
+        <xsl:otherwise>
+          <div class="learn-more">
+            <span><xsl:value-of select="$item/Datum[@Name='CTA']" disable-output-escaping="yes"/></span>
+          </div>
+        </xsl:otherwise>
+      </xsl:choose>
+     
+    </div>
+  </xsl:if>
+ 
+ 
+  <!-- Modal -->
+ 
+<div class="modal fade" style="display: none;">
+ 
+<xsl:attribute name="id">
+<xsl:value-of select="$item/Datum[@Name='Video ID']" disable-output-escaping="yes"/>
+</xsl:attribute>
+ 
+<div class="modal-dialog" style="top: 0px; width: auto; max-width: 960px;">
+  <div class="modal-content">
+  <div>
+ 
+  <div class="modal-header" style="border: none; border-top: 8px #FBDE00 solid; padding: 0px;">
+  <button class="close" style="font-size: 41px; color: #595959; font-family: &#34;&#34;; font-weight: normal;" type="button" data-dismiss="modal">×</button>
+  </div>
+ 
+  <div class="modal-body" style="padding: 0px;">
+    <div class="white-box-text" style="padding: 25px; padding-top: 10px;">
+      <div style="margin-bottom: 20px;">
+        <h2 style="font-size: 20px; font-family: 'Roboto Medium','Roboto',Arial,sans-serif !important;">
+          <xsl:choose>
+            <xsl:when test="$item/Datum[@Name='Popup Heading'] != ''">
+              <xsl:value-of select="$item/Datum[@Name='Popup Heading']" disable-output-escaping="yes"/>
+            </xsl:when>
+            <xsl:otherwise>
+            <xsl:value-of select="$item/Datum[@Name='Heading']" disable-output-escaping="yes"/>
+          </xsl:otherwise>
+        </xsl:choose>
+        </h2>
+        <div>
+ 
+     
+      <xsl:variable name="vidLink" select="./Datum[@Name='Video Link']"/>
+     
+       
+  <xsl:if test="$item/Datum[@Name='Video Link'] != ''">
+      <div class="v-wrap"></div><script>$(document).ready(function(event) {$("#<xsl:value-of select='$item/Datum[@Name="Video ID"]' disable-output-escaping='yes'/>").on("show.bs.modal", function() {$(".modal#<xsl:value-of select='$item/Datum[@Name="Video ID"]' disable-output-escaping='yes'/> .v-wrap").html('<div style="position: relative; height: 0; padding-bottom: 56.25%;"><iframe style="width: 100%; height: 100%; position: absolute; left: 0; top: 0;" width="100%" height="auto" scrolling="no" src="{$vidLink}" frameborder="0" allowfullscreen="allowfullscreen"></iframe></div>');});$("#<xsl:value-of select='$item/Datum[@Name="Video ID"]' disable-output-escaping='yes'/>").on("hidden.bs.modal", function() {$(".modal#<xsl:value-of select='$item/Datum[@Name="Video ID"]' disable-output-escaping='yes'/> .v-wrap").html('');});});</script>
+    </xsl:if>
+      </div>
+ 
+<xsl:if test="/Properties/Datum[@ID='ShowDescription'] != 'false'">
+ 
+  <div class="c-wrap"></div><script>$(document).ready(function(event) {$("#<xsl:value-of select='$item/Datum[@Name="Video ID"]' disable-output-escaping='yes'/>").on("show.bs.modal", function() {$(".modal#<xsl:value-of select='$item/Datum[@Name="Video ID"]' disable-output-escaping='yes'/> .c-wrap").html('<div style="margin-top:45px;"><xsl:value-of select="./Datum[@Name='Popup Description']" disable-output-escaping="yes"/></div>');});$("#<xsl:value-of select='$item/Datum[@Name="Video ID"]' disable-output-escaping='yes'/>").on("hidden.bs.modal", function() {$(".modal#<xsl:value-of select='$item/Datum[@Name="Video ID"]' disable-output-escaping='yes'/> .c-wrap").html('');});});</script>  
+ 
+</xsl:if>
+      </div>
+    </div>
+  </div>
+ 
+</div>
+ 
+  </div>
+  </div>
+  </div>
+ 
+
+</xsl:template>
+ 
+</xsl:stylesheet>
