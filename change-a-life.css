@@ -51,7 +51,7 @@
     font-size: 16px;
     line-height: 19.2px;
     margin: 16px 0;
-    max-width: 47vw;
+    max-width: 39vw;
     padding: 0;
     width: 100%;
   }
@@ -87,4 +87,155 @@
     background-image: url('/assets/rbccm/images/citizenship/changealife/changealife-banner-mobile.png');
     background-position: center top;
   }
+
+  .hero-text .hero-border p {
+    margin-bottom: 20px;
+    color: #003168;
+  }
+
+  .hero-text .hero-border p:last-child {
+    margin-bottom: 30px !important;
+    text-align: center;
+  }
+
+  .tile--box .img-stretch {
+    min-height: 188px !important;
+  }
+
+  .tile--box .white-box-text, .tile--box.tile--btn-cta .white-box-text {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 0;
+        height: auto !important;
+        min-height: auto !important;
+  }
+
+  .tile--box h3 {
+    margin: 0;
+  }
+
+  .tile--box p:nth-of-type(1), .tile--box p:nth-of-type(3) {
+    display: none;
+  }
+
+  .tile--box p {
+    margin: 0 0 16px 0 !important;
+  }
+
+  .tile-footer .btn-primary {
+    margin: 0;
+  }
+
+  .tile--box .tile-footer {
+    position: relative;
+    margin-top: 16px;
+  }
+
+  #1756778868621 .container {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .dropdown-wrapper {
+    float: left;
+    width: 100%;
+    display: flex;
+    margin: 0;
+  }
+
+  .dropdown-wrapper .text-right {
+    width: 100%;
+    text-align: left;
+  }
+
+  .dropdown-wrapper .dropdown {
+    margin: 30px 0 40px 0;
+    width: 100%;
+  }
+
+  .dropdown-toggle:before {
+    content: "";
+    width: 1px;
+    height: 30px;
+    background: #003168;
+    display: block;
+    position: absolute;
+    left: 131px;
+    top: 11px;
+  }
+
+  #etTopicDropdown {
+    color: #0051a5;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 20px;
+  }
+
+  #etTopicMenu i {
+    margin-left: 25px;
+    padding: 15px 10px !important;
+    font-size: 16px;
+  }
+
+  #etTopicMenu:hover, #etTopicMenu:focus {
+    border-radius: 0;
+    padding: 15px 10px !important;
+  }
+
+  #etTopicDropdown li:first-of-type {
+    display: none;
+  }
+
+  #1756778868621 .container div:nth-of-type(2) {
+    margn-bottom: 0;
+  }
+
+  #1756778868621 .container div:nth-of-type(2) h2 {
+    font-size: 24px;
+    color: #003168;
+  }
+
+  #1756778868621 .container div:nth-of-type(2) p {
+    font-size: 18px;
+    color: #003168;
+  }
+
+  #1756778868629 .tile--box .img-stretch {
+    min-height: 236px !important;
+  }
+
+  #1756778868625 button {
+    width:calc(100% - 30px);
+    margin: 0 15px;
+    padding: 15px 0;
+  }
+
+  #1756778868632 .tile--gib .inline {
+    height: 236px;
+  }
+
+  #1756778868632 .story-tiles .tile--gib {
+    height: auto;
+    min-height: auto;
+    max-height: auto;
+  }
+
+  #1756778868624 h2 {
+    font-size: 24px;
+    color: #003168;
+  }
+
+  #1756778868624 p {
+    color: #003168;
+    font-size: 18px;
+  }
 }
+
