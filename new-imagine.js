@@ -275,34 +275,38 @@ $(document).ready(function() {
     }
 
     nodes.forEach((el) => {
-      // Remove TinyMCE script placeholders if present
-      el.querySelectorAll('img.mce-object-script, [data-mce-object="script"]').forEach(n => n.remove());
+        el.querySelectorAll('img.mce-object-script, [data-mce-object="script"]').forEach(n => n.remove());
+        if (el.querySelector('video-js')) return;
 
-      // Avoid duplicate init
-      if (el.querySelector('video-js')) return;
+        const account = el.getAttribute('data-bc-account') || a;
+        const player  = el.getAttribute('data-bc-player')  || p;
+        const embed   = el.getAttribute('data-bc-embed')   || e;
+        const videoId = el.getAttribute('data-bc-video-id');
+        if (!videoId) return;
 
-      const account = el.getAttribute('data-bc-account') || a;
-      const player  = el.getAttribute('data-bc-player')  || p;
-      const embed   = el.getAttribute('data-bc-embed')   || e;
-      const videoId = el.getAttribute('data-bc-video-id');
+        const v = document.createElement('video-js');
+        v.className = 'video-js vjs-fluid';
+        v.setAttribute('data-account', account);
+        v.setAttribute('data-player',  player);
+        v.setAttribute('data-embed',   embed);
+        v.setAttribute('data-video-id', videoId);
+        v.setAttribute('controls', '');
+        v.setAttribute('width', '960');
+        v.setAttribute('height','540');
 
-      if (!videoId) return;
+        const poster = el.getAttribute('data-bc-poster');
+        if (poster) v.setAttribute('poster', poster);
 
-      const v = document.createElement('video-js');
-      v.className = 'video-js vjs-fluid';
-      v.setAttribute('data-account', account);
-      v.setAttribute('data-player',  player);
-      v.setAttribute('data-embed',   embed);
-      v.setAttribute('data-video-id', videoId);
-      v.setAttribute('controls', '');
-      v.setAttribute('width', '960');
-      v.setAttribute('height','540');
+        el.appendChild(v);
 
-      const poster = el.getAttribute('data-bc-poster');
-      if (poster) v.setAttribute('poster', poster);
-
-      el.appendChild(v);
-    });
+        // >>> NEW: force initialization for dynamically-added players
+        try {
+            if (window.bc) { window.bc(v); }
+            else if (window.videojs) { window.videojs(v); }
+        } catch (e) {
+            console.error('Brightcove init failed:', e);
+        }
+        });
   }
 
   // Run on DOM ready without interfering with existing listeners
