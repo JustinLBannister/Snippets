@@ -1,0 +1,437 @@
+<style>
+  /* === RBC CM inspired tokens & base === */
+  :root{
+    --navy:#002144;
+    --navy-2:#0b2a4a;
+    --gold:#FFB81C;
+    --text:#F4F8FF;
+    --muted:#C6D3E4;
+    --maxw:1200px;
+    --radius:18px;
+    --gap:20px;
+    --fz-body:16px;
+    --fz-h1:clamp(28px,3.4vw,44px);
+    --fz-h2:clamp(22px,2.6vw,32px);
+  }
+  html{box-sizing:border-box}
+  *,*:before,*:after{box-sizing:inherit}
+  body{margin:0;background:var(--navy);color:var(--text);font:var(--fz-body)/1.55 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif}
+  .container{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+  .section{padding:40px 0}
+  .section--navy{background:var(--navy)}
+  .section-title{font-size:var(--fz-h2);margin:0 0 16px;font-weight:700}
+  .lead{color:var(--muted)}
+  /* Hero (mobile-first) */
+  .hero{position:relative;isolation:isolate;}
+  .hero__bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:60% 40%;}
+  .hero__overlay{position:absolute;inset:0;background:
+    radial-gradient(1200px 600px at 85% 35%, rgba(0,0,0,.0) 0%, rgba(0,0,0,.15) 60%, rgba(0,0,0,.35) 100%),
+    linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.0) 38%, rgba(0,0,0,.35) 100%);
+    pointer-events:none;
+  }
+  .hero__content{position:relative;padding:32px 0 24px;}
+  .hero .mobile-head{margin-top:0 !important;}
+  #imagine-logo{width:180px;height:auto;display:block;margin:0 0 16px;}
+  .hero h1{margin:0 0 8px;font-weight:700;font-size:clamp(28px,7vw,44px);line-height:1.1;color:var(--text);} 
+  .hero p{max-width:34ch;margin:0 0 16px;color:var(--text);} 
+  .hero .btn{display:inline-block;margin-top:4px;}
+
+  /* Hero — Figma spec alignment */
+  .hero__intro{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+
+  /* RBC Imagine logo */
+  #imagine-logo{
+    display:block;           /* image behaves predictably */
+    width:145px;             /* Figma width */
+    max-height:94px;         /* approximate container height */
+    height:auto;             /* preserve aspect ratio */
+    flex-shrink:0;
+    object-fit:contain;
+  }
+
+  /* Body copy (paragraph) */
+  .hero p{
+    color:#FFFDFD;
+    font-family:"RBC Display", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    font-size:16px;
+    font-style:normal;
+    font-weight:400;
+    line-height:20px; /* 125% */
+  }
+
+  /* Headline */
+  .hero h1{
+    color:#FFFDFD;
+    font-family:"RBC Display", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    font-weight:500;  /* Figma sample shows 500 */
+  }
+
+  /* Primary CTA button */
+  .hero .btn{
+    display:flex;
+    width:145px;
+    height:40.423px;
+    padding:9.667px 31.578px;
+    justify-content:center;
+    align-items:center;
+    gap:15.467px;
+    border:0.644px solid #FFF;
+    background:#0051A5;
+    color:#FFF;
+    text-align:center;
+    font-family:Roboto, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    font-size:12.889px;
+    font-style:normal;
+    font-weight:600;
+    line-height:normal;
+  }
+
+  /* Tablet */
+  @media (min-width:768px){
+    .hero__content{padding:72px 0;}
+    #imagine-logo{width:220px;margin-bottom:20px;}
+    .hero h1{font-size:clamp(36px,4vw,56px);} 
+    .hero p{max-width:42ch;}
+  }
+
+  /* Desktop */
+  @media (min-width:1024px){
+    .hero{min-height:560px;}
+    .hero__content{display:grid;grid-template-columns:minmax(320px,520px) 1fr;align-items:center;gap:40px;padding:96px 0;}
+    .hero__bg{object-position:right center;}
+    .hero p{max-width:46ch;}
+  }
+
+  /* Large Desktop */
+  @media (min-width:1360px){
+    .hero{min-height:640px;}
+    #imagine-logo{width:260px;}
+    .hero__content{padding:120px 0;}
+  }
+
+  /* Inline->CSS replacements */
+  .mobile-head{margin-top:0}
+  .hero h1{padding:10px 0}
+  /* Modal layout */
+  #element-video .modal-dialog{top:0;max-width:960px}
+  #element-video .modal-header{border:none;border-top:8px #FBDE00 solid;padding:0}
+  #element-video .close{font-size:41px;color:#595959;font-weight:400}
+  #element-video .modal-body{padding:0}
+  #element-video .white-box-text{padding:25px 25px 0}
+  #element-video .white-box-text > div{margin-bottom:20px}
+
+  /* Approach section */
+  #approach .subhead{color:#fff;margin-top:25px}
+  #approach p{color:#fff}
+  #approach .container-sm{padding-left:0}
+  #approach .video-wrap{max-width:960px}
+  #approach .container-sm.subhead{padding-top:50px}
+
+  /* Responsive Tabs / Accordion */
+  .fthemes{border-top:1px solid rgba(255,255,255,.12)}
+  .ftheme{border-bottom:1px solid rgba(255,255,255,.12)}
+  .ftheme__trigger{width:100%;text-align:left;background:none;border:0;color:inherit;padding:18px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;font-weight:600}
+  .ftheme__trigger:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:12px}
+  .ftheme__chev{flex:0 0 auto;width:22px;height:22px;transition:transform .22s ease}
+  .ftheme__trigger[aria-expanded="true"] .ftheme__chev{transform:rotate(180deg)}
+  .ftheme__panel{padding:0 16px 16px;display:grid;grid-template-columns:1fr;gap:16px;max-height:0;overflow:hidden;transition:max-height .25s ease}
+  .ftheme__panel[data-open="true"]{max-height:1200px}
+  .ftheme__card{background:linear-gradient(0deg, rgba(255,255,255,.02), rgba(255,255,255,.02)), var(--navy-2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:18px;display:grid;gap:14px;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+  .ftheme__media{width:100%;height:auto;border-radius:16px;display:block}
+  .eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+  .ftheme__lead{color:var(--muted);margin:0 0 8px;font-weight:500}
+  @media (min-width:960px){
+    .fthemes{border-top:0}
+    .fthemes__tabstrip{display:flex;flex-wrap:wrap;gap:36px;border-bottom:1px solid rgba(255,255,255,.18);margin:0 0 28px;padding:0 2px}
+    .fthemes__tabstrip .ftheme__trigger{padding:14px 0}
+    .fthemes__tabstrip .ftheme__chev{display:none}
+    .ftheme__trigger[aria-selected="true"]{position:relative}
+    .ftheme__trigger[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--gold);border-radius:3px}
+    .ftheme__panel{display:none;max-height:none;padding:0}
+    .ftheme__panel[data-open="true"]{display:grid}
+    .ftheme__card{grid-template-columns:minmax(360px,420px) 1fr;gap:28px;padding:22px 24px}
+    .ftheme__media{border-radius:20px;aspect-ratio:3/2;object-fit:cover}
+  }
+  @media (prefers-reduced-motion:reduce){.ftheme__chev,.ftheme__panel{transition:none}}
+</style>
+<header class="hero">
+  <img
+    class="hero__bg"
+    src="/assets/rbccm/images/expertise/energy/world-energy-3.gif"
+    alt="Energy Transition banner"
+  />
+  <div class="hero__overlay"></div>
+  <div class="hero__content">
+    <div class="container mobile-head">
+      <div class="hero__intro">
+        <nav aria-label="breadcrumb"></nav>
+        <img
+          src="/assets/rbccm/images/imagine/rbc-imagine.png"
+          alt="RBC Imagine logo"
+          id="imagine-logo"
+        />
+        <h1>Think further forward</h1>
+        <p>
+          Explore how RBC Imagine helps leaders anticipate disruption and identify opportunity across sectors.
+        </p>
+        <a
+          class="btn btn-white full"
+          href="#new-insight"
+        >Download now</a>
+      </div>
+
+      <div class="hero__media"></div>
+
+      <!-- Video modal -->
+      <div class="modal" id="element-video" hidden>
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div>
+              <div class="modal-header">
+                <button class="close" type="button" data-dismiss="modal">&times;</button>
+              </div>
+              <div class="modal-body">
+                <div class="white-box-text">
+                  <div>
+                    <div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /Video modal -->
+    </div>
+  </div>
+</header>
+<section id="approach" class="section section--navy">
+  <div class="container">
+    <h2 class="subhead">Our approach</h2>
+    <p>
+      RBC Capital Markets brings structure, speed, and strategy to a complex, fast-moving landscape, aligning capital with insight across regions, sectors, and transition maturity levels. From bespoke financing to cross-platform execution, we help clients seize innovation, navigate policy volatility, and unlock sustainable growth &ndash; at every stage of the transition.
+    </p>
+    <div class="row">
+      <div class="col-xs-12 col-sm-7 col-md-6">
+        <div class="video-wrap">
+          <video-js
+            data-account="6021289101001"
+            data-player="VyvCc9BZx"
+            data-embed="default"
+            controls="controls"
+            data-video-id="6374198630112"
+            data-playlist-id=""
+            data-application-id=""
+            width="960"
+            height="540"
+            class="vjs-fluid"
+          ></video-js>
+        </div>
+        <script src="https://players.brightcove.net/6021289101001/VyvCc9BZx_default/index.min.js" type="text/javascript"></script>
+      </div>
+      <div class="col-xs-12 col-sm-5 col-md-6">
+        <h2 class="container-sm subhead">Seizing the opportunity</h2>
+        <p class="container-sm">
+          Hear from RBC Capital Markets leaders on how we&rsquo;re helping clients navigate complexity, scale innovation, and unlock value in a fast-changing energy landscape.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="full-service" class="section section--navy">
+  <div class="container">
+    <header>
+      <h2 class="section-title">Full-service Energy Transition support</h2>
+      <p class="lead">We deliver end-to-end solutions across the transition lifecycle – connecting capital, insights, and execution.</p>
+    </header>
+
+    <section class="fthemes" data-accordion data-one-open="true">
+      <div class="fthemes__tabstrip" aria-label="Energy Transition Support"></div>
+
+      <!-- Global Investment Banking -->
+      <article class="ftheme" id="theme-gib">
+        <h3 class="visually-hidden">Global Investment Banking</h3>
+        <button class="ftheme__trigger" id="tab-gib" aria-controls="panel-gib" aria-expanded="false" type="button">
+          <span class="ftheme__label">Global Investment Banking</span>
+          <svg class="ftheme__chev" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+        </button>
+        <div class="ftheme__panel" id="panel-gib" role="region" aria-labelledby="tab-gib" data-open="false">
+          <div class="ftheme__card">
+            <img class="ftheme__media" src="/assets/rbccm/images/gib/ecm/et-bg.png" alt="Abstract transition background" />
+            <div>
+              <p class="eyebrow">Theme</p>
+              <h4 style="margin:6px 0 12px">Global Investment Banking</h4>
+              <p class="ftheme__lead">An innovative, trusted partner to clients for the long-term.</p>
+              <h5>Solutions</h5>
+              <ul>
+                <li>M&amp;A and debt advisory</li>
+                <li>Strategic equity solutions across public and private markets</li>
+                <li>Project and infrastructure finance</li>
+                <li>Sector specialists across clean power, clean fuels, manufacturing, services, climate tech and more</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Corporate Banking -->
+      <article class="ftheme" id="theme-cb">
+        <h3 class="visually-hidden">Corporate Banking</h3>
+        <button class="ftheme__trigger" id="tab-cb" aria-controls="panel-cb" aria-expanded="false" type="button">
+          <span class="ftheme__label">Corporate Banking</span>
+          <svg class="ftheme__chev" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+        </button>
+        <div class="ftheme__panel" id="panel-cb" role="region" aria-labelledby="tab-cb" data-open="false">
+          <div class="ftheme__card">
+            <img class="ftheme__media" src="/assets/rbccm/images/gib/ecm/et-bg.png" alt="Abstract transition background" />
+            <div>
+              <p class="eyebrow">Theme</p>
+              <h4 style="margin:6px 0 12px">Corporate Banking</h4>
+              <p class="ftheme__lead">Supporting the Energy Transition with tailored lending, innovative credit structuring, and relationship-led execution across sectors and regions.</p>
+              <h5>Solutions</h5>
+              <ul>
+                <li>Balance sheet lending across conventional and low-carbon energy assets</li>
+                <li>Bespoke credit structuring for energy transition projects</li>
+                <li>Coordination with Equity Capital Markets, Debt Capital Markets, and Project Finance</li>
+                <li>Support for carbon streaming agreements and capital recycling strategies</li>
+                <li>Strategic advisory for sustainability-linked loans and other credit solutions</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Sustainable Finance -->
+      <article class="ftheme" id="theme-sf">
+        <h3 class="visually-hidden">Sustainable Finance</h3>
+        <button class="ftheme__trigger" id="tab-sf" aria-controls="panel-sf" aria-expanded="false" type="button">
+          <span class="ftheme__label">Sustainable Finance</span>
+          <svg class="ftheme__chev" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+        </button>
+        <div class="ftheme__panel" id="panel-sf" role="region" aria-labelledby="tab-sf" data-open="false">
+          <div class="ftheme__card">
+            <img class="ftheme__media" src="/assets/rbccm/images/gib/ecm/et-bg.png" alt="Abstract transition background" />
+            <div>
+              <p class="eyebrow">Theme</p>
+              <h4 style="margin:6px 0 12px">Sustainable Finance</h4>
+              <p class="ftheme__lead">Structured capital solutions aligned to sustainability objectives, regulatory standards, and investor expectations.</p>
+              <h5>Solutions</h5>
+              <ul>
+                <li>Green, sustainability-linked and transition finance instruments</li>
+                <li>ESG integration in corporate strategy and investment analysis</li>
+                <li>Disclosure and reporting advisory</li>
+                <li>ESG due diligence for M&amp;A and private equity</li>
+                <li>Carbon markets and renewable energy procurement solutions</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Global Markets -->
+      <article class="ftheme" id="theme-gm">
+        <h3 class="visually-hidden">Global Markets</h3>
+        <button class="ftheme__trigger" id="tab-gm" aria-controls="panel-gm" aria-expanded="false" type="button">
+          <span class="ftheme__label">Global Markets</span>
+          <svg class="ftheme__chev" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+        </button>
+        <div class="ftheme__panel" id="panel-gm" role="region" aria-labelledby="tab-gm" data-open="false">
+          <div class="ftheme__card">
+            <img class="ftheme__media" src="/assets/rbccm/images/gib/ecm/et-bg.png" alt="Abstract transition background" />
+            <div>
+              <p class="eyebrow">Theme</p>
+              <h4 style="margin:6px 0 12px">Global Markets</h4>
+              <p class="ftheme__lead">Carbon, trading, and risk solutions – structuring credit, derivatives, and hedging strategies for energy, fuels, and renewables.</p>
+              <h5>Solutions</h5>
+              <ul>
+                <li>Carbon emissions trading</li>
+                <li>Structured hedging and derivatives</li>
+                <li>Power and fuel pricing strategies</li>
+                <li>Aftermarket performance optimization</li>
+                <li>Carbon markets and renewable energy procurement solutions</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Global Research -->
+      <article class="ftheme" id="theme-gr">
+        <h3 class="visually-hidden">Global Research</h3>
+        <button class="ftheme__trigger" id="tab-gr" aria-controls="panel-gr" aria-expanded="false" type="button">
+          <span class="ftheme__label">Global Research</span>
+          <svg class="ftheme__chev" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+        </button>
+        <div class="ftheme__panel" id="panel-gr" role="region" aria-labelledby="tab-gr" data-open="false">
+          <div class="ftheme__card">
+            <img class="ftheme__media" src="/assets/rbccm/images/gib/ecm/et-bg.png" alt="Abstract transition background" />
+            <div>
+              <p class="eyebrow">Theme</p>
+              <h4 style="margin:6px 0 12px">Global Research</h4>
+              <p class="ftheme__lead">Market intelligence across priority transition markets, assessing capital flows, policy risk, and investor sentiment with precision.</p>
+              <h5>Solutions</h5>
+              <ul>
+                <li>Energy transition capital flows</li>
+                <li>Investor sentiment and policy impact</li>
+                <li>Sector insights: energy, PU&amp;I, technology</li>
+                <li>Emerging tech and energy economics</li>
+                <li>Supply chain and infrastructure analysis</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </div>
+</section>
+<script>
+  (function(){
+    const bp = window.matchMedia('(min-width: 960px)');
+    const root = document.querySelector('#full-service .fthemes');
+    if(!root) return;
+    const triggers = [...root.querySelectorAll('.ftheme__trigger')];
+    const panels = triggers.map(btn => document.getElementById(btn.getAttribute('aria-controls')));
+    const tabstrip = root.querySelector('.fthemes__tabstrip');
+    const oneOpen = root.hasAttribute('data-one-open');
+
+    const setExpanded = (btn, open) => {
+      btn.setAttribute('aria-expanded', String(open));
+      const panel = document.getElementById(btn.getAttribute('aria-controls'));
+      panel.dataset.open = String(open);
+    };
+    const collapseAll = () => triggers.forEach(b => setExpanded(b,false));
+    const activateTab = (btn) => {
+      triggers.forEach(b=>{ b.setAttribute('aria-selected','false'); document.getElementById(b.getAttribute('aria-controls')).dataset.open='false'; });
+      btn.setAttribute('aria-selected','true');
+      document.getElementById(btn.getAttribute('aria-controls')).dataset.open='true';
+      btn.focus();
+    };
+    const keyHandler = (e)=>{
+      const current = e.currentTarget; const idx = triggers.indexOf(current);
+      const prev = triggers[(idx-1+triggers.length)%triggers.length];
+      const next = triggers[(idx+1)%triggers.length];
+      switch(e.key){
+        case 'ArrowUp': case 'ArrowLeft': e.preventDefault(); prev.focus(); if(bp.matches) activateTab(prev); break;
+        case 'ArrowDown': case 'ArrowRight': e.preventDefault(); next.focus(); if(bp.matches) activateTab(next); break;
+        case 'Home': e.preventDefault(); const first=triggers[0]; first.focus(); if(bp.matches) activateTab(first); break;
+        case 'End': e.preventDefault(); const last=triggers[triggers.length-1]; last.focus(); if(bp.matches) activateTab(last); break;
+        case 'Enter': case ' ': e.preventDefault(); if(bp.matches){ activateTab(current); } else { const open=current.getAttribute('aria-expanded')==='true'; if(oneOpen) collapseAll(); setExpanded(current,!open);} break;
+      }
+    };
+    const clickHandler = (e)=>{ const btn=e.currentTarget; if(bp.matches){ activateTab(btn); } else { const open=btn.getAttribute('aria-expanded')==='true'; if(oneOpen) collapseAll(); setExpanded(btn,!open);} };
+    const applyMode = ()=>{
+      if(bp.matches){
+        tabstrip.setAttribute('role','tablist'); tabstrip.innerHTML='';
+        triggers.forEach(btn=>{ btn.setAttribute('role','tab'); btn.removeAttribute('aria-expanded'); btn.setAttribute('aria-selected','false'); tabstrip.appendChild(btn); });
+        panels.forEach(p=>p.setAttribute('role','tabpanel'));
+        activateTab(triggers[0]);
+      }else{
+        tabstrip.removeAttribute('role');
+        triggers.forEach(btn=>{ btn.setAttribute('role','button'); btn.setAttribute('aria-expanded','false'); btn.removeAttribute('aria-selected'); const panel=document.getElementById(btn.getAttribute('aria-controls')); panel.before(btn); panel.setAttribute('role','region'); panel.dataset.open='false'; });
+        if(oneOpen){ setExpanded(triggers[0],true); }
+      }
+    };
+    triggers.forEach(btn=>{ btn.addEventListener('keydown', keyHandler); btn.addEventListener('click', clickHandler); });
+    applyMode(); bp.addEventListener('change', applyMode);
+  })();
+</script>
