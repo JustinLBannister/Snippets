@@ -61,3 +61,23 @@ $(document).ready(function () {
 // console.log("Video:", $(".page-banner .podcast-playing").length > 0);
 // console.log("Audio:", $(".story-podcast-playing:visible").length > 0);
 // console.log("Header:", $(".header--story:visible").length > 0);
+
+(function() {
+  // 1️⃣ Add the filenames or path segments you want removed
+  const cssToRemove = [
+    '/assets/rbccm/css/rbccm.2.css',
+    '/assets/rbccm/css/sub/secondarynav.css',
+    '/assets/rbccm/css/sub/deal-tombstones.css',
+    '/assets/rbccm/css/sub/owl.carousel.min.css'
+  ];
+
+  // 2️⃣ Loop through all linked stylesheets and remove matches
+  document.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+    cssToRemove.forEach(pattern => {
+      if (link.href.includes(pattern)) {
+        console.log(`Removing CSS: ${link.href}`);
+        link.remove();
+      }
+    });
+  });
+})();
