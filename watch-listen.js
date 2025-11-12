@@ -81,3 +81,48 @@ $(document).ready(function () {
     });
   });
 })();
+
+<script>
+function loadBrightcovePlayer({
+  account = '6021289101001',
+  player = 'VyvCc9BZx',
+  embed = 'default',
+  videoId = '6374198630112',
+  containerSelector = '.rbccm-approach__video'
+} = {}) {
+
+  // Create the <video-js> element
+  const container = document.querySelector(containerSelector);
+  if (!container) return console.error('Brightcove container not found:', containerSelector);
+
+  // Clear existing placeholder content
+  container.innerHTML = '';
+
+  // Inject video element
+  const video = document.createElement('video-js');
+  video.className = 'video-js vjs-fluid';
+  video.setAttribute('data-account', account);
+  video.setAttribute('data-player', player);
+  video.setAttribute('data-embed', embed);
+  video.setAttribute('data-video-id', videoId);
+  video.setAttribute('width', '960');
+  video.setAttribute('height', '540');
+  video.setAttribute('controls', '');
+  container.appendChild(video);
+
+  // Inject Brightcove player script dynamically
+  const script = document.createElement('script');
+  script.src = `https://players.brightcove.net/${account}/${player}_${embed}/index.min.js`;
+  script.async = true;
+  script.onload = () => console.log('✅ Brightcove player loaded');
+  script.onerror = () => console.error('❌ Failed to load Brightcove script');
+  document.body.appendChild(script);
+}
+
+// Example usage after DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  loadBrightcovePlayer();
+});
+</script>
+
+<div class="rbccm-approach__video"></div>
