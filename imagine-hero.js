@@ -1,51 +1,128 @@
-<section class="rbccm-hero rbccm-hero--video" id="imagine-hero" aria-labelledby="rbccm-hero-title">
+/* =========================================
+   RBC CM Hero, Approach, and Themes
+   Mobile-first with organized, alphabetized rules
+   ========================================= */
 
-  <!-- Video background layer -->
-  <div class="rbccm-hero__video-bg">
-    <!-- JS will inject the teaser <video> here -->
-    <div id="imagine-teaser-mount"></div>
-  </div>
+/* ------------------------------------------------------------------
+   Hero Section
+   ------------------------------------------------------------------ */
+.rbccm-hero {
+  background: url("/assets/rbccm/images/imagine-images/imagine-2025-hero.jpg") right center no-repeat;
+  background-size: cover;
+  color: #FFFDFD;
+  flex-shrink: 0;
+  margin: 92px -15px 0 -15px;
+  overflow: hidden;
+  padding: 55px 31px;
+  position: relative;
+}
 
-  <!-- Hero content overlay -->
-  <div class="rbccm-hero__container">
-    <div class="rbccm-hero__intro">
-      <div class="rbccm-hero__logo">
-        <img
-          class="rbccm-hero__logo-image"
-          src="/assets/rbccm/images/imagine/rbc-imagine.png"
-          alt="RBC Imagine logo"
-        >
-      </div>
+.rbccm-hero::before {
+  background: linear-gradient(90deg, #002144 36.54%, rgba(0, 33, 68, 0) 100%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
 
-      <h1 id="rbccm-hero-title" class="rbccm-hero__title">Think further forward.</h1>
+.rbccm-hero__container {
+  margin: 0 auto;
+  max-width: 1140px;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
 
-      <p class="rbccm-hero__desc">
-        Explore how RBC Imagine helps leaders anticipate disruption and identify opportunity across sectors.
-      </p>
+.rbccm-hero__intro {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 539px;
+}
 
-      <div class="rbccm-hero__actions">
-        <!-- Existing download button (keeps your Marketo hero modal) -->
-        <a class="rbccm-hero__btn" href="#download">Download now</a>
-      </div>
-    </div>
-  </div>
-</section>
+.rbccm-hero__logo {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  height: 94px;
+  justify-content: center;
+  margin: 0 0 10px 0;
+  width: 145px;
+}
 
+.rbccm-hero__logo-image {
+  height: auto;
+  object-fit: contain;
+  width: 100%;
+}
+
+.rbccm-hero__title {
+  align-self: stretch;
+  color: #FFFDFD;
+  font-family: "RBCDisplay", Georgia, Times, serif;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  margin: 0;
+  padding: 0;
+}
+
+.rbccm-hero__desc {
+  align-self: stretch;
+  color: #FFFDFD;
+  font-family: "RBCDisplay", Georgia, Times, serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  margin: 0;
+  max-width: 539px; /* rounded */
+  padding: 0;
+  width: 100%;
+}
+
+.rbccm-hero__btn {
+  align-items: center;
+  background: #0051A5;
+  border: 1px solid #FFF; /* rounded */
+  color: #FFF !important;
+  display: flex;
+  font-family: Roboto, system-ui;
+  font-size: 13px; /* rounded */
+  font-style: normal;
+  font-weight: 600;
+  justify-content: center;
+  line-height: normal;
+  padding: 12px 30px;
+  text-align: center;
+  text-decoration: none !important;
+}
+
+/* Hero with background video */
 .rbccm-hero--video {
   position: relative;
   overflow: hidden;
-  min-height: 300px;          /* tweak if you want it taller */
+  min-height: 675px; /* keep hero tall even when viewport narrows */
 }
 
 .rbccm-hero__video-bg {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: #000;
   overflow: hidden;
   z-index: 0;
 }
 
 .rbccm-hero__video-teaser {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -57,1469 +134,784 @@
   z-index: 1;
 }
 
-// Themes Section Tabs/Accordion
-document.addEventListener('DOMContentLoaded', function() {
-  const tabs = document.querySelectorAll('.rbccm-themes__tab');
-  const panels = document.querySelectorAll('.rbccm-themes__panel');
-  const panelsContainer = document.querySelector('.rbccm-themes__panels');
-  const isDesktop = () => window.matchMedia('(min-width: 992px)').matches;
-  let previousViewportState = isDesktop() ? 'desktop' : 'mobile';
+/* ------------------------------------------------------------------
+   Approach Section
+   ------------------------------------------------------------------ */
+.rbccm-approach {
+  background-color: #002144;
+  color: #FFFDFD;
+}
 
-  function handleTabClick(clickedTab) {
-    const targetPanel = clickedTab.dataset.panel;
+.rbccm-approach__container {
+  margin: 0 auto;
+  max-width: 1140px;
+}
 
-    if (isDesktop()) {
-      // Desktop: tabs behavior
-      tabs.forEach(tab => {
-        tab.classList.remove('is-active');
-        tab.setAttribute('aria-expanded', 'false');
-      });
+.rbccm-approach__content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 40px 16px;
+}
 
-      panels.forEach(panel => {
-        panel.classList.remove('is-active');
-      });
+.rbccm-approach__video {
+  width: 100%;
+  min-height: 193px;
+}
 
-      clickedTab.classList.add('is-active');
-      clickedTab.setAttribute('aria-expanded', 'true');
+.rbccm-approach__details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
-      const activePanel = document.querySelector(
-        `[data-panel="${targetPanel}"].rbccm-themes__panel`
-      );
-      if (activePanel) {
-        activePanel.classList.add('is-active');
-      }
-    } else {
-      // Mobile: accordion behavior
-      const isActive = clickedTab.classList.contains('is-active');
+.rbccm-approach__subtitle {
+  color: #FFC72C;
+  font-family: "RBCDisplay", Georgia, Times, serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 120%;
+  margin: 0;
+}
 
-      if (isActive) {
-        clickedTab.classList.remove('is-active');
-        clickedTab.setAttribute('aria-expanded', 'false');
-      } else {
-        clickedTab.classList.add('is-active');
-        clickedTab.setAttribute('aria-expanded', 'true');
-      }
-    }
+.rbccm-approach__desc {
+  color: #FFF;
+  font-family: "RBCDisplay", Georgia, Times, serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 26px;
+  margin: 0;
+}
+
+/* ------------------------------------------------------------------
+   Themes Section - Mobile First (Accordion)
+   ------------------------------------------------------------------ */
+.rbccm-themes {
+  background-color: #002144;
+  color: #FFFDFD;
+  padding: 0;
+}
+
+.rbccm-themes__container {
+  margin: 0 auto;
+  max-width: 1140px;
+}
+
+.rbccm-themes__heading {
+  color: #FFFDFD;
+  font-family: "RBCDisplay", Georgia, Times, serif;
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0 !important;
+  padding: 35px 16px;
+}
+
+/* Tab list for all viewports */
+.rbccm-themes__tablist {
+  border-top: 1px solid #FFFDFD;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Individual tab button */
+.rbccm-themes__tab {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #FFFDFD;
+  color: #FFFDFD;
+  cursor: pointer;
+  font-family: "RBC Display", Roboto, system-ui;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 18px 48px 18px 40px;
+  position: relative;
+  text-align: left;
+  width: 100%;
+}
+
+/* Chevron for mobile */
+.rbccm-themes__chevron {
+  height: 25px;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%) rotate(180deg);
+  transition: transform 0.3s ease;
+  width: 24px;
+}
+
+/* Active tab on mobile */
+.rbccm-themes__tab.is-active {
+  font-weight: 700;
+}
+
+.rbccm-themes__tab.is-active .rbccm-themes__chevron {
+  transform: translateY(-50%) rotate(0deg);
+}
+
+/* Individual panel */
+.rbccm-themes__panel {
+  display: none;
+  opacity: 0;
+  padding: 24px 16px;
+  transition: opacity 0.2s ease;
+}
+
+/* Show panel after active tab on mobile */
+.rbccm-themes__tab.is-active + .rbccm-themes__panel {
+  border-bottom: 1px solid white;
+  display: block;
+  opacity: 1;
+}
+
+.rbccm-theme__title {
+  color: #FFFDFD;
+  font-family: "RBCDisplay", Georgia, Times, serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 0 0 16px 0;
+}
+
+.rbccm-theme__content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rbccm-theme__image {
+  border-radius: 20px;
+  height: auto;
+  margin: 15px 0;
+  width: 100%;
+}
+
+.rbccm-theme__text p {
+  font-family: "Roboto Light", "Roboto", Arial, Verdana, sans-serif;
+}
+
+.rbccm-theme__text p,
+.rbccm-themes__panel p {
+  color: #FFFDFD;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+}
+
+.rbccm-themes__panel p {
+  font-family: "RBCDisplay", Georgia, Times, serif;
+}
+
+.rbccm-theme__text p:last-child {
+  margin-bottom: 0;
+}
+
+/* ------------------------------------------------------------------
+   Testimonials Carousel Section
+   ------------------------------------------------------------------ */
+.rbccm-testimonials {
+  background-color: #001934;
+  margin: 0;
+  overflow: hidden;
+  padding: 60px 16px 0 16px;
+  position: relative;
+}
+
+.rbccm-testimonials::after {
+  background: url('/assets/rbccm/images/imagine-images/large-gradient.png') no-repeat 45% 161px;
+  background-size: cover;
+  bottom: 0;
+  content: "";
+  left: 0;
+  opacity: 0.15;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.rbccm-testimonials > * {
+  position: relative;
+  z-index: 1;
+}
+
+.rbccm-testimonials__container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin: 0 auto;
+  max-width: 1170px;
+  position: relative;
+}
+
+.rbccm-testimonials__slider {
+  margin: 0;
+  padding: 0;
+}
+
+.rbccm-testimonials__slide {
+  outline: none;
+}
+
+.rbccm-testimonials__content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.rbccm-testimonials__text-block {
+  flex: 1;
+}
+
+.rbccm-testimonials__quote {
+  color: #FFF;
+  font-family: "RBC Display";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 120%;
+  margin: 0 0 20px 0;
+  position: relative;
+  max-width: none;
+  padding: 0;
+  border-left: 0;
+}
+
+.rbccm-testimonials__quote::before {
+  content: """;
+  font-size: 60px;
+  left: -20px;
+  line-height: 1;
+  opacity: 0.3;
+  position: absolute;
+  top: -20px;
+}
+
+.rbccm-testimonials__author {
+  color: #FFC72C;
+  display: block;
+  font-family: "RBCDisplay", Georgia, Times, serif;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 400;
+  margin: 0 0 5px 0;
+}
+
+.rbccm-testimonials__role {
+  color: #FFFDFD;
+  display: block;
+  font-family: "RBCDisplay", Georgia, Times, serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.4;
+  font-style: normal;
+}
+
+.rbccm-testimonials__image-slide {
+  align-items: flex-end;
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  position: relative;
+  width: 100%;
+}
+
+.rbccm-testimonials__image-slide img {
+  border-radius: 0;
+  height: auto;
+  margin: 0 auto;
+  max-width: 292px;
+  width: 100%;
+}
+
+.rbccm-testimonials__slider-text {
+  margin: 0 !important;
+}
+
+/* Controls container */
+.rbccm-testimonials__controls {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  height: 24px;
+  justify-content: space-between;
+  margin: 0 auto 20px auto;
+  max-width: 343px;
+  position: relative;
+  width: 100%;
+}
+
+/* Arrows wrapper */
+.rbccm-testimonials__arrows {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Dots wrapper */
+.rbccm-testimonials__dots,
+.rbccm-testimonials__dots .slick-dots {
+  align-items: center;
+  display: flex !important;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.rbccm-testimonials__dots .slick-dots {
+  bottom: initial;
+  left: calc(50% - 95.5px);
+  width: 191px;
+}
+
+.rbccm-testimonials__dots .slick-dots li {
+  height: 11px;
+  margin: 0;
+  padding: 0;
+  width: 11px;
+}
+
+/* Arrow buttons */
+.custom-slick-prev,
+.custom-slick-next {
+  align-items: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  height: 21px;
+  justify-content: center;
+  padding: 0;
+  width: 24px;
+}
+
+/* Arrow colors */
+.custom-slick-prev svg path {
+  stroke: #979797;
+}
+
+.custom-slick-next svg path {
+  stroke: #ffffff;
+}
+
+/* Dot styling */
+.rbccm-testimonials__dots button {
+  background: transparent !important;
+  border: 1px solid white !important;
+  border-radius: 50%;
+  cursor: pointer;
+  height: 11px !important;
+  padding: 0;
+  width: 11px !important;
+}
+
+.rbccm-testimonials__dots button:before {
+  display: none;
+}
+
+.rbccm-testimonials__dots .slick-active button {
+  background: white !important;
+  border: 1px solid white !important;
+}
+
+/* Desktop arrows wrapper */
+.rbccm-testimonials__arrows-desktop {
+  align-items: center;
+  display: none;
+  flex-direction: row;
+  height: 38px;
+  justify-content: center;
+  left: calc(50% - 550px);
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1100px;
+  z-index: 3;
+}
+
+.rbccm-testimonials__arrows-desktop .custom-slick-prev,
+.rbccm-testimonials__arrows-desktop .custom-slick-next {
+  height: 38px;
+  pointer-events: auto;
+  position: absolute;
+  transform: translateY(-50%);
+  width: 19px;
+}
+
+.rbccm-testimonials__arrows-desktop .custom-slick-prev {
+  left: -60px;
+  top: 50%;
+}
+
+.rbccm-testimonials__arrows-desktop .custom-slick-next {
+  right: -60px;
+  top: 50%;
+}
+
+/* ------------------------------------------------------------------
+   Desktop Media Queries (min-width: 992px)
+   ------------------------------------------------------------------ */
+@media (min-width: 992px) {
+  /* Hero adjustments */
+  .rbccm-hero {
+    align-items: center;
+    display: flex;
+    min-height: 407px;
+    padding: 92px 60px;
   }
 
-  function reorganizeForDesktop() {
-    if (isDesktop() && panelsContainer) {
-      panels.forEach(panel => {
-        panelsContainer.appendChild(panel);
-      });
-    } else {
-      tabs.forEach((tab, index) => {
-        if (panels[index]) {
-          tab.after(panels[index]);
-        }
-      });
-    }
+  /* keep video hero tall on desktop too */
+  .rbccm-hero--video {
+    min-height: 675px;
   }
 
-  function handleViewportChange() {
-    const currentViewportState = isDesktop() ? 'desktop' : 'mobile';
-
-    if (previousViewportState !== currentViewportState) {
-      reorganizeForDesktop();
-
-      if (currentViewportState === 'desktop') {
-        const activeTabs = Array.from(tabs).filter(tab =>
-          tab.classList.contains('is-active')
-        );
-
-        tabs.forEach(tab => {
-          tab.classList.remove('is-active');
-          tab.setAttribute('aria-expanded', 'false');
-        });
-        panels.forEach(panel => {
-          panel.classList.remove('is-active');
-        });
-
-        const tabToActivate = activeTabs.length > 0 ? activeTabs[0] : tabs[0];
-        if (tabToActivate) {
-          const targetPanel = tabToActivate.dataset.panel;
-          tabToActivate.classList.add('is-active');
-          tabToActivate.setAttribute('aria-expanded', 'true');
-
-          const activePanel = document.querySelector(
-            `[data-panel="${targetPanel}"].rbccm-themes__panel`
-          );
-          if (activePanel) {
-            activePanel.classList.add('is-active');
-          }
-        }
-      } else {
-        const activeTab = document.querySelector('.rbccm-themes__tab.is-active');
-
-        panels.forEach(panel => {
-          panel.classList.remove('is-active');
-        });
-
-        if (!activeTab && tabs[0]) {
-          tabs[0].classList.add('is-active');
-          tabs[0].setAttribute('aria-expanded', 'true');
-        }
-      }
-
-      previousViewportState = currentViewportState;
-    }
+  .rbccm-hero__title {
+    font-size: 40px;
+    font-weight: 400;
+    line-height: 59px; /* rounded */
   }
 
-  tabs.forEach(tab => {
-    tab.addEventListener('click', function(e) {
-      e.preventDefault();
-      handleTabClick(this);
-    });
-  });
-
-  reorganizeForDesktop();
-
-  if (!document.querySelector('.rbccm-themes__tab.is-active')) {
-    if (tabs[0]) {
-      tabs[0].classList.add('is-active');
-      tabs[0].setAttribute('aria-expanded', 'true');
-
-      if (isDesktop() && panels[0]) {
-        panels[0].classList.add('is-active');
-      }
-    }
-  } else if (isDesktop()) {
-    const activeTab = document.querySelector('.rbccm-themes__tab.is-active');
-    if (activeTab) {
-      const targetPanel = activeTab.dataset.panel;
-      const activePanel = document.querySelector(
-        `[data-panel="${targetPanel}"].rbccm-themes__panel`
-      );
-      if (activePanel) {
-        activePanel.classList.add('is-active');
-      }
-    }
+  .rbccm-hero__desc {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 120%;
   }
 
-  let resizing = false;
-  window.addEventListener('resize', function() {
-    if (!resizing) {
-      resizing = true;
-      requestAnimationFrame(function() {
-        handleViewportChange();
-        resizing = false;
-      });
-    }
-  });
-});
-
-// Testimonials Slick Carousel
-$(document).ready(function() {
-  let textSlider, imageSlider;
-  let slidersInitialized = false;
-
-  function initSliders() {
-    if (slidersInitialized) return;
-
-    const isDesktop = $(window).width() >= 992;
-    const arrowWrapper = isDesktop
-      ? '.rbccm-testimonials__arrows-desktop'
-      : '.rbccm-testimonials__arrows';
-
-    // Initialize text slider
-    textSlider = $('#testimonialTextSlider').slick({
-      adaptiveHeight: true,
-      asNavFor: '#testimonialImageSlider',
-      autoplay: false,
-      arrows: true,
-      dots: true,
-      fade: false,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-      prevArrow:
-        '<button type="button" class="custom-slick-prev">' +
-        '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
-        '<path d="M10.707 20.3535L0.707031 10.3535L10.707 0.353515" stroke="#979797"/></svg></button>',
-      nextArrow:
-        '<button type="button" class="custom-slick-next">' +
-        '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
-        '<path d="M0.353516 0.353516L10.3535 10.3535L0.353516 20.3535" stroke="white"/></svg></button>',
-      appendArrows: $(arrowWrapper),
-      appendDots: $('.rbccm-testimonials__dots')
-    });
-
-    // Initialize image slider
-    imageSlider = $('#testimonialImageSlider').slick({
-      adaptiveHeight: true,
-      asNavFor: '#testimonialTextSlider',
-      autoplay: false,
-      arrows: false,
-      dots: false,
-      fade: true,
-      slidesToShow: 1,
-      slidesToScroll: 1
-    });
-
-    slidersInitialized = true;
+  .rbccm-hero__logo {
+    flex-shrink: 0;
+    height: 143px;  /* rounded */
+    width: 221px;   /* rounded */
   }
 
-  function destroySliders() {
-    if (!slidersInitialized) return;
-
-    $('#testimonialTextSlider').slick('unslick');
-    $('#testimonialImageSlider').slick('unslick');
-    slidersInitialized = false;
+  .rbccm-hero__btn {
+    font-size: 14px;            /* rounded */
+    padding: 13px 33px;         /* rounded */
   }
 
-  function handleResize() {
-    const isDesktop = $(window).width() >= 992;
-
-    // Save current slide index
-    const currentSlide = slidersInitialized
-      ? $('#testimonialTextSlider').slick('slickCurrentSlide')
-      : 0;
-
-    // Destroy and reinitialize sliders
-    destroySliders();
-    initSliders();
-
-    // Restore slide position
-    if (slidersInitialized && currentSlide > 0) {
-      $('#testimonialTextSlider').slick('slickGoTo', currentSlide, true);
-    }
+  /* Approach adjustments */
+  .rbccm-approach {
+    padding: 34px 16px;
   }
 
-  // Initialize on load
-  initSliders();
-
-  // Handle resize with debounce
-  let resizeTimer;
-  $(window).on('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(handleResize, 250);
-  });
-});
-
-/* -----------------------------------------------------------
-   Brightcove Autoloader (non-intrusive)
-   Looks for containers with data-bc-* attrs and initializes
-   Brightcove players without touching the rest of your code.
------------------------------------------------------------ */
-(function () {
-  const DEFAULTS = {
-    account: '6021289101001',
-    player:  'VyvCc9BZx',
-    embed:   'default'
-  };
-
-  function ensureBrightcove({account, player, embed}) {
-    return new Promise((resolve, reject) => {
-      if (window.videojs) return resolve();
-
-      const id = `bc-${account}-${player}-${embed}`;
-      if (!document.getElementById(id)) {
-        const s = document.createElement('script');
-        s.id = id;
-        s.async = true;
-        s.src = `https://players.brightcove.net/${account}/${player}_${embed}/index.min.js`;
-        s.onload = () => resolve();
-        s.onerror = () => reject(new Error('Failed to load Brightcove runtime'));
-        (document.head || document.body).appendChild(s);
-      }
-
-      const t0 = Date.now();
-      (function waitForVJS() {
-        if (window.videojs) return resolve();
-        if (Date.now() - t0 > 8000)
-          return reject(new Error('Timed out waiting for Brightcove'));
-        requestAnimationFrame(waitForVJS);
-      })();
-    });
+  .rbccm-approach__content {
+    align-items: center;
+    flex-direction: row;
+    gap: 76px;
+    padding: 0;
   }
 
-  async function initBrightcoveContainers() {
-    const nodes = document.querySelectorAll('[data-bc-video-id]');
-    if (!nodes.length) return;
-
-    const a = nodes[0].getAttribute('data-bc-account') || DEFAULTS.account;
-    const p = nodes[0].getAttribute('data-bc-player')  || DEFAULTS.player;
-    const e = nodes[0].getAttribute('data-bc-embed')   || DEFAULTS.embed;
-
-    try {
-      await ensureBrightcove({account: a, player: p, embed: e});
-    } catch (err) {
-      console.error(err);
-      return;
-    }
-
-    nodes.forEach((el) => {
-      // Remove TinyMCE script placeholders if present
-      el.querySelectorAll('img.mce-object-script, [data-mce-object="script"]').forEach(n => n.remove());
-
-      // Avoid duplicate init
-      if (el.querySelector('video-js')) return;
-
-      const account = el.getAttribute('data-bc-account') || a;
-      const player  = el.getAttribute('data-bc-player')  || p;
-      const embed   = el.getAttribute('data-bc-embed')   || e;
-      const videoId = el.getAttribute('data-bc-video-id');
-
-      if (!videoId) return;
-
-      const v = document.createElement('video-js');
-      v.className = 'video-js vjs-fluid';
-      v.setAttribute('data-account', account);
-      v.setAttribute('data-player',  player);
-      v.setAttribute('data-embed',   embed);
-      v.setAttribute('data-video-id', videoId);
-      v.setAttribute('controls', '');
-      v.setAttribute('width', '960');
-      v.setAttribute('height','540');
-
-      const poster = el.getAttribute('data-bc-poster');
-      if (poster) v.setAttribute('poster', poster);
-
-      el.appendChild(v);
-
-      // force initialization for dynamically-added players
-      try {
-        if (window.bc) {
-          window.bc(v);
-        } else if (window.videojs) {
-          window.videojs(v);
-        }
-      } catch (e) {
-        console.error('Brightcove init failed:', e);
-      }
-    });
+  .rbccm-approach__video {
+    flex: 0 1 50%;
+    max-width: 550px;
+    min-height: 308px;
   }
 
-  // Run on DOM ready without interfering with existing listeners
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initBrightcoveContainers);
-  } else {
-    initBrightcoveContainers();
-  }
-})();
-
-/* -----------------------------------------------------------
-   Marketo Imagine Subscribe Form Loader
-   Step 1: Form 1232  -> basic info + business email validation
-   Step 2: Form 1182  -> follow-up preferences
------------------------------------------------------------ */
-(function () {
-  var MARKETO = {
-    baseUrl: '//discover.rbccm.com',
-    munchkinId: '577-RQV-784',
-    stepOneFormId: 1232,
-    stepTwoFormId: 1182,
-    containerSelector: '#mkto_wrap'
-  };
-
-  function loadScript(src, id) {
-    return new Promise(function (resolve, reject) {
-      if (id && document.getElementById(id)) {
-        resolve();
-        return;
-      }
-      var s = document.createElement('script');
-      if (id) s.id = id;
-      s.src = src;
-      s.async = true;
-      s.onload = function () { resolve(); };
-      s.onerror = function () {
-        console.error('Failed to load script:', src);
-        reject(new Error('Failed to load ' + src));
-      };
-      (document.head || document.body).appendChild(s);
-    });
+  .rbccm-approach__details {
+    flex: 1;
+    gap: 24px;
   }
 
-  function ensureMktoForms2() {
-    return new Promise(function (resolve, reject) {
-      if (window.MktoForms2) return resolve(window.MktoForms2);
-
-      loadScript(MARKETO.baseUrl + '/js/forms2/js/forms2.min.js', 'mkto-forms2-script')
-        .then(function () {
-          var start = Date.now();
-          (function waitForMkto() {
-            if (window.MktoForms2) return resolve(window.MktoForms2);
-            if (Date.now() - start > 8000) {
-              return reject(new Error('Timed out waiting for MktoForms2'));
-            }
-            requestAnimationFrame(waitForMkto);
-          })();
-        })
-        .catch(reject);
-    });
+  .rbccm-approach__subtitle {
+    font-size: 29px;
+    max-width: calc(353 / 474 * 100%);
   }
 
-  function injectLinkedInAutofill() {
-    var subContent = document.getElementById('sub-content');
-    if (!subContent) return;
-
-    var autofillDiv = document.getElementById('autofill');
-    if (!autofillDiv) {
-      autofillDiv = document.createElement('div');
-      autofillDiv.id = 'autofill';
-      subContent.appendChild(autofillDiv);
-    }
-
-    loadScript('https://www.linkedin.com/autofill/js/autofill.js', 'linkedin-autofill-js')
-      .then(function () {
-        var initScript = document.getElementById('linkedin-autofill-init');
-        if (!initScript) {
-          initScript = document.createElement('script');
-          initScript.id = 'linkedin-autofill-init';
-          initScript.type = 'text/javascript';
-          initScript.setAttribute('data-form', 'mktoForm_' + MARKETO.stepOneFormId);
-          initScript.setAttribute('data-field-firstname', 'FirstName');
-          initScript.setAttribute('data-field-lastname', 'LastName');
-          initScript.setAttribute('data-field-email', 'Email');
-          initScript.setAttribute('data-field-company', 'Company');
-          initScript.setAttribute('data-field-title', 'Title');
-          autofillDiv.appendChild(initScript);
-        }
-
-        var isSafari =
-          navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
-          navigator.userAgent &&
-          navigator.userAgent.indexOf('CriOS') === -1 &&
-          navigator.userAgent.indexOf('FxiOS') === -1;
-
-        if (isSafari) {
-          autofillDiv.style.display = 'none';
-        }
-      })
-      .catch(function (err) {
-        console.error('LinkedIn Autofill load error:', err);
-      });
+  .rbccm-approach__desc {
+    max-width: calc(433 / 474 * 100%);
   }
 
-  function initMarketoForm() {
-    var container = document.querySelector(MARKETO.containerSelector);
-    if (!container) return; // not on this page
-
-    ensureMktoForms2()
-      .then(function (MktoForms2) {
-        // STEP 1: Load form 1232
-        MktoForms2.loadForm(
-          MARKETO.baseUrl,
-          MARKETO.munchkinId,
-          MARKETO.stepOneFormId,
-          function (form1) {
-            // Move the generated form into #mkto_wrap (in case Marketo puts it elsewhere)
-            var formEl1 = form1.getFormElem()[0];
-            container.innerHTML = '';
-            container.appendChild(formEl1);
-
-            // Make width flexible
-            try {
-              form1.getFormElem().css('width', 'auto');
-            } catch (e) {}
-
-            // Business-email-only validation for step 1
-            var invalidDomains = ['@gmail.', '@hotmail.', '@live.', '@aol.', '@outlook.'];
-
-            function isBusinessEmail(email) {
-              for (var i = 0; i < invalidDomains.length; i++) {
-                if (email.indexOf(invalidDomains[i]) !== -1) {
-                  return false;
-                }
-              }
-              return true;
-            }
-
-            form1.onValidate(function () {
-              var vals = form1.vals();
-              var email = vals.Email;
-
-              if (email && !isBusinessEmail(email)) {
-                form1.submitable(false);
-                var emailElem = form1.getFormElem().find('#Email');
-                form1.showErrorMessage('Must be Business email.', emailElem);
-              } else {
-                form1.submitable(true);
-              }
-            });
-
-            // On success of step 1:
-            //  - update heading to "Thank you!"
-            //  - load form 1182 into #mkto_wrap
-            form1.onSuccess(function (vals, thankYouURL) {
-              var email = vals.Email;
-
-              // Update copy
-              var subPre = document.getElementById('sub-pre');
-              if (subPre) {
-                subPre.innerHTML =
-                  '<h2 style="margin-top: 0;">Thank you!</h2>' +
-                  '<p style="color: #002144;">We\'ll send you an email with a link to download your ' +
-                  'RBC Imagine&trade; <strong>Preparing for Hyperdrive</strong> report.</p>';
-              }
-
-              // Clear first form and load step 2 (1182)
-              container.innerHTML = '';
-
-              MktoForms2.loadForm(
-                MARKETO.baseUrl,
-                MARKETO.munchkinId,
-                MARKETO.stepTwoFormId,
-                function (form2) {
-                  var formEl2 = form2.getFormElem()[0];
-                  container.appendChild(formEl2);
-
-                  try {
-                    form2.getFormElem().css('width', 'auto');
-                  } catch (e) {}
-
-                  // Pass email from step 1 into hidden field on step 2
-                  if (email) {
-                    form2.addHiddenFields({
-                      Email: email
-                    });
-                  }
-
-                  // Final success for step 2: stay on page, do nothing fancy
-                  form2.onSuccess(function (vals2, thankYou2) {
-                    // If you want to clear mkto_wrap at the very end:
-                    // container.innerHTML = '';
-                    return false;
-                  });
-                }
-              );
-
-              // Do NOT go to Marketo thank-you URL
-              return false;
-            });
-
-            // Wire LinkedIn autofill to step 1
-            injectLinkedInAutofill();
-          }
-        );
-      })
-      .catch(function (err) {
-        console.error('Marketo init error:', err);
-      });
+  /* Themes Section - Desktop Grid Layout */
+  .rbccm-themes {
+    padding: 65px 16px;
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMarketoForm);
-  } else {
-    initMarketoForm();
-  }
-})();
-
-/* -----------------------------------------------------------
-   HERO DOWNLOAD MODAL + MARKETO 1225
------------------------------------------------------------ */
-(function ($) {
-  var MARKETO = {
-    baseUrl: '//discover.rbccm.com',
-    munchkinId: '577-RQV-784',
-    formId: 1225
-  };
-
-  function loadMktoScript() {
-    return new Promise(function (resolve, reject) {
-      if (window.MktoForms2) return resolve();
-
-      var s = document.createElement('script');
-      s.src = MARKETO.baseUrl + '/js/forms2/js/forms2.min.js';
-      s.async = true;
-
-      s.onload = function () {
-        var start = Date.now();
-        (function check() {
-          if (window.MktoForms2) return resolve();
-          if (Date.now() - start > 8000)
-            return reject(new Error('MktoForms2 load timeout'));
-          requestAnimationFrame(check);
-        })();
-      };
-
-      s.onerror = () => reject(new Error('Failed to load Mkto script'));
-      document.head.appendChild(s);
-    });
+  .rbccm-themes__heading {
+    font-size: 29px;
+    margin: 0 0 50px 0 !important;
+    padding: 0;
   }
 
-  function businessEmailCheck(form) {
-    var invalid = ['@gmail.', '@hotmail.', '@live.', '@aol.', '@outlook.'];
-
-    form.onValidate(function () {
-      var email = form.vals().Email;
-      if (!email) return;
-
-      var bad = invalid.some(function (d) {
-        return email.indexOf(d) !== -1;
-      });
-
-      if (bad) {
-        form.submitable(false);
-        var emailElem = form.getFormElem().find('#Email');
-        form.showErrorMessage('Must be Business email.', emailElem);
-      } else {
-        form.submitable(true);
-      }
-    });
+  /* Grid wrapper for tabs and panels */
+  .rbccm-themes__wrapper {
+    display: grid;
+    gap: 0;
+    grid-template-rows: auto auto;
   }
 
-  function injectSuccessModal() {
-    return `
-<div class="modal-content">
-  <div>
-    <div class="modal-header" style="border: none;border-top: 8px #FBDE00 solid;padding: 0;height: 0;">
-      <button class="close"
-              style="font-size: 41px;color: #595959;font-weight: normal;position: absolute;top: 0;right: 0;z-index: 100;"
-              type="button" data-dismiss="modal">×</button>
-    </div>
-
-    <div class="modal-body" style="padding: 0;background: #11223E;">
-      <div class="row row-no-gutters">
-
-        <div class="col-md-7">
-          <div class="dark"
-               style="background: #11223E; color: #fff; height: 600px; padding: 60px;">
-            <div style="margin-bottom: 70px;">
-              <img src="/assets/rbccm/images/imagine/rbc-imagine.png"
-                   alt="RBC Imagine" style="width: 123px;">
-            </div>
-
-            <h2 style="color: #fff; font-size: 42px;">Thank you!</h2>
-
-            <p style="color: #fff;font-size: 24px;">
-              We'll send you an email with a link to download your RBC Imagine™
-              <span style="color: #FBDE00;">Preparing for Hyperdrive</span> report.
-            </p>
-
-            <p style="margin-top: 70px;">
-              <a class="modal-close-link" href="#" type="button" data-dismiss="modal">
-                Close window
-              </a>
-            </p>
-          </div>
-        </div>
-
-        <div class="col-md-5">
-          <div class="img-stretch"
-               style="height: 600px;
-                      background-image: url('/assets/rbccm/images/imagine/confirmation-bg.jpg');
-                      background-color: #000;"></div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</div>`;
+  /* Tab list becomes horizontal */
+  .rbccm-themes__tablist {
+    border-top: none;
+    display: flex;
+    flex-direction: row;
+    grid-column: 1;
+    grid-row: 1;
+    justify-content: space-between;
+    position: relative;
   }
 
-  function initDownloadModal() {
-    var $modal = $('#download');
-    var formLoaded = false;
-
-    $(document).on('click', '.rbccm-hero__btn[href="#download"]', function (e) {
-      e.preventDefault();
-      $modal.modal('show');
-
-      if (formLoaded) return;
-      formLoaded = true;
-
-      loadMktoScript().then(function () {
-        var container = document.getElementById('download-form-container');
-
-        // Create empty form shell Marketo will populate
-        var formShell = document.createElement('form');
-        formShell.id = 'mktoForm_' + MARKETO.formId;
-        container.appendChild(formShell);
-
-        MktoForms2.loadForm(
-          MARKETO.baseUrl,
-          MARKETO.munchkinId,
-          MARKETO.formId,
-          function (form) {
-            businessEmailCheck(form);
-
-            form.onSuccess(function () {
-              var html = injectSuccessModal();
-              $modal.find('.modal-content').replaceWith(html);
-              return false;
-            });
-          }
-        );
-      });
-    });
+  .rbccm-themes__tablist:after {
+    background: white;
+    bottom: 0;
+    content: "";
+    height: 1px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 0;
   }
 
-  $(initDownloadModal);
-
-})(jQuery);
-
-/* -----------------------------------------------------------
-   IMAGINE HERO BACKGROUND VIDEO (TEASER ONLY)
-   - Injects a looping, muted teaser into #imagine-teaser-mount
------------------------------------------------------------ */
-(function () {
-  function initImagineHeroTeaser() {
-    var hero        = document.getElementById('imagine-hero');
-    var teaserMount = document.getElementById('imagine-teaser-mount');
-
-    if (!hero || !teaserMount) return;
-
-    // Avoid double-injecting
-    if (teaserMount.querySelector('video')) return;
-
-    var video = document.createElement('video');
-    video.id = 'imagine-teaser-video';
-    video.className = 'rbccm-hero__video-teaser';
-    video.autoplay = true;
-    video.loop = true;
-    video.muted = true;
-    video.playsInline = true; // iOS/Safari-friendly
-
-    var source = document.createElement('source');
-    source.src = '/assets/rbccm/images/imagine-images/imagine-2025-tall-hero-clean.mp4';
-    source.type = 'video/mp4';
-
-    video.appendChild(source);
-    teaserMount.appendChild(video);
-
-    // Best-effort autoplay, ignore failures
-    video.play().catch(function () {});
+  /* Tab buttons on desktop */
+  .rbccm-themes__tab {
+    border-bottom: 1px solid transparent;
+    font-family: "RBCDisplay", Georgia, Times, serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px;
+    padding: 20px 0;
+    text-align: center;
+    transition: all 0.3s ease;
+    width: auto;
+    z-index: 1;
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initImagineHeroTeaser);
-  } else {
-    initImagineHeroTeaser();
-  }
-})();
-
-
-
-
-// Themes Section Tabs/Accordion
-document.addEventListener('DOMContentLoaded', function() {
-  const tabs = document.querySelectorAll('.rbccm-themes__tab');
-  const panels = document.querySelectorAll('.rbccm-themes__panel');
-  const panelsContainer = document.querySelector('.rbccm-themes__panels');
-  const isDesktop = () => window.matchMedia('(min-width: 992px)').matches;
-  let previousViewportState = isDesktop() ? 'desktop' : 'mobile';
-
-  function handleTabClick(clickedTab) {
-    const targetPanel = clickedTab.dataset.panel;
-
-    if (isDesktop()) {
-      // Desktop: tabs behavior
-      tabs.forEach(tab => {
-        tab.classList.remove('is-active');
-        tab.setAttribute('aria-expanded', 'false');
-      });
-
-      panels.forEach(panel => {
-        panel.classList.remove('is-active');
-      });
-
-      clickedTab.classList.add('is-active');
-      clickedTab.setAttribute('aria-expanded', 'true');
-
-      const activePanel = document.querySelector(
-        `[data-panel="${targetPanel}"].rbccm-themes__panel`
-      );
-      if (activePanel) {
-        activePanel.classList.add('is-active');
-      }
-    } else {
-      // Mobile: accordion behavior
-      const isActive = clickedTab.classList.contains('is-active');
-
-      if (isActive) {
-        clickedTab.classList.remove('is-active');
-        clickedTab.setAttribute('aria-expanded', 'false');
-      } else {
-        clickedTab.classList.add('is-active');
-        clickedTab.setAttribute('aria-expanded', 'true');
-      }
-    }
+  .rbccm-themes__tab:hover {
+    border-bottom: 3px solid rgba(255, 199, 44, 0.5);
   }
 
-  function reorganizeForDesktop() {
-    if (isDesktop() && panelsContainer) {
-      panels.forEach(panel => {
-        panelsContainer.appendChild(panel);
-      });
-    } else {
-      tabs.forEach((tab, index) => {
-        if (panels[index]) {
-          tab.after(panels[index]);
-        }
-      });
-    }
+  .rbccm-themes__tab.is-active {
+    border-bottom: 3px solid #FFC736;
   }
 
-  function handleViewportChange() {
-    const currentViewportState = isDesktop() ? 'desktop' : 'mobile';
-
-    if (previousViewportState !== currentViewportState) {
-      reorganizeForDesktop();
-
-      if (currentViewportState === 'desktop') {
-        const activeTabs = Array.from(tabs).filter(tab =>
-          tab.classList.contains('is-active')
-        );
-
-        tabs.forEach(tab => {
-          tab.classList.remove('is-active');
-          tab.setAttribute('aria-expanded', 'false');
-        });
-        panels.forEach(panel => {
-          panel.classList.remove('is-active');
-        });
-
-        const tabToActivate = activeTabs.length > 0 ? activeTabs[0] : tabs[0];
-        if (tabToActivate) {
-          const targetPanel = tabToActivate.dataset.panel;
-          tabToActivate.classList.add('is-active');
-          tabToActivate.setAttribute('aria-expanded', 'true');
-
-          const activePanel = document.querySelector(
-            `[data-panel="${targetPanel}"].rbccm-themes__panel`
-          );
-          if (activePanel) {
-            activePanel.classList.add('is-active');
-          }
-        }
-      } else {
-        const activeTab = document.querySelector('.rbccm-themes__tab.is-active');
-
-        panels.forEach(panel => {
-          panel.classList.remove('is-active');
-        });
-
-        if (!activeTab && tabs[0]) {
-          tabs[0].classList.add('is-active');
-          tabs[0].setAttribute('aria-expanded', 'true');
-        }
-      }
-
-      previousViewportState = currentViewportState;
-    }
+  /* Hide chevrons on desktop */
+  .rbccm-themes__chevron {
+    display: none;
   }
 
-  tabs.forEach(tab => {
-    tab.addEventListener('click', function(e) {
-      e.preventDefault();
-      handleTabClick(this);
-    });
-  });
-
-  reorganizeForDesktop();
-
-  if (!document.querySelector('.rbccm-themes__tab.is-active')) {
-    if (tabs[0]) {
-      tabs[0].classList.add('is-active');
-      tabs[0].setAttribute('aria-expanded', 'true');
-
-      if (isDesktop() && panels[0]) {
-        panels[0].classList.add('is-active');
-      }
-    }
-  } else if (isDesktop()) {
-    const activeTab = document.querySelector('.rbccm-themes__tab.is-active');
-    if (activeTab) {
-      const targetPanel = activeTab.dataset.panel;
-      const activePanel = document.querySelector(
-        `[data-panel="${targetPanel}"].rbccm-themes__panel`
-      );
-      if (activePanel) {
-        activePanel.classList.add('is-active');
-      }
-    }
+  /* Panels container spans full width */
+  .rbccm-themes__panels {
+    grid-column: 1;
+    grid-row: 2;
+    padding-top: 60px;
   }
 
-  let resizing = false;
-  window.addEventListener('resize', function() {
-    if (!resizing) {
-      resizing = true;
-      requestAnimationFrame(function() {
-        handleViewportChange();
-        resizing = false;
-      });
-    }
-  });
-});
-
-// Testimonials Slick Carousel
-$(document).ready(function() {
-  let textSlider, imageSlider;
-  let slidersInitialized = false;
-
-  function initSliders() {
-    if (slidersInitialized) return;
-
-    const isDesktop = $(window).width() >= 992;
-    const arrowWrapper = isDesktop
-      ? '.rbccm-testimonials__arrows-desktop'
-      : '.rbccm-testimonials__arrows';
-
-    // Initialize text slider
-    textSlider = $('#testimonialTextSlider').slick({
-      adaptiveHeight: true,
-      asNavFor: '#testimonialImageSlider',
-      autoplay: false,
-      arrows: true,
-      dots: true,
-      fade: false,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-      prevArrow:
-        '<button type="button" class="custom-slick-prev">' +
-        '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
-        '<path d="M10.707 20.3535L0.707031 10.3535L10.707 0.353515" stroke="#979797"/></svg></button>',
-      nextArrow:
-        '<button type="button" class="custom-slick-next">' +
-        '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
-        '<path d="M0.353516 0.353516L10.3535 10.3535L0.353516 20.3535" stroke="white"/></svg></button>',
-      appendArrows: $(arrowWrapper),
-      appendDots: $('.rbccm-testimonials__dots')
-    });
-
-    // Initialize image slider
-    imageSlider = $('#testimonialImageSlider').slick({
-      adaptiveHeight: true,
-      asNavFor: '#testimonialTextSlider',
-      autoplay: false,
-      arrows: false,
-      dots: false,
-      fade: true,
-      slidesToShow: 1,
-      slidesToScroll: 1
-    });
-
-    slidersInitialized = true;
+  /* Hide all panels by default on desktop */
+  .rbccm-themes__panel {
+    display: none;
+    opacity: 0;
+    padding: 0;
+    transition: opacity 0.2s ease;
   }
 
-  function destroySliders() {
-    if (!slidersInitialized) return;
-
-    $('#testimonialTextSlider').slick('unslick');
-    $('#testimonialImageSlider').slick('unslick');
-    slidersInitialized = false;
+  /* Show only active panel */
+  .rbccm-themes__panel.is-active {
+    display: block;
+    opacity: 1;
   }
 
-  function handleResize() {
-    const isDesktop = $(window).width() >= 992;
-
-    // Save current slide index
-    const currentSlide = slidersInitialized
-      ? $('#testimonialTextSlider').slick('slickCurrentSlide')
-      : 0;
-
-    // Destroy and reinitialize sliders
-    destroySliders();
-    initSliders();
-
-    // Restore slide position
-    if (slidersInitialized && currentSlide > 0) {
-      $('#testimonialTextSlider').slick('slickGoTo', currentSlide, true);
-    }
+  /* Don't use adjacent selector on desktop */
+  .rbccm-themes__tab.is-active + .rbccm-themes__panel {
+    display: none;
+    opacity: 0;
   }
 
-  // Initialize on load
-  initSliders();
-
-  // Handle resize with debounce
-  let resizeTimer;
-  $(window).on('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(handleResize, 250);
-  });
-});
-
-/* -----------------------------------------------------------
-   Brightcove Autoloader (non-intrusive)
-   Looks for containers with data-bc-* attrs and initializes
-   Brightcove players without touching the rest of your code.
------------------------------------------------------------ */
-(function () {
-  const DEFAULTS = {
-    account: '6021289101001',
-    player:  'VyvCc9BZx',
-    embed:   'default'
-  };
-
-  function ensureBrightcove({account, player, embed}) {
-    return new Promise((resolve, reject) => {
-      if (window.videojs) return resolve();
-
-      const id = `bc-${account}-${player}-${embed}`;
-      if (!document.getElementById(id)) {
-        const s = document.createElement('script');
-        s.id = id;
-        s.async = true;
-        s.src = `https://players.brightcove.net/${account}/${player}_${embed}/index.min.js`;
-        s.onload = () => resolve();
-        s.onerror = () => reject(new Error('Failed to load Brightcove runtime'));
-        (document.head || document.body).appendChild(s);
-      }
-
-      const t0 = Date.now();
-      (function waitForVJS() {
-        if (window.videojs) return resolve();
-        if (Date.now() - t0 > 8000)
-          return reject(new Error('Timed out waiting for Brightcove'));
-        requestAnimationFrame(waitForVJS);
-      })();
-    });
+  .rbccm-theme__title {
+    font-size: 28px;
+    margin-bottom: 10px;
   }
 
-  async function initBrightcoveContainers() {
-    const nodes = document.querySelectorAll('[data-bc-video-id]');
-    if (!nodes.length) return;
-
-    const a = nodes[0].getAttribute('data-bc-account') || DEFAULTS.account;
-    const p = nodes[0].getAttribute('data-bc-player')  || DEFAULTS.player;
-    const e = nodes[0].getAttribute('data-bc-embed')   || DEFAULTS.embed;
-
-    try {
-      await ensureBrightcove({account: a, player: p, embed: e});
-    } catch (err) {
-      console.error(err);
-      return;
-    }
-
-    nodes.forEach((el) => {
-      // Remove TinyMCE script placeholders if present
-      el.querySelectorAll('img.mce-object-script, [data-mce-object="script"]').forEach(n => n.remove());
-
-      // Avoid duplicate init
-      if (el.querySelector('video-js')) return;
-
-      const account = el.getAttribute('data-bc-account') || a;
-      const player  = el.getAttribute('data-bc-player')  || p;
-      const embed   = el.getAttribute('data-bc-embed')   || e;
-      const videoId = el.getAttribute('data-bc-video-id');
-
-      if (!videoId) return;
-
-      const v = document.createElement('video-js');
-      v.className = 'video-js vjs-fluid';
-      v.setAttribute('data-account', account);
-      v.setAttribute('data-player',  player);
-      v.setAttribute('data-embed',   embed);
-      v.setAttribute('data-video-id', videoId);
-      v.setAttribute('controls', '');
-      v.setAttribute('width', '960');
-      v.setAttribute('height','540');
-
-      const poster = el.getAttribute('data-bc-poster');
-      if (poster) v.setAttribute('poster', poster);
-
-      el.appendChild(v);
-
-      // force initialization for dynamically-added players
-      try {
-        if (window.bc) {
-          window.bc(v);
-        } else if (window.videojs) {
-          window.videojs(v);
-        }
-      } catch (e) {
-        console.error('Brightcove init failed:', e);
-      }
-    });
+  .rbccm-theme__content {
+    align-items: center;
+    flex-direction: row;
+    gap: 40px;
+    justify-content: flex-start;
+    margin-top: 45px;
   }
 
-  // Run on DOM ready without interfering with existing listeners
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initBrightcoveContainers);
-  } else {
-    initBrightcoveContainers();
-  }
-})();
-
-/* -----------------------------------------------------------
-   Marketo Imagine Subscribe Form Loader
-   Step 1: Form 1232  -> basic info + business email validation
-   Step 2: Form 1182  -> follow-up preferences
------------------------------------------------------------ */
-(function () {
-  var MARKETO = {
-    baseUrl: '//discover.rbccm.com',
-    munchkinId: '577-RQV-784',
-    stepOneFormId: 1232,
-    stepTwoFormId: 1182,
-    containerSelector: '#mkto_wrap'
-  };
-
-  function loadScript(src, id) {
-    return new Promise(function (resolve, reject) {
-      if (id && document.getElementById(id)) {
-        resolve();
-        return;
-      }
-      var s = document.createElement('script');
-      if (id) s.id = id;
-      s.src = src;
-      s.async = true;
-      s.onload = function () { resolve(); };
-      s.onerror = function () {
-        console.error('Failed to load script:', src);
-        reject(new Error('Failed to load ' + src));
-      };
-      (document.head || document.body).appendChild(s);
-    });
+  .rbccm-theme__image {
+    border-radius: 16px;
+    flex: 0 0 45%;
+    margin: 0;
+    max-width: 500px;
   }
 
-  function ensureMktoForms2() {
-    return new Promise(function (resolve, reject) {
-      if (window.MktoForms2) return resolve(window.MktoForms2);
-
-      loadScript(MARKETO.baseUrl + '/js/forms2/js/forms2.min.js', 'mkto-forms2-script')
-        .then(function () {
-          var start = Date.now();
-          (function waitForMkto() {
-            if (window.MktoForms2) return resolve(window.MktoForms2);
-            if (Date.now() - start > 8000) {
-              return reject(new Error('Timed out waiting for MktoForms2'));
-            }
-            requestAnimationFrame(waitForMkto);
-          })();
-        })
-        .catch(reject);
-    });
+  .rbccm-theme__text {
+    flex: 1;
   }
 
-  function injectLinkedInAutofill() {
-    var subContent = document.getElementById('sub-content');
-    if (!subContent) return;
-
-    var autofillDiv = document.getElementById('autofill');
-    if (!autofillDiv) {
-      autofillDiv = document.createElement('div');
-      autofillDiv.id = 'autofill';
-      subContent.appendChild(autofillDiv);
-    }
-
-    loadScript('https://www.linkedin.com/autofill/js/autofill.js', 'linkedin-autofill-js')
-      .then(function () {
-        var initScript = document.getElementById('linkedin-autofill-init');
-        if (!initScript) {
-          initScript = document.createElement('script');
-          initScript.id = 'linkedin-autofill-init';
-          initScript.type = 'text/javascript';
-          initScript.setAttribute('data-form', 'mktoForm_' + MARKETO.stepOneFormId);
-          initScript.setAttribute('data-field-firstname', 'FirstName');
-          initScript.setAttribute('data-field-lastname', 'LastName');
-          initScript.setAttribute('data-field-email', 'Email');
-          initScript.setAttribute('data-field-company', 'Company');
-          initScript.setAttribute('data-field-title', 'Title');
-          autofillDiv.appendChild(initScript);
-        }
-
-        var isSafari =
-          navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
-          navigator.userAgent &&
-          navigator.userAgent.indexOf('CriOS') === -1 &&
-          navigator.userAgent.indexOf('FxiOS') === -1;
-
-        if (isSafari) {
-          autofillDiv.style.display = 'none';
-        }
-      })
-      .catch(function (err) {
-        console.error('LinkedIn Autofill load error:', err);
-      });
+  .rbccm-theme__text p {
+    font-family: "Roboto Light", "Roboto", Arial, Verdana, sans-serif;
   }
 
-  function initMarketoForm() {
-    var container = document.querySelector(MARKETO.containerSelector);
-    if (!container) return; // not on this page
-
-    ensureMktoForms2()
-      .then(function (MktoForms2) {
-        // STEP 1: Load form 1232
-        MktoForms2.loadForm(
-          MARKETO.baseUrl,
-          MARKETO.munchkinId,
-          MARKETO.stepOneFormId,
-          function (form1) {
-            // Move the generated form into #mkto_wrap (in case Marketo puts it elsewhere)
-            var formEl1 = form1.getFormElem()[0];
-            container.innerHTML = '';
-            container.appendChild(formEl1);
-
-            // Make width flexible
-            try {
-              form1.getFormElem().css('width', 'auto');
-            } catch (e) {}
-
-            // Business-email-only validation for step 1
-            var invalidDomains = ['@gmail.', '@hotmail.', '@live.', '@aol.', '@outlook.'];
-
-            function isBusinessEmail(email) {
-              for (var i = 0; i < invalidDomains.length; i++) {
-                if (email.indexOf(invalidDomains[i]) !== -1) {
-                  return false;
-                }
-              }
-              return true;
-            }
-
-            form1.onValidate(function () {
-              var vals = form1.vals();
-              var email = vals.Email;
-
-              if (email && !isBusinessEmail(email)) {
-                form1.submitable(false);
-                var emailElem = form1.getFormElem().find('#Email');
-                form1.showErrorMessage('Must be Business email.', emailElem);
-              } else {
-                form1.submitable(true);
-              }
-            });
-
-            // On success of step 1:
-            //  - update heading to "Thank you!"
-            //  - load form 1182 into #mkto_wrap
-            form1.onSuccess(function (vals, thankYouURL) {
-              var email = vals.Email;
-
-              // Update copy
-              var subPre = document.getElementById('sub-pre');
-              if (subPre) {
-                subPre.innerHTML =
-                  '<h2 style="margin-top: 0;">Thank you!</h2>' +
-                  '<p style="color: #002144;">We\'ll send you an email with a link to download your ' +
-                  'RBC Imagine&trade; <strong>Preparing for Hyperdrive</strong> report.</p>';
-              }
-
-              // Clear first form and load step 2 (1182)
-              container.innerHTML = '';
-
-              MktoForms2.loadForm(
-                MARKETO.baseUrl,
-                MARKETO.munchkinId,
-                MARKETO.stepTwoFormId,
-                function (form2) {
-                  var formEl2 = form2.getFormElem()[0];
-                  container.appendChild(formEl2);
-
-                  try {
-                    form2.getFormElem().css('width', 'auto');
-                  } catch (e) {}
-
-                  // Pass email from step 1 into hidden field on step 2
-                  if (email) {
-                    form2.addHiddenFields({
-                      Email: email
-                    });
-                  }
-
-                  // Final success for step 2: stay on page, do nothing fancy
-                  form2.onSuccess(function (vals2, thankYou2) {
-                    // If you want to clear mkto_wrap at the very end:
-                    // container.innerHTML = '';
-                    return false;
-                  });
-                }
-              );
-
-              // Do NOT go to Marketo thank-you URL
-              return false;
-            });
-
-            // Wire LinkedIn autofill to step 1
-            injectLinkedInAutofill();
-          }
-        );
-      })
-      .catch(function (err) {
-        console.error('Marketo init error:', err);
-      });
+  .rbccm-theme__text p,
+  .rbccm-themes__panel p {
+    font-size: 16px;
+    line-height: normal;
+    margin-bottom: 15px;
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMarketoForm);
-  } else {
-    initMarketoForm();
-  }
-})();
-
-/* -----------------------------------------------------------
-   HERO DOWNLOAD MODAL + MARKETO 1225
------------------------------------------------------------ */
-(function ($) {
-  var MARKETO = {
-    baseUrl: '//discover.rbccm.com',
-    munchkinId: '577-RQV-784',
-    formId: 1225
-  };
-
-  function loadMktoScript() {
-    return new Promise(function (resolve, reject) {
-      if (window.MktoForms2) return resolve();
-
-      var s = document.createElement('script');
-      s.src = MARKETO.baseUrl + '/js/forms2/js/forms2.min.js';
-      s.async = true;
-
-      s.onload = function () {
-        var start = Date.now();
-        (function check() {
-          if (window.MktoForms2) return resolve();
-          if (Date.now() - start > 8000)
-            return reject(new Error('MktoForms2 load timeout'));
-          requestAnimationFrame(check);
-        })();
-      };
-
-      s.onerror = () => reject(new Error('Failed to load Mkto script'));
-      document.head.appendChild(s);
-    });
+  /* Testimonials Desktop Styles */
+  .rbccm-testimonials {
+    padding: 0 16px;
   }
 
-  function businessEmailCheck(form) {
-    var invalid = ['@gmail.', '@hotmail.', '@live.', '@aol.', '@outlook.'];
-
-    form.onValidate(function () {
-      var email = form.vals().Email;
-      if (!email) return;
-
-      var bad = invalid.some(function (d) {
-        return email.indexOf(d) !== -1;
-      });
-
-      if (bad) {
-        form.submitable(false);
-        var emailElem = form.getFormElem().find('#Email');
-        form.showErrorMessage('Must be Business email.', emailElem);
-      } else {
-        form.submitable(true);
-      }
-    });
+  .rbccm-testimonials::after {
+    background: url('/assets/rbccm/images/imagine-images/large-gradient.png') no-repeat 467px -210px;
+    background-size: 1239px 697px;
+    left: calc(50% - 775px);
   }
 
-  function injectSuccessModal() {
-    return `
-<div class="modal-content">
-  <div>
-    <div class="modal-header" style="border: none;border-top: 8px #FBDE00 solid;padding: 0;height: 0;">
-      <button class="close"
-              style="font-size: 41px;color: #595959;font-weight: normal;position: absolute;top: 0;right: 0;z-index: 100;"
-              type="button" data-dismiss="modal">×</button>
-    </div>
-
-    <div class="modal-body" style="padding: 0;background: #11223E;">
-      <div class="row row-no-gutters">
-
-        <div class="col-md-7">
-          <div class="dark"
-               style="background: #11223E; color: #fff; height: 600px; padding: 60px;">
-            <div style="margin-bottom: 70px;">
-              <img src="/assets/rbccm/images/imagine/rbc-imagine.png"
-                   alt="RBC Imagine" style="width: 123px;">
-            </div>
-
-            <h2 style="color: #fff; font-size: 42px;">Thank you!</h2>
-
-            <p style="color: #fff;font-size: 24px;">
-              We'll send you an email with a link to download your RBC Imagine™
-              <span style="color: #FBDE00;">Preparing for Hyperdrive</span> report.
-            </p>
-
-            <p style="margin-top: 70px;">
-              <a class="modal-close-link" href="#" type="button" data-dismiss="modal">
-                Close window
-              </a>
-            </p>
-          </div>
-        </div>
-
-        <div class="col-md-5">
-          <div class="img-stretch"
-               style="height: 600px;
-                      background-image: url('/assets/rbccm/images/imagine/confirmation-bg.jpg');
-                      background-color: #000;"></div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</div>`;
+  .rbccm-testimonials__container {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 60px;
+    justify-content: space-between;
+    min-height: 449px;
+    padding: 40px 0 0 0;
   }
 
-  function initDownloadModal() {
-    var $modal = $('#download');
-    var formLoaded = false;
-
-    $(document).on('click', '.rbccm-hero__btn[href="#download"]', function (e) {
-      e.preventDefault();
-      $modal.modal('show');
-
-      if (formLoaded) return;
-      formLoaded = true;
-
-      loadMktoScript().then(function () {
-        var container = document.getElementById('download-form-container');
-
-        // Create empty form shell Marketo will populate
-        var formShell = document.createElement('form');
-        formShell.id = 'mktoForm_' + MARKETO.formId;
-        container.appendChild(formShell);
-
-        MktoForms2.loadForm(
-          MARKETO.baseUrl,
-          MARKETO.munchkinId,
-          MARKETO.formId,
-          function (form) {
-            businessEmailCheck(form);
-
-            form.onSuccess(function () {
-              var html = injectSuccessModal();
-              $modal.find('.modal-content').replaceWith(html);
-              return false;
-            });
-          }
-        );
-      });
-    });
+  .rbccm-testimonials__slider {
+    padding: 0 80px;
   }
 
-  $(initDownloadModal);
-
-})(jQuery);
-
-/* -----------------------------------------------------------
-   IMAGINE HERO BACKGROUND VIDEO (TEASER ONLY)
-   - Injects a looping, muted teaser into #imagine-teaser-mount
------------------------------------------------------------ */
-(function () {
-  function initImagineHeroTeaser() {
-    var hero        = document.getElementById('imagine-hero');
-    var teaserMount = document.getElementById('imagine-teaser-mount');
-
-    if (!hero || !teaserMount) return;
-
-    // Avoid double-injecting
-    if (teaserMount.querySelector('video')) return;
-
-    var video = document.createElement('video');
-    video.id = 'imagine-teaser-video';
-    video.className = 'rbccm-hero__video-teaser';
-    video.autoplay = true;
-    video.loop = true;
-    video.muted = true;
-    video.playsInline = true; // iOS/Safari-friendly
-
-    var source = document.createElement('source');
-    source.src = '/assets/rbccm/images/imagine-images/imagine-2025-tall-hero-clean.mp4';
-    source.type = 'video/mp4';
-
-    video.appendChild(source);
-    teaserMount.appendChild(video);
-
-    // Best-effort autoplay, ignore failures
-    video.play().catch(function () {});
+  .rbccm-testimonials__slider-text {
+    flex: 0 0 100%;
+    max-width: 560px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 400px;
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initImagineHeroTeaser);
-  } else {
-    initImagineHeroTeaser();
+  .rbccm-testimonials__slider-image {
+    align-items: center;
+    display: flex;
+    flex: 0 0 100%;
+    justify-content: flex-end;
+    max-width: 411px;
   }
-})();
+
+  .rbccm-testimonials__image-slide img {
+    max-width: 411px;
+  }
+
+  .rbccm-testimonials__content {
+    align-items: center;
+    flex-direction: row;
+    gap: 80px;
+    padding: 0 40px;
+  }
+
+  .rbccm-testimonials__text-block {
+    flex: 1;
+    max-width: 600px;
+  }
+
+  .rbccm-testimonials__quote {
+    font-size: 28px;
+    line-height: 120%;
+    margin: 0 0 15px 0;
+  }
+
+  .rbccm-testimonials__quote::before {
+    font-size: 80px;
+    left: -40px;
+    top: -30px;
+  }
+
+  .rbccm-testimonials__author {
+    font-size: 28px;
+    line-height: 120%;
+  }
+
+  .rbccm-testimonials__role {
+    font-size: 21px;
+    line-height: 120%;
+  }
+
+  .rbccm-testimonials__image {
+    flex-shrink: 0;
+    margin: 0;
+    max-width: 400px;
+  }
+
+  .rbccm-testimonials__image img {
+    width: 400px;
+  }
+
+  /* Hide mobile arrows, show desktop arrows */
+  .rbccm-testimonials__arrows {
+    display: none;
+  }
+
+  .rbccm-testimonials__arrows-desktop {
+    display: block;
+  }
+
+  /* Controls positioning */
+  .rbccm-testimonials__controls {
+    align-items: center;
+    bottom: 20px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    left: calc(50% - 171.5px);
+    position: absolute;
+    width: 100%;
+    z-index: 10;
+  }
+
+  .rbccm-testimonials__dots {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .rbccm-testimonials__dots button {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    height: 12px;
+    width: 12px;
+  }
+
+  .rbccm-testimonials__dots .slick-active button {
+    background: #FFF;
+    border-color: #FFF;
+  }
+}
+
+/* Additional grid-based testimonials layout */
+@media (min-width: 992px) {
+  .rbccm-testimonials__container {
+    align-items: flex-end;
+    display: flex;
+    gap: 0 80px;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+  }
+
+  #testimonialTextSlider {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .rbccm-testimonials__controls {
+    grid-column: 1;
+    grid-row: 2;
+    justify-content: flex-start;
+    margin-top: 24px;
+  }
+
+  #testimonialImageSlider {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
