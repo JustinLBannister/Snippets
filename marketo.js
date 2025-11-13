@@ -1,27 +1,7 @@
-<section id="subscription" style="margin-top: 0;">
-  <div style="background-color: #e8eef1;">
-    <div id="subscribe-form" style="padding: 50px 0;">
-      <div class="container">
-        <div id="sub-content">
-          <div id="sub-pre">
-            <h2 style="margin-top: 0;">Stay in front of a rapidly evolving future</h2>
-            <p style="color: #002144;">
-              Get the latest RBC Imagine&trade; insights and reports delivered to your inbox.
-            </p>
-          </div>
-
-          <!-- Marketo form will be injected here -->
-          <div id="mkto_wrap"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 /* -----------------------------------------------------------
    Marketo Imagine Subscribe Form Loader (Form 1232)
    - Simple markup hook: #mkto_wrap
-   - Everything else is loaded via JS
+   - Everything else loaded via JS
 ----------------------------------------------------------- */
 (function () {
   var MARKETO = {
@@ -33,7 +13,6 @@
 
   function loadScript(src, id) {
     return new Promise(function (resolve, reject) {
-      // Already present?
       if (id && document.getElementById(id)) {
         resolve();
         return;
@@ -72,7 +51,6 @@
   }
 
   function injectLinkedInAutofill() {
-    // Create container once, if needed
     var subContent = document.getElementById('sub-content');
     if (!subContent) return;
 
@@ -83,10 +61,10 @@
       subContent.appendChild(autofillDiv);
     }
 
-    // LinkedIn autofill script
+    // Load LinkedIn Autofill script
     loadScript('https://www.linkedin.com/autofill/js/autofill.js', 'linkedin-autofill-js')
       .then(function () {
-        // Data-init script (this is how LinkedIn knows which form/fields to wire)
+        // Data-init script so LinkedIn knows which form/fields to wire
         var initScript = document.getElementById('linkedin-autofill-init');
         if (!initScript) {
           initScript = document.createElement('script');
@@ -101,7 +79,7 @@
           autofillDiv.appendChild(initScript);
         }
 
-        // Safari quirk: hide autofill UI if needed (copied from original logic)
+        // Safari quirk: hide autofill UI if needed
         var isSafari =
           navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
           navigator.userAgent &&
@@ -123,6 +101,12 @@
 
     ensureMktoForms2()
       .then(function (MktoForms2) {
+        // 👇 Create the placeholder <form> inside #mkto_wrap
+        container.innerHTML = ''; // clear out &nbsp;
+        var formShell = document.createElement('form');
+        formShell.id = 'mktoForm_' + MARKETO.formId;
+        container.appendChild(formShell);
+
         MktoForms2.loadForm(
           MARKETO.baseUrl,
           MARKETO.munchkinId,
@@ -172,9 +156,6 @@
                   'RBC Imagine&trade; <strong>Preparing for Hyperdrive</strong> report.</p>';
               }
 
-              // Optional: clear the form area
-              // container.innerHTML = '';
-
               // Prevent redirect to Marketo thank-you page
               return false;
             });
@@ -196,3 +177,23 @@
     initMarketoForm();
   }
 })();
+
+<section id="subscription" style="margin-top: 0px;">
+  <div style="background-color: #e8eef1;">
+    <div id="subscribe-form" style="padding: 50px 0;">
+      <div class="container">
+        <div id="sub-content">
+          <div id="sub-pre">
+            <h2 style="margin-top: 0;">Stay in front of a rapidly evolving future</h2>
+            <p style="color: #002144;">
+              Get the latest RBC Imagine&trade; insights and reports delivered to your inbox.
+            </p>
+          </div>
+
+          <!-- JS will inject <form id="mktoForm_1232"> here -->
+          <div id="mkto_wrap">&nbsp;</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
