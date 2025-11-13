@@ -1,13 +1,14 @@
 /* -----------------------------------------------------------
-   Marketo Imagine Subscribe Form Loader (Form 1232)
-   - Simple markup hook: #mkto_wrap
-   - Everything else loaded via JS
+   Marketo Imagine Subscribe Form Loader
+   Step 1: Form 1232  -> basic info + business email validation
+   Step 2: Form 1182  -> follow-up preferences
 ----------------------------------------------------------- */
 (function () {
   var MARKETO = {
     baseUrl: '//discover.rbccm.com',
     munchkinId: '577-RQV-784',
-    formId: 1232,
+    stepOneFormId: 1232,
+    stepTwoFormId: 1182,
     containerSelector: '#mkto_wrap'
   };
 
@@ -17,7 +18,6 @@
         resolve();
         return;
       }
-
       var s = document.createElement('script');
       if (id) s.id = id;
       s.src = src;
@@ -61,16 +61,14 @@
       subContent.appendChild(autofillDiv);
     }
 
-    // Load LinkedIn Autofill script
     loadScript('https://www.linkedin.com/autofill/js/autofill.js', 'linkedin-autofill-js')
       .then(function () {
-        // Data-init script so LinkedIn knows which form/fields to wire
         var initScript = document.getElementById('linkedin-autofill-init');
         if (!initScript) {
           initScript = document.createElement('script');
           initScript.id = 'linkedin-autofill-init';
           initScript.type = 'text/javascript';
-          initScript.setAttribute('data-form', 'mktoForm_' + MARKETO.formId);
+          initScript.setAttribute('data-form', 'mktoForm_' + MARKETO.stepOneFormId);
           initScript.setAttribute('data-field-firstname', 'FirstName');
           initScript.setAttribute('data-field-lastname', 'LastName');
           initScript.setAttribute('data-field-email', 'Email');
@@ -79,7 +77,6 @@
           autofillDiv.appendChild(initScript);
         }
 
-        // Safari quirk: hide autofill UI if needed
         var isSafari =
           navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
           navigator.userAgent &&
@@ -101,27 +98,23 @@
 
     ensureMktoForms2()
       .then(function (MktoForms2) {
-        // 👇 Create the placeholder <form> inside #mkto_wrap
-        container.innerHTML = ''; // clear out &nbsp;
-        var formShell = document.createElement('form');
-        formShell.id = 'mktoForm_' + MARKETO.formId;
-        container.appendChild(formShell);
-
+        // STEP 1: Load form 1232
         MktoForms2.loadForm(
           MARKETO.baseUrl,
           MARKETO.munchkinId,
-          MARKETO.formId,
-          function (form) {
+          MARKETO.stepOneFormId,
+          function (form1) {
+            // Move the generated form into #mkto_wrap (in case Marketo puts it elsewhere)
+            var formEl1 = form1.getFormElem()[0];
+            container.innerHTML = '';
+            container.appendChild(formEl1);
+
             // Make width flexible
             try {
-              if (form.getFormElem && form.getFormElem().css) {
-                form.getFormElem().css('width', 'auto');
-              }
-            } catch (e) {
-              // non-fatal
-            }
+              form1.getFormElem().css('width', 'auto');
+            } catch (e) {}
 
-            // Business-email-only validation
+            // Business-email-only validation for step 1
             var invalidDomains = ['@gmail.', '@hotmail.', '@live.', '@aol.', '@outlook.'];
 
             function isBusinessEmail(email) {
@@ -133,34 +126,70 @@
               return true;
             }
 
-            form.onValidate(function () {
-              var vals = form.vals();
+            form1.onValidate(function () {
+              var vals = form1.vals();
               var email = vals.Email;
 
               if (email && !isBusinessEmail(email)) {
-                form.submitable(false);
-                var emailElem = form.getFormElem().find('#Email');
-                form.showErrorMessage('Must be Business email.', emailElem);
+                form1.submitable(false);
+                var emailElem = form1.getFormElem().find('#Email');
+                form1.showErrorMessage('Must be Business email.', emailElem);
               } else {
-                form.submitable(true);
+                form1.submitable(true);
               }
             });
 
-            // On success: change copy and stay on page
-            form.onSuccess(function (vals, thankYouURL) {
+            // On success of step 1:
+            //  - update heading to "Thank you!"
+            //  - load form 1182 into #mkto_wrap
+            form1.onSuccess(function (vals, thankYouURL) {
+              var email = vals.Email;
+
+              // Update copy
               var subPre = document.getElementById('sub-pre');
               if (subPre) {
                 subPre.innerHTML =
                   '<h2 style="margin-top: 0;">Thank you!</h2>' +
-                  '<p style="color: #002144;">We&#39;ll send you an email with a link to download your ' +
+                  '<p style="color: #002144;">We\'ll send you an email with a link to download your ' +
                   'RBC Imagine&trade; <strong>Preparing for Hyperdrive</strong> report.</p>';
               }
 
-              // Prevent redirect to Marketo thank-you page
+              // Clear first form and load step 2 (1182)
+              container.innerHTML = '';
+
+              MktoForms2.loadForm(
+                MARKETO.baseUrl,
+                MARKETO.munchkinId,
+                MARKETO.stepTwoFormId,
+                function (form2) {
+                  var formEl2 = form2.getFormElem()[0];
+                  container.appendChild(formEl2);
+
+                  try {
+                    form2.getFormElem().css('width', 'auto');
+                  } catch (e) {}
+
+                  // Pass email from step 1 into hidden field on step 2
+                  if (email) {
+                    form2.addHiddenFields({
+                      Email: email
+                    });
+                  }
+
+                  // Final success for step 2: stay on page, do nothing fancy
+                  form2.onSuccess(function (vals2, thankYou2) {
+                    // ORIGINAL onFinalSuccess cleared mkto_wrap; if you want that:
+                    // container.innerHTML = '';
+                    return false;
+                  });
+                }
+              );
+
+              // Do NOT go to Marketo thank-you URL
               return false;
             });
 
-            // After form exists, wire up LinkedIn Autofill
+            // Wire LinkedIn autofill to step 1
             injectLinkedInAutofill();
           }
         );
@@ -170,7 +199,6 @@
       });
   }
 
-  // Run on DOM ready, without touching your other listeners
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initMarketoForm);
   } else {
