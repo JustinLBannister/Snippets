@@ -4,8 +4,8 @@
    - Testimonials Slick carousel
    - Brightcove autoloader
    - Marketo multi-step forms
-   - Hero download modal (with jump fix)
-   - Hero background teaser video (with fade)
+   - Hero download modal
+   - Hero background teaser video (with optional fade)
    ========================================= */
 
 /* -----------------------------------------------------------
@@ -15,10 +15,6 @@ document.addEventListener('DOMContentLoaded', function () {
   var tabs = document.querySelectorAll('.rbccm-themes__tab');
   var panels = document.querySelectorAll('.rbccm-themes__panel');
   var panelsContainer = document.querySelector('.rbccm-themes__panels');
-
-  if (!tabs.length || !panels.length) {
-    return;
-  }
 
   function isDesktop() {
     return window.matchMedia('(min-width: 992px)').matches;
@@ -30,13 +26,13 @@ document.addEventListener('DOMContentLoaded', function () {
     var targetPanel = clickedTab.getAttribute('data-panel');
 
     if (isDesktop()) {
-      // Desktop: classic tab behavior
-      tabs.forEach(function (tab) {
+      // Desktop: traditional tab behavior (single active)
+      Array.prototype.forEach.call(tabs, function (tab) {
         tab.classList.remove('is-active');
         tab.setAttribute('aria-expanded', 'false');
       });
 
-      panels.forEach(function (panel) {
+      Array.prototype.forEach.call(panels, function (panel) {
         panel.classList.remove('is-active');
       });
 
@@ -50,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
         activePanel.classList.add('is-active');
       }
     } else {
-      // Mobile: accordion behavior
+      // Mobile: accordion-style toggle; can open/close individually
       var isActive = clickedTab.classList.contains('is-active');
 
       if (isActive) {
@@ -60,52 +56,51 @@ document.addEventListener('DOMContentLoaded', function () {
         clickedTab.classList.add('is-active');
         clickedTab.setAttribute('aria-expanded', 'true');
       }
+      // Panels on mobile are handled by CSS using the adjacent sibling selector
     }
   }
 
   function reorganizeForDesktop() {
     if (isDesktop() && panelsContainer) {
-      panels.forEach(function (panel) {
+      // Move all panels into the shared container on desktop
+      Array.prototype.forEach.call(panels, function (panel) {
         panelsContainer.appendChild(panel);
       });
     } else {
-      tabs.forEach(function (tab, index) {
+      // On mobile, each panel follows its tab
+      Array.prototype.forEach.call(tabs, function (tab, index) {
         if (panels[index]) {
-          tab.after(panels[index]);
+          tab.parentNode.insertBefore(panels[index], tab.nextSibling);
         }
       });
     }
   }
 
-  function setDesktopDefaultState() {
-    // Clear everything
-    tabs.forEach(function (tab) {
+  function activateFirstDesktopTab() {
+    if (!tabs.length || !panels.length) return;
+
+    // Clear everything first
+    Array.prototype.forEach.call(tabs, function (tab) {
       tab.classList.remove('is-active');
       tab.setAttribute('aria-expanded', 'false');
     });
-    panels.forEach(function (panel) {
+    Array.prototype.forEach.call(panels, function (panel) {
       panel.classList.remove('is-active');
     });
 
-    // Activate first tab + first panel only
+    // Activate the first tab + its panel
     var firstTab = tabs[0];
-    var firstPanel = panels[0];
-    if (firstTab && firstPanel) {
-      firstTab.classList.add('is-active');
-      firstTab.setAttribute('aria-expanded', 'true');
+    var firstPanelKey = firstTab.getAttribute('data-panel');
+    var firstPanel = document.querySelector(
+      '[data-panel="' + firstPanelKey + '"].rbccm-themes__panel'
+    ) || panels[0];
+
+    firstTab.classList.add('is-active');
+    firstTab.setAttribute('aria-expanded', 'true');
+
+    if (firstPanel) {
       firstPanel.classList.add('is-active');
     }
-  }
-
-  function setMobileDefaultState() {
-    // Mobile: all tabs/panels inactive by default
-    tabs.forEach(function (tab) {
-      tab.classList.remove('is-active');
-      tab.setAttribute('aria-expanded', 'false');
-    });
-    panels.forEach(function (panel) {
-      panel.classList.remove('is-active');
-    });
   }
 
   function handleViewportChange() {
@@ -118,41 +113,61 @@ document.addEventListener('DOMContentLoaded', function () {
     reorganizeForDesktop();
 
     if (currentViewportState === 'desktop') {
-      // Desktop: ensure we have exactly one active (first)
-      setDesktopDefaultState();
+      // Going MOBILE -> DESKTOP
+      // Ensure exactly ONE active tab (the first in DOM order)
+      activateFirstDesktopTab();
     } else {
-      // Mobile: everything collapsed
-      setMobileDefaultState();
+      // Going DESKTOP -> MOBILE
+      // Clear all active states so nothing is open by default
+      Array.prototype.forEach.call(tabs, function (tab) {
+        tab.classList.remove('is-active');
+        tab.setAttribute('aria-expanded', 'false');
+      });
+      Array.prototype.forEach.call(panels, function (panel) {
+        panel.classList.remove('is-active');
+      });
+      // On mobile, accordion open/close is purely user-driven
     }
 
     previousViewportState = currentViewportState;
   }
 
-  // Bind clicks
-  tabs.forEach(function (tab) {
+  // Tab click wiring
+  Array.prototype.forEach.call(tabs, function (tab) {
     tab.addEventListener('click', function (e) {
       e.preventDefault();
-      handleTabClick(this);
+      handleTabClick(tab);
     });
   });
 
-  // Initial layout/state
+  // Initial layout
   reorganizeForDesktop();
+
+  // Initial active state:
   if (isDesktop()) {
-    setDesktopDefaultState();
+    // On desktop, guarantee one active tab + panel
+    activateFirstDesktopTab();
   } else {
-    setMobileDefaultState();
+    // On mobile, all tabs start inactive
+    Array.prototype.forEach.call(tabs, function (tab) {
+      tab.classList.remove('is-active');
+      tab.setAttribute('aria-expanded', 'false');
+    });
+    Array.prototype.forEach.call(panels, function (panel) {
+      panel.classList.remove('is-active');
+    });
   }
 
-  // Resize handler
+  // Resize handling with a simple debounce
   var resizing = false;
   window.addEventListener('resize', function () {
-    if (resizing) return;
-    resizing = true;
-    requestAnimationFrame(function () {
-      handleViewportChange();
-      resizing = false;
-    });
+    if (!resizing) {
+      resizing = true;
+      requestAnimationFrame(function () {
+        handleViewportChange();
+        resizing = false;
+      });
+    }
   });
 });
 
@@ -293,17 +308,21 @@ $(document).ready(function () {
     var nodes = document.querySelectorAll('[data-bc-video-id]');
     if (!nodes.length) return;
 
-    var a = nodes[0].getAttribute('data-bc-account') || DEFAULTS.account;
-    var p = nodes[0].getAttribute('data-bc-player') || DEFAULTS.player;
-    var e = nodes[0].getAttribute('data-bc-embed') || DEFAULTS.embed;
+    var a =
+      nodes[0].getAttribute('data-bc-account') || DEFAULTS.account;
+    var p =
+      nodes[0].getAttribute('data-bc-player') || DEFAULTS.player;
+    var e =
+      nodes[0].getAttribute('data-bc-embed') || DEFAULTS.embed;
 
     ensureBrightcove({ account: a, player: p, embed: e })
       .then(function () {
-        nodes.forEach(function (el) {
+        Array.prototype.forEach.call(nodes, function (el) {
           // Remove TinyMCE script placeholders if present
-          el.querySelectorAll(
+          var scriptPlaceholders = el.querySelectorAll(
             'img.mce-object-script, [data-mce-object="script"]'
-          ).forEach(function (n) {
+          );
+          Array.prototype.forEach.call(scriptPlaceholders, function (n) {
             n.remove();
           });
 
@@ -342,12 +361,16 @@ $(document).ready(function () {
               window.videojs(v);
             }
           } catch (err) {
-            console.error('Brightcove init failed:', err);
+            if (window.console && console.error) {
+              console.error('Brightcove init failed:', err);
+            }
           }
         });
       })
       .catch(function (err) {
-        console.error(err);
+        if (window.console && console.error) {
+          console.error(err);
+        }
       });
   }
 
@@ -386,7 +409,9 @@ $(document).ready(function () {
         resolve();
       };
       s.onerror = function () {
-        console.error('Failed to load script:', src);
+        if (window.console && console.error) {
+          console.error('Failed to load script:', src);
+        }
         reject(new Error('Failed to load ' + src));
       };
       (document.head || document.body).appendChild(s);
@@ -435,7 +460,9 @@ $(document).ready(function () {
       'linkedin-autofill-js'
     )
       .then(function () {
-        var initScript = document.getElementById('linkedin-autofill-init');
+        var initScript = document.getElementById(
+          'linkedin-autofill-init'
+        );
         if (!initScript) {
           initScript = document.createElement('script');
           initScript.id = 'linkedin-autofill-init';
@@ -470,7 +497,9 @@ $(document).ready(function () {
         }
       })
       .catch(function (err) {
-        console.error('LinkedIn Autofill load error:', err);
+        if (window.console && console.error) {
+          console.error('LinkedIn Autofill load error:', err);
+        }
       });
   }
 
@@ -534,7 +563,7 @@ $(document).ready(function () {
               if (subPre) {
                 subPre.innerHTML =
                   '<h2 style="margin-top: 0;">Thank you!</h2>' +
-                  "<p style=\"color: #002144;\">We'll send you an email with a link to download your " +
+                  '<p style="color: #002144;">We\'ll send you an email with a link to download your ' +
                   'RBC Imagine&trade; <strong>Preparing for Hyperdrive</strong> report.</p>';
               }
 
@@ -572,7 +601,9 @@ $(document).ready(function () {
         );
       })
       .catch(function (err) {
-        console.error('Marketo init error:', err);
+        if (window.console && console.error) {
+          console.error('Marketo init error:', err);
+        }
       });
   }
 
@@ -585,7 +616,6 @@ $(document).ready(function () {
 
 /* -----------------------------------------------------------
    HERO DOWNLOAD MODAL + MARKETO 1225
-   - Adds a small "no 19px jump" fix for the hero area
 ----------------------------------------------------------- */
 (function ($) {
   var MARKETO = {
@@ -593,6 +623,48 @@ $(document).ready(function () {
     munchkinId: '577-RQV-784',
     formId: 1225
   };
+
+  // Inject CSS to prevent body padding-right jump on modal-open
+  (function ensureModalScrollFixRule() {
+    var existing = document.getElementById('rbccm-modal-scrollfix-style');
+    if (existing) return;
+
+    var style = document.createElement('style');
+    style.id = 'rbccm-modal-scrollfix-style';
+    style.type = 'text/css';
+    style.appendChild(
+      document.createTextNode('body.modal-open { padding-right: 0 !important; }')
+    );
+    document.head.appendChild(style);
+  })();
+
+  function loadMktoScript() {
+    return new Promise(function (resolve, reject) {
+      if (window.MktoForms2) return resolve();
+
+      var s = document.createElement('script');
+      s.src = MARKETO.baseUrl + '/js/forms2/js/forms2.min.js';
+      s.async = true;
+
+      s.onload = function () {
+        var start = Date.now();
+        (function check() {
+          if (window.MktoForms2) return resolve();
+          if (Date.now() - start > 8000) {
+            return reject(
+              new Error('MktoForms2 load timeout')
+            );
+          }
+          requestAnimationFrame(check);
+        })();
+      };
+
+      s.onerror = function () {
+        reject(new Error('Failed to load Mkto script'));
+      };
+      document.head.appendChild(s);
+    });
+  }
 
   function businessEmailCheck(form) {
     var invalid = [
@@ -621,34 +693,6 @@ $(document).ready(function () {
       } else {
         form.submitable(true);
       }
-    });
-  }
-
-  function loadMktoScript() {
-    return new Promise(function (resolve, reject) {
-      if (window.MktoForms2) return resolve();
-
-      var s = document.createElement('script');
-      s.src = MARKETO.baseUrl + '/js/forms2/js/forms2.min.js';
-      s.async = true;
-
-      s.onload = function () {
-        var start = Date.now();
-        (function check() {
-          if (window.MktoForms2) return resolve();
-          if (Date.now() - start > 8000) {
-            return reject(
-              new Error('MktoForms2 load timeout')
-            );
-          }
-          requestAnimationFrame(check);
-        })();
-      };
-
-      s.onerror = function () {
-        reject(new Error('Failed to load Mkto script'));
-      };
-      document.head.appendChild(s);
     });
   }
 
@@ -693,42 +737,9 @@ $(document).ready(function () {
     );
   }
 
-  // Small helper: counteract body padding on hero to avoid visible "jump"
-  function applyHeroShiftFix() {
-    var body = document.body;
-    var hero = document.getElementById('imagine-hero');
-    if (!body || !hero) return;
-
-    var pr = window.getComputedStyle(body).paddingRight || '0';
-    var value = parseFloat(pr) || 0;
-    hero.dataset.prevMarginRight = hero.style.marginRight || '';
-    if (value > 0) {
-      hero.style.marginRight = '-' + value + 'px';
-    }
-  }
-
-  function clearHeroShiftFix() {
-    var hero = document.getElementById('imagine-hero');
-    if (!hero) return;
-    if (hero.dataset.prevMarginRight !== undefined) {
-      hero.style.marginRight = hero.dataset.prevMarginRight;
-      delete hero.dataset.prevMarginRight;
-    } else {
-      hero.style.marginRight = '';
-    }
-  }
-
   function initDownloadModal() {
     var $modal = $('#download');
     var formLoaded = false;
-
-    // Attach once: keep hero visually steady while modal is open
-    $modal.on('shown.bs.modal', function () {
-      applyHeroShiftFix();
-    });
-    $modal.on('hidden.bs.modal', function () {
-      clearHeroShiftFix();
-    });
 
     $(document).on(
       'click',
@@ -744,8 +755,6 @@ $(document).ready(function () {
           var container = document.getElementById(
             'download-form-container'
           );
-
-          if (!container) return;
 
           var formShell = document.createElement('form');
           formShell.id = 'mktoForm_' + MARKETO.formId;
@@ -776,33 +785,42 @@ $(document).ready(function () {
 /* -----------------------------------------------------------
    IMAGINE HERO BACKGROUND VIDEO (TEASER ONLY)
    - Injects teaser into #imagine-teaser-mount
-   - Optional pauseAfterSeconds (set number or null)
-   - Fades out .rbccm-hero__video-bg so CSS hero bg shows
+   - pauseAfterSeconds can be fractional (e.g., 2.5)
+   - Fades out the video overlay to reveal CSS background
 ----------------------------------------------------------- */
 (function () {
   var HERO_VIDEO_CONFIG = {
-    // Set to a number (e.g., 6) to stop early,
-    // or null to fade when the video naturally ends.
-    pauseAfterSeconds: null
+    // Number of seconds to stop early (can be fractional, e.g., 2.5)
+    // Set to null to let the video play to the end.
+    pauseAfterSeconds: null,
+
+    // If true: fade overlay out smoothly.
+    // If false: hide overlay immediately (no fade).
+    fadeInImage: false
   };
 
-  function fadeOutVideoBg(videoBg, video) {
-    if (!videoBg) return;
+  function fadeOutOverlay(video, overlay) {
+    if (!overlay) return;
 
-    // Prepare transition
-    if (!videoBg.style.transition) {
-      videoBg.style.transition = 'opacity 800ms ease';
-    }
-    if (video) {
-      try {
-        video.pause();
-      } catch (e) {}
+    if (HERO_VIDEO_CONFIG.fadeInImage === false) {
+      // Hard switch: no animation
+      if (video) {
+        try { video.pause(); } catch (e) {}
+      }
+      overlay.style.display = 'none';
+      return;
     }
 
-    // Fade to transparent so underlying CSS background shows
-    requestAnimationFrame(function () {
-      videoBg.style.opacity = '0';
-    });
+    // Smooth fade
+    overlay.style.transition = 'opacity 800ms ease';
+    overlay.style.opacity = '0';
+
+    setTimeout(function () {
+      if (video) {
+        try { video.pause(); } catch (e) {}
+      }
+      overlay.style.display = 'none';
+    }, 850);
   }
 
   function initImagineHeroTeaser() {
@@ -811,19 +829,10 @@ $(document).ready(function () {
 
     if (!hero || !teaserMount) return;
 
-    // The wrapper that sits over the CSS background
-    var videoBg = hero.querySelector('.rbccm-hero__video-bg');
-    if (videoBg) {
-      videoBg.style.opacity = '1';
-      if (!videoBg.style.position) {
-        videoBg.style.position = 'absolute';
-        videoBg.style.inset = '0';
-        videoBg.style.overflow = 'hidden';
-      }
-    }
-
-    // Avoid double-injecting
+    // Make sure we don't double-inject
     if (teaserMount.querySelector('video')) return;
+
+    var overlay = hero.querySelector('.rbccm-hero__video-bg') || teaserMount;
 
     var video = document.createElement('video');
     video.id = 'imagine-teaser-video';
@@ -833,6 +842,9 @@ $(document).ready(function () {
     video.muted = true;
     video.playsInline = true;
 
+    // Ensure it covers the mount/overlay fully
+    video.style.position = 'absolute';
+    video.style.inset = '0';
     video.style.width = '100%';
     video.style.height = '100%';
     video.style.objectFit = 'cover';
@@ -848,7 +860,7 @@ $(document).ready(function () {
     function handleFinished() {
       video.removeEventListener('ended', handleFinished);
       video.removeEventListener('timeupdate', checkPausePoint);
-      fadeOutVideoBg(videoBg, video);
+      fadeOutOverlay(video, overlay);
     }
 
     function checkPausePoint() {
@@ -868,9 +880,8 @@ $(document).ready(function () {
       video.addEventListener('ended', handleFinished);
     }
 
-    // Best-effort autoplay
     video.play().catch(function () {
-      // ignore autoplay failures
+      // Autoplay restrictions – if it fails, we just leave the overlay as-is.
     });
   }
 
