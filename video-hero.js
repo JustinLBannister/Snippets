@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var previousViewportState = isDesktop() ? 'desktop' : 'mobile';
 
   function handleTabClick(clickedTab) {
-    var targetPanel = clickedTab.dataset.panel;
+    var targetPanel = clickedTab.getAttribute('data-panel');
 
     if (isDesktop()) {
       // Desktop: tab behavior
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var tabToActivate = activeTabs.length > 0 ? activeTabs[0] : tabs[0];
         if (tabToActivate) {
-          var targetPanel = tabToActivate.dataset.panel;
+          var targetPanel = tabToActivate.getAttribute('data-panel');
           tabToActivate.classList.add('is-active');
           tabToActivate.setAttribute('aria-expanded', 'true');
 
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
   } else if (isDesktop()) {
     var activeTab = document.querySelector('.rbccm-themes__tab.is-active');
     if (activeTab) {
-      var targetPanel = activeTab.dataset.panel;
+      var targetPanel = activeTab.getAttribute('data-panel');
       var activePanel = document.querySelector(
         '[data-panel="' + targetPanel + '"].rbccm-themes__panel'
       );
@@ -761,58 +761,34 @@ $(document).ready(function () {
    IMAGINE HERO BACKGROUND VIDEO (TEASER ONLY)
    - Injects teaser into #imagine-teaser-mount
    - Optional pauseAfterSeconds
-   - Fades into static hero image when finished
+   - Fades out .rbccm-hero__video-bg to reveal CSS background
 ----------------------------------------------------------- */
 (function () {
   var HERO_VIDEO_CONFIG = {
     // Set to a number of seconds (e.g., 6) to stop early,
     // or null to fade when the video ends.
-    pauseAfterSeconds: null,
-    fallbackImageUrl:
-      '/assets/rbccm/images/imagine-images/imagine-2025-hero.jpg'
+    pauseAfterSeconds: null
   };
 
-  function fadeToImage(video, mount) {
-    if (!mount) return;
+  function fadeOutVideoBg(videoBg, video) {
+    if (!videoBg) return;
 
-    var fallback = mount.querySelector(
-      '.rbccm-hero__teaser-fallback'
-    );
-    if (!fallback) {
-      fallback = document.createElement('div');
-      fallback.className = 'rbccm-hero__teaser-fallback';
-      fallback.style.position = 'absolute';
-      fallback.style.inset = '0';
-      fallback.style.backgroundImage =
-        'url(' + HERO_VIDEO_CONFIG.fallbackImageUrl + ')';
-      fallback.style.backgroundSize = 'cover';
-      fallback.style.backgroundPosition = 'center center';
-      fallback.style.backgroundRepeat = 'no-repeat';
-      fallback.style.opacity = '0';
-      fallback.style.transition = 'opacity 800ms ease';
-      mount.appendChild(fallback);
+    // Ensure we have a transition for the fade
+    if (!videoBg.style.transition) {
+      videoBg.style.transition = 'opacity 800ms ease';
     }
-
-    if (!mount.style.position) {
-      mount.style.position = 'absolute';
-      mount.style.inset = '0';
-      mount.style.overflow = 'hidden';
-    }
+    videoBg.style.opacity = '0';
 
     if (video) {
-      video.style.transition = 'opacity 800ms ease';
-      video.style.opacity = '0';
-
-      setTimeout(function () {
-        try {
-          video.pause();
-        } catch (e) {}
-      }, 850);
+      try {
+        video.pause();
+      } catch (e) {}
     }
 
-    requestAnimationFrame(function () {
-      fallback.style.opacity = '1';
-    });
+    // Optionally hide after fade for performance
+    setTimeout(function () {
+      videoBg.style.display = 'none';
+    }, 900);
   }
 
   function initImagineHeroTeaser() {
@@ -821,8 +797,12 @@ $(document).ready(function () {
 
     if (!hero || !teaserMount) return;
 
+    // If video already injected, don't double-inject
     if (teaserMount.querySelector('video')) return;
 
+    var videoBg = hero.querySelector('.rbccm-hero__video-bg');
+
+    // Create video element
     var video = document.createElement('video');
     video.id = 'imagine-teaser-video';
     video.className = 'rbccm-hero__video-teaser';
@@ -831,8 +811,7 @@ $(document).ready(function () {
     video.muted = true;
     video.playsInline = true;
 
-    video.style.position = 'absolute';
-    video.style.inset = '0';
+    // Make sure it fills the hero container
     video.style.width = '100%';
     video.style.height = '100%';
     video.style.objectFit = 'cover';
@@ -848,7 +827,8 @@ $(document).ready(function () {
     function handleFinished() {
       video.removeEventListener('ended', handleFinished);
       video.removeEventListener('timeupdate', checkPausePoint);
-      fadeToImage(video, teaserMount);
+      video.removeEventListener('error', handleFinished);
+      fadeOutVideoBg(videoBg, video);
     }
 
     function checkPausePoint() {
@@ -868,8 +848,13 @@ $(document).ready(function () {
       video.addEventListener('ended', handleFinished);
     }
 
+    // If video fails to load or play, just fade out the bg so the static image shows
+    video.addEventListener('error', handleFinished);
+
+    // Best-effort autoplay (ignore restrictions)
     video.play().catch(function () {
-      // Autoplay restrictions: ignore
+      // If autoplay is blocked, you *might* want to keep the teaser visible,
+      // but we won't force fade here; leave it as a static poster-like frame.
     });
   }
 
