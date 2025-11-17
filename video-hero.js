@@ -4,7 +4,7 @@
    - Testimonials Slick carousel
    - Brightcove autoloader
    - Marketo multi-step forms
-   - Hero download modal
+   - Hero download modal (with jump fix)
    - Hero background teaser video (with fade)
    ========================================= */
 
@@ -15,16 +15,22 @@ document.addEventListener('DOMContentLoaded', function () {
   var tabs = document.querySelectorAll('.rbccm-themes__tab');
   var panels = document.querySelectorAll('.rbccm-themes__panel');
   var panelsContainer = document.querySelector('.rbccm-themes__panels');
-  var isDesktop = function () {
+
+  if (!tabs.length || !panels.length) {
+    return;
+  }
+
+  function isDesktop() {
     return window.matchMedia('(min-width: 992px)').matches;
-  };
+  }
+
   var previousViewportState = isDesktop() ? 'desktop' : 'mobile';
 
   function handleTabClick(clickedTab) {
     var targetPanel = clickedTab.getAttribute('data-panel');
 
     if (isDesktop()) {
-      // Desktop: tab behavior
+      // Desktop: classic tab behavior
       tabs.forEach(function (tab) {
         tab.classList.remove('is-active');
         tab.setAttribute('aria-expanded', 'false');
@@ -71,57 +77,58 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function handleViewportChange() {
-    var currentViewportState = isDesktop() ? 'desktop' : 'mobile';
+  function setDesktopDefaultState() {
+    // Clear everything
+    tabs.forEach(function (tab) {
+      tab.classList.remove('is-active');
+      tab.setAttribute('aria-expanded', 'false');
+    });
+    panels.forEach(function (panel) {
+      panel.classList.remove('is-active');
+    });
 
-    if (previousViewportState !== currentViewportState) {
-      reorganizeForDesktop();
-
-      if (currentViewportState === 'desktop') {
-        var activeTabs = Array.prototype.slice
-          .call(tabs)
-          .filter(function (tab) {
-            return tab.classList.contains('is-active');
-          });
-
-        tabs.forEach(function (tab) {
-          tab.classList.remove('is-active');
-          tab.setAttribute('aria-expanded', 'false');
-        });
-        panels.forEach(function (panel) {
-          panel.classList.remove('is-active');
-        });
-
-        var tabToActivate = activeTabs.length > 0 ? activeTabs[0] : tabs[0];
-        if (tabToActivate) {
-          var targetPanel = tabToActivate.getAttribute('data-panel');
-          tabToActivate.classList.add('is-active');
-          tabToActivate.setAttribute('aria-expanded', 'true');
-
-          var activePanel = document.querySelector(
-            '[data-panel="' + targetPanel + '"].rbccm-themes__panel'
-          );
-          if (activePanel) {
-            activePanel.classList.add('is-active');
-          }
-        }
-      } else {
-        var activeTab = document.querySelector('.rbccm-themes__tab.is-active');
-
-        panels.forEach(function (panel) {
-          panel.classList.remove('is-active');
-        });
-
-        if (!activeTab && tabs[0]) {
-          tabs[0].classList.add('is-active');
-          tabs[0].setAttribute('aria-expanded', 'true');
-        }
-      }
-
-      previousViewportState = currentViewportState;
+    // Activate first tab + first panel only
+    var firstTab = tabs[0];
+    var firstPanel = panels[0];
+    if (firstTab && firstPanel) {
+      firstTab.classList.add('is-active');
+      firstTab.setAttribute('aria-expanded', 'true');
+      firstPanel.classList.add('is-active');
     }
   }
 
+  function setMobileDefaultState() {
+    // Mobile: all tabs/panels inactive by default
+    tabs.forEach(function (tab) {
+      tab.classList.remove('is-active');
+      tab.setAttribute('aria-expanded', 'false');
+    });
+    panels.forEach(function (panel) {
+      panel.classList.remove('is-active');
+    });
+  }
+
+  function handleViewportChange() {
+    var currentViewportState = isDesktop() ? 'desktop' : 'mobile';
+
+    if (previousViewportState === currentViewportState) {
+      return;
+    }
+
+    reorganizeForDesktop();
+
+    if (currentViewportState === 'desktop') {
+      // Desktop: ensure we have exactly one active (first)
+      setDesktopDefaultState();
+    } else {
+      // Mobile: everything collapsed
+      setMobileDefaultState();
+    }
+
+    previousViewportState = currentViewportState;
+  }
+
+  // Bind clicks
   tabs.forEach(function (tab) {
     tab.addEventListener('click', function (e) {
       e.preventDefault();
@@ -129,39 +136,23 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  // Initial layout/state
   reorganizeForDesktop();
-
-  if (!document.querySelector('.rbccm-themes__tab.is-active')) {
-    if (tabs[0]) {
-      tabs[0].classList.add('is-active');
-      tabs[0].setAttribute('aria-expanded', 'true');
-
-      if (isDesktop() && panels[0]) {
-        panels[0].classList.add('is-active');
-      }
-    }
-  } else if (isDesktop()) {
-    var activeTab = document.querySelector('.rbccm-themes__tab.is-active');
-    if (activeTab) {
-      var targetPanel = activeTab.getAttribute('data-panel');
-      var activePanel = document.querySelector(
-        '[data-panel="' + targetPanel + '"].rbccm-themes__panel'
-      );
-      if (activePanel) {
-        activePanel.classList.add('is-active');
-      }
-    }
+  if (isDesktop()) {
+    setDesktopDefaultState();
+  } else {
+    setMobileDefaultState();
   }
 
+  // Resize handler
   var resizing = false;
   window.addEventListener('resize', function () {
-    if (!resizing) {
-      resizing = true;
-      requestAnimationFrame(function () {
-        handleViewportChange();
-        resizing = false;
-      });
-    }
+    if (resizing) return;
+    resizing = true;
+    requestAnimationFrame(function () {
+      handleViewportChange();
+      resizing = false;
+    });
   });
 });
 
@@ -302,12 +293,9 @@ $(document).ready(function () {
     var nodes = document.querySelectorAll('[data-bc-video-id]');
     if (!nodes.length) return;
 
-    var a =
-      nodes[0].getAttribute('data-bc-account') || DEFAULTS.account;
-    var p =
-      nodes[0].getAttribute('data-bc-player') || DEFAULTS.player;
-    var e =
-      nodes[0].getAttribute('data-bc-embed') || DEFAULTS.embed;
+    var a = nodes[0].getAttribute('data-bc-account') || DEFAULTS.account;
+    var p = nodes[0].getAttribute('data-bc-player') || DEFAULTS.player;
+    var e = nodes[0].getAttribute('data-bc-embed') || DEFAULTS.embed;
 
     ensureBrightcove({ account: a, player: p, embed: e })
       .then(function () {
@@ -364,10 +352,7 @@ $(document).ready(function () {
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener(
-      'DOMContentLoaded',
-      initBrightcoveContainers
-    );
+    document.addEventListener('DOMContentLoaded', initBrightcoveContainers);
   } else {
     initBrightcoveContainers();
   }
@@ -450,9 +435,7 @@ $(document).ready(function () {
       'linkedin-autofill-js'
     )
       .then(function () {
-        var initScript = document.getElementById(
-          'linkedin-autofill-init'
-        );
+        var initScript = document.getElementById('linkedin-autofill-init');
         if (!initScript) {
           initScript = document.createElement('script');
           initScript.id = 'linkedin-autofill-init';
@@ -594,10 +577,7 @@ $(document).ready(function () {
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener(
-      'DOMContentLoaded',
-      initMarketoForm
-    );
+    document.addEventListener('DOMContentLoaded', initMarketoForm);
   } else {
     initMarketoForm();
   }
@@ -605,6 +585,7 @@ $(document).ready(function () {
 
 /* -----------------------------------------------------------
    HERO DOWNLOAD MODAL + MARKETO 1225
+   - Adds a small "no 19px jump" fix for the hero area
 ----------------------------------------------------------- */
 (function ($) {
   var MARKETO = {
@@ -612,34 +593,6 @@ $(document).ready(function () {
     munchkinId: '577-RQV-784',
     formId: 1225
   };
-
-  function loadMktoScript() {
-    return new Promise(function (resolve, reject) {
-      if (window.MktoForms2) return resolve();
-
-      var s = document.createElement('script');
-      s.src = MARKETO.baseUrl + '/js/forms2/js/forms2.min.js';
-      s.async = true;
-
-      s.onload = function () {
-        var start = Date.now();
-        (function check() {
-          if (window.MktoForms2) return resolve();
-          if (Date.now() - start > 8000) {
-            return reject(
-              new Error('MktoForms2 load timeout')
-            );
-          }
-          requestAnimationFrame(check);
-        })();
-      };
-
-      s.onerror = function () {
-        reject(new Error('Failed to load Mkto script'));
-      };
-      document.head.appendChild(s);
-    });
-  }
 
   function businessEmailCheck(form) {
     var invalid = [
@@ -668,6 +621,34 @@ $(document).ready(function () {
       } else {
         form.submitable(true);
       }
+    });
+  }
+
+  function loadMktoScript() {
+    return new Promise(function (resolve, reject) {
+      if (window.MktoForms2) return resolve();
+
+      var s = document.createElement('script');
+      s.src = MARKETO.baseUrl + '/js/forms2/js/forms2.min.js';
+      s.async = true;
+
+      s.onload = function () {
+        var start = Date.now();
+        (function check() {
+          if (window.MktoForms2) return resolve();
+          if (Date.now() - start > 8000) {
+            return reject(
+              new Error('MktoForms2 load timeout')
+            );
+          }
+          requestAnimationFrame(check);
+        })();
+      };
+
+      s.onerror = function () {
+        reject(new Error('Failed to load Mkto script'));
+      };
+      document.head.appendChild(s);
     });
   }
 
@@ -712,9 +693,42 @@ $(document).ready(function () {
     );
   }
 
+  // Small helper: counteract body padding on hero to avoid visible "jump"
+  function applyHeroShiftFix() {
+    var body = document.body;
+    var hero = document.getElementById('imagine-hero');
+    if (!body || !hero) return;
+
+    var pr = window.getComputedStyle(body).paddingRight || '0';
+    var value = parseFloat(pr) || 0;
+    hero.dataset.prevMarginRight = hero.style.marginRight || '';
+    if (value > 0) {
+      hero.style.marginRight = '-' + value + 'px';
+    }
+  }
+
+  function clearHeroShiftFix() {
+    var hero = document.getElementById('imagine-hero');
+    if (!hero) return;
+    if (hero.dataset.prevMarginRight !== undefined) {
+      hero.style.marginRight = hero.dataset.prevMarginRight;
+      delete hero.dataset.prevMarginRight;
+    } else {
+      hero.style.marginRight = '';
+    }
+  }
+
   function initDownloadModal() {
     var $modal = $('#download');
     var formLoaded = false;
+
+    // Attach once: keep hero visually steady while modal is open
+    $modal.on('shown.bs.modal', function () {
+      applyHeroShiftFix();
+    });
+    $modal.on('hidden.bs.modal', function () {
+      clearHeroShiftFix();
+    });
 
     $(document).on(
       'click',
@@ -730,6 +744,8 @@ $(document).ready(function () {
           var container = document.getElementById(
             'download-form-container'
           );
+
+          if (!container) return;
 
           var formShell = document.createElement('form');
           formShell.id = 'mktoForm_' + MARKETO.formId;
@@ -760,35 +776,33 @@ $(document).ready(function () {
 /* -----------------------------------------------------------
    IMAGINE HERO BACKGROUND VIDEO (TEASER ONLY)
    - Injects teaser into #imagine-teaser-mount
-   - Optional pauseAfterSeconds
-   - Fades out .rbccm-hero__video-bg to reveal CSS background
+   - Optional pauseAfterSeconds (set number or null)
+   - Fades out .rbccm-hero__video-bg so CSS hero bg shows
 ----------------------------------------------------------- */
 (function () {
   var HERO_VIDEO_CONFIG = {
-    // Set to a number of seconds (e.g., 6) to stop early,
-    // or null to fade when the video ends.
+    // Set to a number (e.g., 6) to stop early,
+    // or null to fade when the video naturally ends.
     pauseAfterSeconds: null
   };
 
   function fadeOutVideoBg(videoBg, video) {
     if (!videoBg) return;
 
-    // Ensure we have a transition for the fade
+    // Prepare transition
     if (!videoBg.style.transition) {
       videoBg.style.transition = 'opacity 800ms ease';
     }
-    videoBg.style.opacity = '0';
-
     if (video) {
       try {
         video.pause();
       } catch (e) {}
     }
 
-    // Optionally hide after fade for performance
-    setTimeout(function () {
-      videoBg.style.display = 'none';
-    }, 900);
+    // Fade to transparent so underlying CSS background shows
+    requestAnimationFrame(function () {
+      videoBg.style.opacity = '0';
+    });
   }
 
   function initImagineHeroTeaser() {
@@ -797,12 +811,20 @@ $(document).ready(function () {
 
     if (!hero || !teaserMount) return;
 
-    // If video already injected, don't double-inject
+    // The wrapper that sits over the CSS background
+    var videoBg = hero.querySelector('.rbccm-hero__video-bg');
+    if (videoBg) {
+      videoBg.style.opacity = '1';
+      if (!videoBg.style.position) {
+        videoBg.style.position = 'absolute';
+        videoBg.style.inset = '0';
+        videoBg.style.overflow = 'hidden';
+      }
+    }
+
+    // Avoid double-injecting
     if (teaserMount.querySelector('video')) return;
 
-    var videoBg = hero.querySelector('.rbccm-hero__video-bg');
-
-    // Create video element
     var video = document.createElement('video');
     video.id = 'imagine-teaser-video';
     video.className = 'rbccm-hero__video-teaser';
@@ -811,7 +833,6 @@ $(document).ready(function () {
     video.muted = true;
     video.playsInline = true;
 
-    // Make sure it fills the hero container
     video.style.width = '100%';
     video.style.height = '100%';
     video.style.objectFit = 'cover';
@@ -827,7 +848,6 @@ $(document).ready(function () {
     function handleFinished() {
       video.removeEventListener('ended', handleFinished);
       video.removeEventListener('timeupdate', checkPausePoint);
-      video.removeEventListener('error', handleFinished);
       fadeOutVideoBg(videoBg, video);
     }
 
@@ -848,21 +868,14 @@ $(document).ready(function () {
       video.addEventListener('ended', handleFinished);
     }
 
-    // If video fails to load or play, just fade out the bg so the static image shows
-    video.addEventListener('error', handleFinished);
-
-    // Best-effort autoplay (ignore restrictions)
+    // Best-effort autoplay
     video.play().catch(function () {
-      // If autoplay is blocked, you *might* want to keep the teaser visible,
-      // but we won't force fade here; leave it as a static poster-like frame.
+      // ignore autoplay failures
     });
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener(
-      'DOMContentLoaded',
-      initImagineHeroTeaser
-    );
+    document.addEventListener('DOMContentLoaded', initImagineHeroTeaser);
   } else {
     initImagineHeroTeaser();
   }
