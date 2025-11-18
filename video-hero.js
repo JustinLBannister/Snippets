@@ -172,11 +172,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* -----------------------------------------------------------
    Testimonials Slick Carousel
-   - Non-infinite for both sliders (no clones/index weirdness)
-   - Text slider = source of truth
-   - Image slider manually synced
-   - Custom arrows wired manually (not via Slick)
    - Rebuilds safely on resize
+   - Infinite scroll
+   - Custom arrow handlers (no Slick arrow binding)
 ----------------------------------------------------------- */
 $(function () {
   var $text  = $('#testimonialTextSlider');
@@ -189,94 +187,71 @@ $(function () {
     var $arrowsWrap = isDesktop
       ? $('.rbccm-testimonials__arrows-desktop')
       : $('.rbccm-testimonials__arrows');
-    var $dotsWrap   = $('.rbccm-testimonials__dots');
 
-    // Preserve current slide if already initialized
-    var currentIndex = 0;
+    // Always destroy any existing instances first
     if ($text.hasClass('slick-initialized')) {
-      currentIndex = $text.slick('slickCurrentSlide');
-      $text.off('.rbccmSync');
       $text.slick('unslick');
     }
     if ($image.hasClass('slick-initialized')) {
       $image.slick('unslick');
     }
 
-    // Clear arrows + dots and old handlers
-    $arrowsWrap.off('.rbccmNav').empty();
-    $dotsWrap.empty();
-
-    // TEXT slider: source of truth, non-infinite
+    // Text slider
     $text.slick({
-      infinite: false,
-      autoplay: true,          // set to false if you want to disable auto-scroll
+      infinite: true,
+      autoplay: true,          // auto-scroll
       autoplaySpeed: 4500,
       adaptiveHeight: true,
-      arrows: false,           // we handle arrows manually
+      asNavFor: '#testimonialImageSlider',
+      arrows: true,
+      appendArrows: $arrowsWrap,
       dots: true,
-      appendDots: $dotsWrap,
+      appendDots: $('.rbccm-testimonials__dots'),
       fade: false,
       slidesToShow: 1,
       slidesToScroll: 1,
-      initialSlide: currentIndex
+      prevArrow:
+        '<button type="button" class="custom-slick-prev">' +
+        '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
+        '<path d="M10.707 20.3535L0.707031 10.3535L10.707 0.353515" stroke="#979797"/></svg></button>',
+      nextArrow:
+        '<button type="button" class="custom-slick-next">' +
+        '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
+        '<path d="M0.353516 0.353516L10.3535 10.3535L0.353516 20.3535" stroke="white"/></svg></button>'
     });
 
-    // IMAGE slider: fade, non-infinite, manually synced
+    // Image slider
     $image.slick({
-      infinite: false,
+      infinite: true,
       autoplay: false,
       adaptiveHeight: true,
+      asNavFor: '#testimonialTextSlider',
       arrows: false,
       dots: false,
       fade: true,
       slidesToShow: 1,
-      slidesToScroll: 1,
-      initialSlide: currentIndex
+      slidesToScroll: 1
     });
 
-    // Simple 1:1 sync – indexes match directly because both are non-infinite
-    $text.on('afterChange.rbccmSync', function (event, slick, cur) {
-      $image.slick('slickGoTo', cur, true);
-    });
+    // ---- Custom arrow wiring to avoid external hijacking ----
+    var $prevArrow = $arrowsWrap.find('.custom-slick-prev');
+    var $nextArrow = $arrowsWrap.find('.custom-slick-next');
 
-    // Render custom arrows manually (same SVGs as before)
-    var prevHtml =
-      '<button type="button" class="custom-slick-prev">' +
-      '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
-      '<path d="M10.707 20.3535L0.707031 10.3535L10.707 0.353515" stroke="#979797"/></svg></button>';
+    // Remove Slick's own click handlers on these arrows
+    $prevArrow.off('click');
+    $nextArrow.off('click');
 
-    var nextHtml =
-      '<button type="button" class="custom-slick-next">' +
-      '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
-      '<path d="M0.353516 0.353516L10.3535 10.3535L0.353516 20.3535" stroke="white"/></svg></button>';
-
-    $arrowsWrap.append(prevHtml + nextHtml);
-
-    var $prev = $arrowsWrap.find('.custom-slick-prev');
-    var $next = $arrowsWrap.find('.custom-slick-next');
-
-    var slickObj  = $text.slick('getSlick');
-    var lastIndex = slickObj.slideCount - 1;
-
-    // Manual prev/next so we ALWAYS move exactly ±1
-    $prev.on('click.rbccmNav', function (e) {
+    // Our own handlers – single, deterministic navigation
+    $prevArrow.on('click.rbccm', function (e) {
       e.preventDefault();
-      var cur = $text.slick('slickCurrentSlide');
-      var target = cur - 1;
-      if (target < 0) target = 0;
-      $text.slick('slickGoTo', target);
+      // let event bubble so GTM can still see the click
+      $text.slick('slickPrev');
     });
 
-    $next.on('click.rbccmNav', function (e) {
+    $nextArrow.on('click.rbccm', function (e) {
       e.preventDefault();
-      var cur = $text.slick('slickCurrentSlide');
-      var target = cur + 1;
-      if (target > lastIndex) target = lastIndex;
-      $text.slick('slickGoTo', target);
+      $text.slick('slickNext');
     });
-
-    // Initial sync just in case
-    $image.slick('slickGoTo', currentIndex, true);
   }
 
   // Initial build
@@ -529,7 +504,6 @@ $(function () {
           navigator.vendor.indexOf('Apple') > -1 &&
           navigator.userAgent &&
           navigator.userAgent.indexOf('CriOS') === -1 &&
-          navigator.userAgent &&
           navigator.userAgent.indexOf('FxiOS') === -1;
 
         if (isSafari) {
