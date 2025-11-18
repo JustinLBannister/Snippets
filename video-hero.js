@@ -172,8 +172,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* -----------------------------------------------------------
    Testimonials Slick Carousel
-   - Infinite scroll for text
-   - Image slider manually synced (no asNavFor bugs)
+   - Non-infinite for both sliders (no clones, no index bugs)
+   - Text slider is source of truth
+   - Image slider manually synced
    - Rebuilds safely on resize
 ----------------------------------------------------------- */
 $(function () {
@@ -200,10 +201,10 @@ $(function () {
       $image.slick('unslick');
     }
 
-    // TEXT slider: the "source of truth"
+    // TEXT slider: source of truth, non-infinite
     $text.slick({
-      infinite: true,
-      autoplay: true,          // set to false if you don't want auto-scroll
+      infinite: false,
+      autoplay: true,          // set to false if you decide to disable auto-scroll
       autoplaySpeed: 4500,
       adaptiveHeight: true,
       arrows: true,
@@ -213,10 +214,18 @@ $(function () {
       fade: false,
       slidesToShow: 1,
       slidesToScroll: 1,
-      initialSlide: currentIndex
+      initialSlide: currentIndex,
+      prevArrow:
+        '<button type="button" class="custom-slick-prev">' +
+        '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
+        '<path d="M10.707 20.3535L0.707031 10.3535L10.707 0.353515" stroke="#979797"/></svg></button>',
+      nextArrow:
+        '<button type="button" class="custom-slick-next">' +
+        '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
+        '<path d="M0.353516 0.353516L10.3535 10.3535L0.353516 20.3535" stroke="white"/></svg></button>'
     });
 
-    // IMAGE slider: fade, not infinite, manually synced
+    // IMAGE slider: fade, non-infinite, manually synced
     $image.slick({
       infinite: false,
       autoplay: false,
@@ -229,24 +238,13 @@ $(function () {
       initialSlide: currentIndex
     });
 
-    // Manual sync using normalized index (handles clones from infinite text slider)
-    function syncImageTo(index, slickInstance) {
-      var slideCount = slickInstance.slideCount || slickInstance.$slides.length;
-      if (!slideCount) return;
-
-      // Normalize currentSlide to 0..slideCount-1
-      var realIndex = ((index % slideCount) + slideCount) % slideCount;
-      $image.slick('slickGoTo', realIndex, true);
-    }
-
-    // Sync on change
+    // Simple 1:1 sync – indexes now match directly because both are non-infinite
     $text.on('afterChange.rbccmSync', function (event, slick, currentSlide) {
-      syncImageTo(currentSlide, slick);
+      $image.slick('slickGoTo', currentSlide, true);
     });
 
-    // Initial sync
-    var textSlick = $text.slick('getSlick');
-    syncImageTo(currentIndex, textSlick);
+    // Initial sync just in case
+    $image.slick('slickGoTo', currentIndex, true);
   }
 
   // Initial build
@@ -439,7 +437,7 @@ $(function () {
           var start = Date.now();
           (function waitForMkto() {
             if (window.MktoForms2) {
-              return resolve(window.MktoForms2);
+              return resolve(MktoForms2);
             }
             if (Date.now() - start > 8000) {
               return reject(
@@ -499,6 +497,7 @@ $(function () {
           navigator.vendor.indexOf('Apple') > -1 &&
           navigator.userAgent &&
           navigator.userAgent.indexOf('CriOS') === -1 &&
+          navigator.userAgent &&
           navigator.userAgent.indexOf('FxiOS') === -1;
 
         if (isSafari) {
