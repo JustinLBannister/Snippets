@@ -891,3 +891,8 @@ $(function () {
     initImagineHeroTeaser();
   }
 })();
+
+/* Hide the auto-play toggle button Slick (or its a11y helper) injects */
+.slick-autoplay-toggle-button {
+  display: none !important;
+}
