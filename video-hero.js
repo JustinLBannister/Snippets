@@ -172,10 +172,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* -----------------------------------------------------------
    Testimonials Slick Carousel
-   - Infinite scroll on text slider
-   - Autoplay text slider
-   - Image slider is slave, synced via beforeChange
-   - Only rebuilds when crossing desktop/mobile breakpoint
+   - Infinite scroll for text
+   - Image slider manually synced (no asNavFor bugs)
+   - Rebuilds safely on resize
 ----------------------------------------------------------- */
 $(function () {
   var $text  = $('#testimonialTextSlider');
@@ -183,90 +182,81 @@ $(function () {
 
   if (!$text.length || !$image.length) return;
 
-  var currentIsDesktop = null;
+  function buildSliders() {
+    var isDesktop   = window.matchMedia('(min-width: 992px)').matches;
+    var $arrowsWrap = isDesktop
+      ? $('.rbccm-testimonials__arrows-desktop')
+      : $('.rbccm-testimonials__arrows');
+    var $dotsWrap   = $('.rbccm-testimonials__dots');
 
-  function initOrRebuildSliders() {
-    var isDesktopNow = window.matchMedia('(min-width: 992px)').matches;
-
-    // If we already have sliders in the same mode, just refresh layout
-    if (
-      currentIsDesktop === isDesktopNow &&
-      $text.hasClass('slick-initialized') &&
-      $image.hasClass('slick-initialized')
-    ) {
-      $text.slick('setPosition');
-      $image.slick('setPosition');
-      return;
-    }
-
-    currentIsDesktop = isDesktopNow;
-
-    // Destroy any existing instances before re-init
+    // Preserve current slide if already initialized
+    var currentIndex = 0;
     if ($text.hasClass('slick-initialized')) {
+      currentIndex = $text.slick('slickCurrentSlide');
+      $text.off('.rbccmSync');
       $text.slick('unslick');
     }
     if ($image.hasClass('slick-initialized')) {
       $image.slick('unslick');
     }
 
-    var $arrowsWrap = isDesktopNow
-      ? $('.rbccm-testimonials__arrows-desktop')
-      : $('.rbccm-testimonials__arrows');
-
-    // TEXT SLIDER (master)
+    // TEXT slider: the "source of truth"
     $text.slick({
       infinite: true,
-      autoplay: true,          // auto-scroll on
+      autoplay: true,          // set to false if you don't want auto-scroll
       autoplaySpeed: 4500,
-      pauseOnHover: false,
-      pauseOnFocus: false,
-      pauseOnDotsHover: false,
       adaptiveHeight: true,
       arrows: true,
       appendArrows: $arrowsWrap,
       dots: true,
-      appendDots: $('.rbccm-testimonials__dots'),
+      appendDots: $dotsWrap,
       fade: false,
       slidesToShow: 1,
       slidesToScroll: 1,
-      prevArrow:
-        '<button type="button" class="custom-slick-prev">' +
-        '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
-        '<path d="M10.707 20.3535L0.707031 10.3535L10.707 0.353515" stroke="#979797"/></svg></button>',
-      nextArrow:
-        '<button type="button" class="custom-slick-next">' +
-        '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
-        '<path d="M0.353516 0.353516L10.3535 10.3535L0.353516 20.3535" stroke="white"/></svg></button>'
+      initialSlide: currentIndex
     });
 
-    // IMAGE SLIDER (slave)
+    // IMAGE slider: fade, not infinite, manually synced
     $image.slick({
-      infinite: false,         // doesn't need to loop; it just follows text
+      infinite: false,
       autoplay: false,
       adaptiveHeight: true,
       arrows: false,
       dots: false,
       fade: true,
       slidesToShow: 1,
-      slidesToScroll: 1
+      slidesToScroll: 1,
+      initialSlide: currentIndex
     });
 
-    // Manual sync: whenever text slider changes, move image slider
-    $text.on('beforeChange.rbccmTestimonials', function (e, slick, current, next) {
-      if ($image.hasClass('slick-initialized')) {
-        $image.slick('slickGoTo', next, true);
-      }
+    // Manual sync using normalized index (handles clones from infinite text slider)
+    function syncImageTo(index, slickInstance) {
+      var slideCount = slickInstance.slideCount || slickInstance.$slides.length;
+      if (!slideCount) return;
+
+      // Normalize currentSlide to 0..slideCount-1
+      var realIndex = ((index % slideCount) + slideCount) % slideCount;
+      $image.slick('slickGoTo', realIndex, true);
+    }
+
+    // Sync on change
+    $text.on('afterChange.rbccmSync', function (event, slick, currentSlide) {
+      syncImageTo(currentSlide, slick);
     });
+
+    // Initial sync
+    var textSlick = $text.slick('getSlick');
+    syncImageTo(currentIndex, textSlick);
   }
 
   // Initial build
-  initOrRebuildSliders();
+  buildSliders();
 
-  // Rebuild only when crossing breakpoint; debounce resize
+  // Rebuild on resize with a small debounce
   var resizeTimer;
   $(window).on('resize', function () {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(initOrRebuildSliders, 250);
+    resizeTimer = setTimeout(buildSliders, 250);
   });
 });
 
