@@ -176,6 +176,13 @@ document.addEventListener('DOMContentLoaded', function () {
    - Infinite scroll
    - Custom arrow handlers (no Slick arrow binding)
 ----------------------------------------------------------- */
+/* -----------------------------------------------------------
+   Testimonials Slick Carousel
+   - Rebuilds safely on resize
+   - Infinite scroll
+   - Custom arrow handlers that stop propagation so
+     external GTM/analytics click handlers can't hijack.
+----------------------------------------------------------- */
 $(function () {
   var $text  = $('#testimonialTextSlider');
   var $image = $('#testimonialImageSlider');
@@ -233,23 +240,26 @@ $(function () {
       slidesToScroll: 1
     });
 
-    // ---- Custom arrow wiring to avoid external hijacking ----
+    // --------- HARDENED ARROW HANDLERS ----------
     var $prevArrow = $arrowsWrap.find('.custom-slick-prev');
     var $nextArrow = $arrowsWrap.find('.custom-slick-next');
 
-    // Remove Slick's own click handlers on these arrows
-    $prevArrow.off('click');
-    $nextArrow.off('click');
+    // Remove any existing handlers on these arrows
+    $prevArrow.off('.rbccm');
+    $nextArrow.off('.rbccm');
 
-    // Our own handlers – single, deterministic navigation
+    // Our own click handlers that stop propagation
     $prevArrow.on('click.rbccm', function (e) {
       e.preventDefault();
-      // let event bubble so GTM can still see the click
+      e.stopPropagation();
+      e.stopImmediatePropagation(); // block other click handlers on same element
       $text.slick('slickPrev');
     });
 
     $nextArrow.on('click.rbccm', function (e) {
       e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
       $text.slick('slickNext');
     });
   }
