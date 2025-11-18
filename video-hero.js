@@ -172,9 +172,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* -----------------------------------------------------------
    Testimonials Slick Carousel
-   - Non-infinite for both sliders (no clones, no index bugs)
-   - Text slider is source of truth
+   - Non-infinite for both sliders (no clones/index weirdness)
+   - Text slider = source of truth
    - Image slider manually synced
+   - Custom arrows wired manually (not via Slick)
    - Rebuilds safely on resize
 ----------------------------------------------------------- */
 $(function () {
@@ -201,28 +202,23 @@ $(function () {
       $image.slick('unslick');
     }
 
+    // Clear arrows + dots and old handlers
+    $arrowsWrap.off('.rbccmNav').empty();
+    $dotsWrap.empty();
+
     // TEXT slider: source of truth, non-infinite
     $text.slick({
       infinite: false,
-      autoplay: true,          // set to false if you decide to disable auto-scroll
+      autoplay: true,          // set to false if you want to disable auto-scroll
       autoplaySpeed: 4500,
       adaptiveHeight: true,
-      arrows: true,
-      appendArrows: $arrowsWrap,
+      arrows: false,           // we handle arrows manually
       dots: true,
       appendDots: $dotsWrap,
       fade: false,
       slidesToShow: 1,
       slidesToScroll: 1,
-      initialSlide: currentIndex,
-      prevArrow:
-        '<button type="button" class="custom-slick-prev">' +
-        '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
-        '<path d="M10.707 20.3535L0.707031 10.3535L10.707 0.353515" stroke="#979797"/></svg></button>',
-      nextArrow:
-        '<button type="button" class="custom-slick-next">' +
-        '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
-        '<path d="M0.353516 0.353516L10.3535 10.3535L0.353516 20.3535" stroke="white"/></svg></button>'
+      initialSlide: currentIndex
     });
 
     // IMAGE slider: fade, non-infinite, manually synced
@@ -238,9 +234,45 @@ $(function () {
       initialSlide: currentIndex
     });
 
-    // Simple 1:1 sync – indexes now match directly because both are non-infinite
-    $text.on('afterChange.rbccmSync', function (event, slick, currentSlide) {
-      $image.slick('slickGoTo', currentSlide, true);
+    // Simple 1:1 sync – indexes match directly because both are non-infinite
+    $text.on('afterChange.rbccmSync', function (event, slick, cur) {
+      $image.slick('slickGoTo', cur, true);
+    });
+
+    // Render custom arrows manually (same SVGs as before)
+    var prevHtml =
+      '<button type="button" class="custom-slick-prev">' +
+      '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
+      '<path d="M10.707 20.3535L0.707031 10.3535L10.707 0.353515" stroke="#979797"/></svg></button>';
+
+    var nextHtml =
+      '<button type="button" class="custom-slick-next">' +
+      '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
+      '<path d="M0.353516 0.353516L10.3535 10.3535L0.353516 20.3535" stroke="white"/></svg></button>';
+
+    $arrowsWrap.append(prevHtml + nextHtml);
+
+    var $prev = $arrowsWrap.find('.custom-slick-prev');
+    var $next = $arrowsWrap.find('.custom-slick-next');
+
+    var slickObj  = $text.slick('getSlick');
+    var lastIndex = slickObj.slideCount - 1;
+
+    // Manual prev/next so we ALWAYS move exactly ±1
+    $prev.on('click.rbccmNav', function (e) {
+      e.preventDefault();
+      var cur = $text.slick('slickCurrentSlide');
+      var target = cur - 1;
+      if (target < 0) target = 0;
+      $text.slick('slickGoTo', target);
+    });
+
+    $next.on('click.rbccmNav', function (e) {
+      e.preventDefault();
+      var cur = $text.slick('slickCurrentSlide');
+      var target = cur + 1;
+      if (target > lastIndex) target = lastIndex;
+      $text.slick('slickGoTo', target);
     });
 
     // Initial sync just in case
@@ -437,7 +469,7 @@ $(function () {
           var start = Date.now();
           (function waitForMkto() {
             if (window.MktoForms2) {
-              return resolve(MktoForms2);
+              return resolve(window.MktoForms2);
             }
             if (Date.now() - start > 8000) {
               return reject(
