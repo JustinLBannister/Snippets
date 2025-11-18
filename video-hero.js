@@ -891,3 +891,16 @@ $(document).ready(function () {
     initImagineHeroTeaser();
   }
 })();
+
+Hi Lauren,
+
+Absolutely — everything is now live on the new Imagine page.
+
+It may take a moment depending on network conditions for certain elements to appear, but all of the proper content and assets are in place. As always, if anything looks off, clearing cache/history can help fetch the most recent resources, as some JS/CSS may still be cached locally.
+
+Joon is also working on the meta information as well.
+
+Let me know if you need anything else!
+
+Best,
+Justin
