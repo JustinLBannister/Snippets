@@ -172,8 +172,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* -----------------------------------------------------------
    Testimonials Slick Carousel
-   - Rebuilds safely on resize
-   - Infinite scroll to prevent "stuck" at end
+   - Infinite scroll
+   - Autoplay text slider
+   - Only rebuilds when crossing desktop/mobile breakpoint
 ----------------------------------------------------------- */
 $(function () {
   var $text  = $('#testimonialTextSlider');
@@ -181,13 +182,25 @@ $(function () {
 
   if (!$text.length || !$image.length) return;
 
-  function buildSliders() {
-    var isDesktop   = window.matchMedia('(min-width: 992px)').matches;
-    var $arrowsWrap = isDesktop
-      ? $('.rbccm-testimonials__arrows-desktop')
-      : $('.rbccm-testimonials__arrows');
+  var currentIsDesktop = null;
 
-    // Always destroy any existing instances first
+  function initOrRebuildSliders() {
+    var isDesktopNow = window.matchMedia('(min-width: 992px)').matches;
+
+    // If we already have sliders in the same mode, just refresh layout
+    if (
+      currentIsDesktop === isDesktopNow &&
+      $text.hasClass('slick-initialized') &&
+      $image.hasClass('slick-initialized')
+    ) {
+      $text.slick('setPosition');
+      $image.slick('setPosition');
+      return;
+    }
+
+    currentIsDesktop = isDesktopNow;
+
+    // Destroy any existing instances before re-init
     if ($text.hasClass('slick-initialized')) {
       $text.slick('unslick');
     }
@@ -195,11 +208,18 @@ $(function () {
       $image.slick('unslick');
     }
 
+    var $arrowsWrap = isDesktopNow
+      ? $('.rbccm-testimonials__arrows-desktop')
+      : $('.rbccm-testimonials__arrows');
+
     // Text slider
     $text.slick({
       infinite: true,
-      autoplay: true,          // flip to true once you want auto-scroll
+      autoplay: true,          // auto-scroll on by default
       autoplaySpeed: 4500,
+      pauseOnHover: false,
+      pauseOnFocus: false,
+      pauseOnDotsHover: false,
       adaptiveHeight: true,
       asNavFor: '#testimonialImageSlider',
       arrows: true,
@@ -234,13 +254,13 @@ $(function () {
   }
 
   // Initial build
-  buildSliders();
+  initOrRebuildSliders();
 
-  // Rebuild on resize with a small debounce
+  // Rebuild only when crossing breakpoint; debounce resize
   var resizeTimer;
   $(window).on('resize', function () {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(buildSliders, 250);
+    resizeTimer = setTimeout(initOrRebuildSliders, 250);
   });
 });
 
@@ -800,7 +820,7 @@ $(function () {
       if (video) {
         try { video.pause(); } catch (e) {}
       }
-      overlay.style.display = 'none';
+      overlay.style.display = 'block';
       return;
     }
 
@@ -847,7 +867,7 @@ $(function () {
     video.style.width = '100%';
     video.style.height = '100%';
     video.style.objectFit = 'cover';
-    video.style.zIndex = '5';
+    video.style.zIndex = '1';
 
     var source = document.createElement('source');
     source.src =
@@ -891,8 +911,3 @@ $(function () {
     initImagineHeroTeaser();
   }
 })();
-
-/* Hide the auto-play toggle button Slick (or its a11y helper) injects */
-.slick-autoplay-toggle-button {
-  display: none !important;
-}
