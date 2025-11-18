@@ -892,15 +892,13 @@ $(document).ready(function () {
   }
 })();
 
-Hi Lauren,
 
-Absolutely — everything is now live on the new Imagine page.
+Hi all,
 
-It may take a moment depending on network conditions for certain elements to appear, but all of the proper content and assets are in place. As always, if anything looks off, clearing cache/history can help fetch the most recent resources, as some JS/CSS may still be cached locally.
+I’m seeing that the footer form (ID 1232) is no longer loading on the page. The console is showing a Marketo-side syntax error (getForm:1 – missing ) after argument list), which usually means the form’s configuration is returning invalid JavaScript.
 
-Joon is also working on the meta information as well.
+Can someone confirm that 1232 is still the correct form ID, and also check whether any recent edits to that form might have introduced custom HTML/JS or formatting that could break the embed?
 
-Let me know if you need anything else!
+I don’t have access to Marketo, so if you can take a quick look and confirm the form is still valid on your side, that would be great.
 
-Best,
-Justin
+Let me know what you find—thanks!
