@@ -113,11 +113,10 @@ document.addEventListener('DOMContentLoaded', function () {
     reorganizeForDesktop();
 
     if (currentViewportState === 'desktop') {
-      // Going MOBILE -> DESKTOP
-      // Ensure exactly ONE active tab (the first in DOM order)
+      // MOBILE -> DESKTOP
       activateFirstDesktopTab();
     } else {
-      // Going DESKTOP -> MOBILE
+      // DESKTOP -> MOBILE
       // Clear all active states so nothing is open by default
       Array.prototype.forEach.call(tabs, function (tab) {
         tab.classList.remove('is-active');
@@ -173,25 +172,40 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* -----------------------------------------------------------
    Testimonials Slick Carousel
+   - Rebuilds safely on resize
+   - Infinite scroll to prevent "stuck" at end
 ----------------------------------------------------------- */
-$(document).ready(function () {
-  var slidersInitialized = false;
+$(function () {
+  var $text  = $('#testimonialTextSlider');
+  var $image = $('#testimonialImageSlider');
 
-  function initSliders() {
-    if (slidersInitialized) return;
+  if (!$text.length || !$image.length) return;
 
-    var isDesktop = $(window).width() >= 992;
-    var arrowWrapper = isDesktop
-      ? '.rbccm-testimonials__arrows-desktop'
-      : '.rbccm-testimonials__arrows';
+  function buildSliders() {
+    var isDesktop   = window.matchMedia('(min-width: 992px)').matches;
+    var $arrowsWrap = isDesktop
+      ? $('.rbccm-testimonials__arrows-desktop')
+      : $('.rbccm-testimonials__arrows');
+
+    // Always destroy any existing instances first
+    if ($text.hasClass('slick-initialized')) {
+      $text.slick('unslick');
+    }
+    if ($image.hasClass('slick-initialized')) {
+      $image.slick('unslick');
+    }
 
     // Text slider
-    $('#testimonialTextSlider').slick({
+    $text.slick({
+      infinite: true,
+      autoplay: true,          // flip to true once you want auto-scroll
+      autoplaySpeed: 4500,
       adaptiveHeight: true,
       asNavFor: '#testimonialImageSlider',
-      autoplay: false,
       arrows: true,
+      appendArrows: $arrowsWrap,
       dots: true,
+      appendDots: $('.rbccm-testimonials__dots'),
       fade: false,
       slidesToShow: 1,
       slidesToScroll: 1,
@@ -202,52 +216,31 @@ $(document).ready(function () {
       nextArrow:
         '<button type="button" class="custom-slick-next">' +
         '<svg width="19" height="38" viewBox="0 0 12 21" fill="none">' +
-        '<path d="M0.353516 0.353516L10.3535 10.3535L0.353516 20.3535" stroke="white"/></svg></button>',
-      appendArrows: $(arrowWrapper),
-      appendDots: $('.rbccm-testimonials__dots')
+        '<path d="M0.353516 0.353516L10.3535 10.3535L0.353516 20.3535" stroke="white"/></svg></button>'
     });
 
     // Image slider
-    $('#testimonialImageSlider').slick({
+    $image.slick({
+      infinite: true,
+      autoplay: false,
       adaptiveHeight: true,
       asNavFor: '#testimonialTextSlider',
-      autoplay: false,
       arrows: false,
       dots: false,
       fade: true,
       slidesToShow: 1,
       slidesToScroll: 1
     });
-
-    slidersInitialized = true;
   }
 
-  function destroySliders() {
-    if (!slidersInitialized) return;
-    $('#testimonialTextSlider').slick('unslick');
-    $('#testimonialImageSlider').slick('unslick');
-    slidersInitialized = false;
-  }
+  // Initial build
+  buildSliders();
 
-  function handleResize() {
-    var currentSlide = slidersInitialized
-      ? $('#testimonialTextSlider').slick('slickCurrentSlide')
-      : 0;
-
-    destroySliders();
-    initSliders();
-
-    if (slidersInitialized && currentSlide > 0) {
-      $('#testimonialTextSlider').slick('slickGoTo', currentSlide, true);
-    }
-  }
-
-  initSliders();
-
+  // Rebuild on resize with a small debounce
   var resizeTimer;
   $(window).on('resize', function () {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(handleResize, 250);
+    resizeTimer = setTimeout(buildSliders, 250);
   });
 });
 
@@ -564,7 +557,7 @@ $(document).ready(function () {
                 subPre.innerHTML =
                   '<h2 style="margin-top: 0;">Thank you!</h2>' +
                   '<p style="color: #002144;">We\'ll send you an email with a link to download your ' +
-                  'RBC Imagine&trade; <strong>Preparing for Hyperdrive</strong> report.</p>';
+                  'RBC Imagine&trade; <strong>The Great Recalibration: Forces of Exponential Change</strong> report.</p>';
               }
 
               container.innerHTML = '';
@@ -717,7 +710,7 @@ $(document).ready(function () {
       '<h2 style="color: #fff; font-size: 42px;">Thank you!</h2>' +
       '<p style="color: #fff;font-size: 24px;">' +
       "We'll send you an email with a link to download your RBC Imagine\u2122 " +
-      '<span style="color: #FBDE00;">Preparing for Hyperdrive</span> report.' +
+      '<span style="color: #FBDE00;">The Great Recalibration: Forces of Exponential Change</span> report.' +
       '</p>' +
       '<p style="margin-top: 70px;">' +
       '<a class="modal-close-link" href="#" type="button" data-dismiss="modal">' +
@@ -803,7 +796,7 @@ $(document).ready(function () {
     if (!overlay) return;
 
     if (HERO_VIDEO_CONFIG.fadeInImage === false) {
-      // Hard switch: no animation
+      // Hard switch: no animation, just remove the video overlay
       if (video) {
         try { video.pause(); } catch (e) {}
       }
@@ -832,7 +825,13 @@ $(document).ready(function () {
     // Make sure we don't double-inject
     if (teaserMount.querySelector('video')) return;
 
+    // This is the video layer we want to fade away;
+    // gradient should live on #imagine-teaser-mount::before above the video.
     var overlay = hero.querySelector('.rbccm-hero__video-bg') || teaserMount;
+
+    if (overlay) {
+      overlay.style.opacity = '1';
+    }
 
     var video = document.createElement('video');
     video.id = 'imagine-teaser-video';
@@ -842,12 +841,13 @@ $(document).ready(function () {
     video.muted = true;
     video.playsInline = true;
 
-    // Ensure it covers the mount/overlay fully
+    // Ensure it covers the mount/overlay fully and sits under gradient
     video.style.position = 'absolute';
     video.style.inset = '0';
     video.style.width = '100%';
     video.style.height = '100%';
     video.style.objectFit = 'cover';
+    video.style.zIndex = '5';
 
     var source = document.createElement('source');
     source.src =
@@ -881,7 +881,7 @@ $(document).ready(function () {
     }
 
     video.play().catch(function () {
-      // Autoplay restrictions – if it fails, we just leave the overlay as-is.
+      // Autoplay restrictions – if it fails, we just leave the hero background image.
     });
   }
 
@@ -891,14 +891,3 @@ $(document).ready(function () {
     initImagineHeroTeaser();
   }
 })();
-
-
-Hi all,
-
-I’m seeing that the footer form (ID 1232) is no longer loading on the page. The console is showing a Marketo-side syntax error (getForm:1 – missing ) after argument list), which usually means the form’s configuration is returning invalid JavaScript.
-
-Can someone confirm that 1232 is still the correct form ID, and also check whether any recent edits to that form might have introduced custom HTML/JS or formatting that could break the embed?
-
-I don’t have access to Marketo, so if you can take a quick look and confirm the form is still valid on your side, that would be great.
-
-Let me know what you find—thanks!
