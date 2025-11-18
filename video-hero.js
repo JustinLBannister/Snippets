@@ -172,8 +172,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* -----------------------------------------------------------
    Testimonials Slick Carousel
-   - Infinite scroll
+   - Infinite scroll on text slider
    - Autoplay text slider
+   - Image slider is slave, synced via beforeChange
    - Only rebuilds when crossing desktop/mobile breakpoint
 ----------------------------------------------------------- */
 $(function () {
@@ -212,16 +213,15 @@ $(function () {
       ? $('.rbccm-testimonials__arrows-desktop')
       : $('.rbccm-testimonials__arrows');
 
-    // Text slider
+    // TEXT SLIDER (master)
     $text.slick({
       infinite: true,
-      autoplay: true,          // auto-scroll on by default
+      autoplay: true,          // auto-scroll on
       autoplaySpeed: 4500,
       pauseOnHover: false,
       pauseOnFocus: false,
       pauseOnDotsHover: false,
       adaptiveHeight: true,
-      asNavFor: '#testimonialImageSlider',
       arrows: true,
       appendArrows: $arrowsWrap,
       dots: true,
@@ -239,17 +239,23 @@ $(function () {
         '<path d="M0.353516 0.353516L10.3535 10.3535L0.353516 20.3535" stroke="white"/></svg></button>'
     });
 
-    // Image slider
+    // IMAGE SLIDER (slave)
     $image.slick({
-      infinite: true,
+      infinite: false,         // doesn't need to loop; it just follows text
       autoplay: false,
       adaptiveHeight: true,
-      asNavFor: '#testimonialTextSlider',
       arrows: false,
       dots: false,
       fade: true,
       slidesToShow: 1,
       slidesToScroll: 1
+    });
+
+    // Manual sync: whenever text slider changes, move image slider
+    $text.on('beforeChange.rbccmTestimonials', function (e, slick, current, next) {
+      if ($image.hasClass('slick-initialized')) {
+        $image.slick('slickGoTo', next, true);
+      }
     });
   }
 
