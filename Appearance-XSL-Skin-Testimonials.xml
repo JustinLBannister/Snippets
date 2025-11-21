@@ -8,7 +8,7 @@
   <xsl:template match="/">
 
     <section class="rbccm-testimonials" aria-label="Client Testimonials">
-      <!-- inline style: background colour + CSS var for ::after bg -->
+      <!-- Inline styles: background color + CSS var for ::after bg image -->
       <xsl:attribute name="style">
         <!-- optional background color -->
         <xsl:if test="/Properties/Datum[@ID='Background'] != ''">
@@ -17,7 +17,7 @@
           <xsl:text>;</xsl:text>
         </xsl:if>
 
-        <!-- CSS custom property for ::after background image -->
+        <!-- CSS custom property from image picker -->
         <xsl:text>--rbccm-testimonials-bg:url('</xsl:text>
         <xsl:value-of select="/Properties/Datum[@ID='BgImage']/Image/Path"/>
         <xsl:text>');</xsl:text>
@@ -83,9 +83,12 @@
 
         function parseBool(raw, defVal) {
           var val = (raw || "").toString().trim().toLowerCase();
-          if (!val) return defVal;
-          if (val === "true" || val === "1" || val === "yes" || val === "on") return true;
-          if (val === "false" || val === "0" || val === "no" || val === "off") return false;
+
+          // TeamSite booleans can be weird; handle common cases
+          if (val === "") return defVal;
+          if (["true", "1", "yes", "on"].indexOf(val) !== -1) return true;
+          if (["false", "0", "no", "off"].indexOf(val) !== -1) return false;
+
           return defVal;
         }
 
@@ -99,9 +102,9 @@
           var rawAutoplay = "<xsl:value-of select='/Properties/Datum[@ID=&quot;Autoplay&quot;]' />";
           var rawShowDots = "<xsl:value-of select='/Properties/Datum[@ID=&quot;ShowDots&quot;]' />";
 
-          var infinite = true;
-          var autoplay = true;
-          var showDots = true;
+          var infinite = parseBool(rawInfinite, true);
+          var autoplay = parseBool(rawAutoplay, true);
+          var showDots = parseBool(rawShowDots, true);
 
           var autoplaySpeed = parseInt(
             "<xsl:value-of select='/Properties/Datum[@ID=&quot;AutoplaySpeed&quot;]' />",
@@ -178,7 +181,7 @@
         // Wait until jQuery, Slick, and DOM nodes exist
         function waitAndInit() {
           var tries = 0;
-          var maxTries = 200; // up to ~10s
+          var maxTries = 200; // ~10s max
 
           var timer = setInterval(function () {
             var $ = window.jQuery;
