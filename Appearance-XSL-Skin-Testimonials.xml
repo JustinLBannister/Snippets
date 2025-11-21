@@ -99,9 +99,9 @@
           var rawAutoplay = "<xsl:value-of select='/Properties/Datum[@ID=&quot;Autoplay&quot;]' />";
           var rawShowDots = "<xsl:value-of select='/Properties/Datum[@ID=&quot;ShowDots&quot;]' />";
 
-          var infinite = parseBool(rawInfinite, true);
-          var autoplay = parseBool(rawAutoplay, true);
-          var showDots = parseBool(rawShowDots, true);
+          var infinite = true;
+          var autoplay = true;
+          var showDots = true;
 
           var autoplaySpeed = parseInt(
             "<xsl:value-of select='/Properties/Datum[@ID=&quot;AutoplaySpeed&quot;]' />",
