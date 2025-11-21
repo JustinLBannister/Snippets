@@ -27,21 +27,24 @@
 
         <!-- Text slider: quotes -->
         <div class="rbccm-testimonials__slider-text" id="testimonialTextSlider">
-          <xsl:for-each select="/Properties/Data/Group[@ID='Slide'] | /Data/Group[@ID='Slide']">
+        <xsl:for-each select="
+            /Properties/Data/Group[@ID='Slide' or @Name='Testimonial Slide']
+            | /Data/Group[@ID='Slide' or @Name='Testimonial Slide']
+            ">
             <div class="rbccm-testimonials__text-slide">
-              <blockquote class="rbccm-testimonials__quote">
-                <xsl:value-of select="Datum[@ID='Quote']" disable-output-escaping="yes"/>
-              </blockquote>
-              <cite class="rbccm-testimonials__citation">
+            <blockquote class="rbccm-testimonials__quote">
+                <xsl:value-of select="Datum[@ID='Quote' or @Name='Quote']" disable-output-escaping="yes"/>
+            </blockquote>
+            <cite class="rbccm-testimonials__citation">
                 <span class="rbccm-testimonials__author">
-                  <xsl:value-of select="Datum[@ID='Author']"/>
+                <xsl:value-of select="Datum[@ID='Author' or @Name='Author']"/>
                 </span>
                 <span class="rbccm-testimonials__role">
-                  <xsl:value-of select="Datum[@ID='Role']" disable-output-escaping="yes"/>
+                <xsl:value-of select="Datum[@ID='Role' or @Name='Role / Title']" disable-output-escaping="yes"/>
                 </span>
-              </cite>
+            </cite>
             </div>
-          </xsl:for-each>
+        </xsl:for-each>
         </div>
 
         <!-- Controls: arrows + dots -->
@@ -52,18 +55,21 @@
 
         <!-- Image slider: portraits -->
         <div class="rbccm-testimonials__slider-image" id="testimonialImageSlider">
-          <xsl:for-each select="/Properties/Data/Group[@ID='Slide'] | /Data/Group[@ID='Slide']">
+        <xsl:for-each select="
+            /Properties/Data/Group[@ID='Slide' or @Name='Testimonial Slide']
+            | /Data/Group[@ID='Slide' or @Name='Testimonial Slide']
+            ">
             <div class="rbccm-testimonials__image-slide">
-              <img>
+            <img>
                 <xsl:attribute name="src">
-                  <xsl:value-of select="Datum[@ID='Portrait']/Image/Path"/>
+                <xsl:value-of select="Datum[@ID='Portrait' or @Name='Portrait Image']/Image/Path"/>
                 </xsl:attribute>
                 <xsl:attribute name="alt">
-                  <xsl:value-of select="Datum[@ID='Alt']"/>
+                <xsl:value-of select="Datum[@ID='Alt' or @Name='Image Alt Text']"/>
                 </xsl:attribute>
-              </img>
+            </img>
             </div>
-          </xsl:for-each>
+        </xsl:for-each>
         </div>
       </div>
 
