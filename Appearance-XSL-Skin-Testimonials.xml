@@ -27,7 +27,7 @@
 
         <!-- Text slider: quotes -->
         <div class="rbccm-testimonials__slider-text" id="testimonialTextSlider">
-          <xsl:for-each select="/Data/Group[@ID='Slide']">
+          <xsl:for-each select="/Properties/Data/Group[@ID='Slide'] | /Data/Group[@ID='Slide']">
             <div class="rbccm-testimonials__text-slide">
               <blockquote class="rbccm-testimonials__quote">
                 <xsl:value-of select="Datum[@ID='Quote']" disable-output-escaping="yes"/>
@@ -52,7 +52,7 @@
 
         <!-- Image slider: portraits -->
         <div class="rbccm-testimonials__slider-image" id="testimonialImageSlider">
-          <xsl:for-each select="/Data/Group[@ID='Slide']">
+          <xsl:for-each select="/Properties/Data/Group[@ID='Slide'] | /Data/Group[@ID='Slide']">
             <div class="rbccm-testimonials__image-slide">
               <img>
                 <xsl:attribute name="src">
