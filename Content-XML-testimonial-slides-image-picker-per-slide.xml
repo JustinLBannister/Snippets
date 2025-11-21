@@ -2,31 +2,27 @@
   <Datum ID="Id" Type="String" Name="Id">testimonials-1</Datum>
 
   <Group ID="Slide" Name="Testimonial Slide" Replicatable="true" CloneGroupID="icc8le6k">
-
     <Datum ID="Quote" Type="Textarea" Name="Quote">
-      <!-- Leave blank for editor -->
+      <!-- empty; authors fill -->
     </Datum>
 
     <Datum ID="Author" Type="String" Name="Author">
-      <!-- Leave blank -->
+      <!-- empty -->
     </Datum>
 
     <Datum ID="Role" Type="Textarea" Name="Role / Title">
-      <!-- Leave blank -->
+      <!-- empty -->
     </Datum>
 
     <Datum ID="Portrait" Type="Image" Name="Portrait Image">
       <Image Width="150" Height="150">
-        <Path>$URL_PREFIX/assets/rbccm/images/imagine-images/nik-modi-imagine-carousel.webp</Path>
-        <Description>Default Portrait</Description>
+        <Path></Path>          <!-- no default to avoid bad path errors -->
+        <Description></Description>
       </Image>
     </Datum>
 
     <Datum ID="Alt" Type="String" Name="Image Alt Text">
-      <!-- Leave blank -->
+      <!-- empty -->
     </Datum>
-
   </Group>
-
-  <!-- Editors can add more slides via Replicatable UI -->
 </Data>

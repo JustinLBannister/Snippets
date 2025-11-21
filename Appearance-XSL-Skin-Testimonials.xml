@@ -8,7 +8,7 @@
   <xsl:template match="/">
 
     <section class="rbccm-testimonials" aria-label="Client Testimonials">
-      <!-- Inline styles: background color + CSS var for ::after bg image -->
+      <!-- inline style: background colour + CSS var for ::after bg -->
       <xsl:attribute name="style">
         <!-- optional background color -->
         <xsl:if test="/Properties/Datum[@ID='Background'] != ''">
@@ -17,7 +17,7 @@
           <xsl:text>;</xsl:text>
         </xsl:if>
 
-        <!-- CSS custom property from image picker -->
+        <!-- CSS custom property for ::after background image -->
         <xsl:text>--rbccm-testimonials-bg:url('</xsl:text>
         <xsl:value-of select="/Properties/Datum[@ID='BgImage']/Image/Path"/>
         <xsl:text>');</xsl:text>
@@ -81,16 +81,28 @@
     <script>// <![CDATA[
       (function () {
 
+        function parseBool(raw, defVal) {
+          var val = (raw || "").toString().trim().toLowerCase();
+          if (!val) return defVal;
+          if (val === "true" || val === "1" || val === "yes" || val === "on") return true;
+          if (val === "false" || val === "0" || val === "no" || val === "off") return false;
+          return defVal;
+        }
+
         function buildSliders($, $text, $image) {
           var isDesktop   = window.matchMedia('(min-width: 992px)').matches;
           var $arrowsWrap = isDesktop
             ? $('.rbccm-testimonials__arrows-desktop')
             : $('.rbccm-testimonials__arrows');
 
-          // Read config from Properties
-          var infinite = "<xsl:value-of select='/Properties/Datum[@ID=&quot;Infinite&quot;]' />" === "true";
-          var autoplay = "<xsl:value-of select='/Properties/Datum[@ID=&quot;Autoplay&quot;]' />" === "true";
-          var showDots = "<xsl:value-of select='/Properties/Datum[@ID=&quot;ShowDots&quot;]' />" === "true";
+          var rawInfinite = "<xsl:value-of select='/Properties/Datum[@ID=&quot;Infinite&quot;]' />";
+          var rawAutoplay = "<xsl:value-of select='/Properties/Datum[@ID=&quot;Autoplay&quot;]' />";
+          var rawShowDots = "<xsl:value-of select='/Properties/Datum[@ID=&quot;ShowDots&quot;]' />";
+
+          var infinite = parseBool(rawInfinite, true);
+          var autoplay = parseBool(rawAutoplay, true);
+          var showDots = parseBool(rawShowDots, true);
+
           var autoplaySpeed = parseInt(
             "<xsl:value-of select='/Properties/Datum[@ID=&quot;AutoplaySpeed&quot;]' />",
             10
@@ -163,14 +175,13 @@
           });
         }
 
-        // Wait until jQuery, Slick, and the DOM nodes all exist
+        // Wait until jQuery, Slick, and DOM nodes exist
         function waitAndInit() {
           var tries = 0;
-          var maxTries = 200; // 200 * 50ms = 10s max
+          var maxTries = 200; // up to ~10s
 
           var timer = setInterval(function () {
             var $ = window.jQuery;
-
             if (!$ || !$.fn || !$.fn.slick) {
               tries++;
               if (tries >= maxTries) {

@@ -13,9 +13,7 @@
 
   <!-- Behaviour -->
   <Datum ID="Infinite"      Type="Boolean" Name="Loop slides infinitely">true</Datum>
-
   <Datum ID="Autoplay"      Type="Boolean" Name="Autoplay slides">true</Datum>
   <Datum ID="AutoplaySpeed" Type="String"  Name="Autoplay speed (ms)">4500</Datum>
-
   <Datum ID="ShowDots"      Type="Boolean" Name="Show dots">true</Datum>
 </Properties>
