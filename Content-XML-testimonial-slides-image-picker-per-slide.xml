@@ -17,7 +17,7 @@
 
     <Datum ID="Portrait" Type="Image" Name="Portrait Image">
       <Image Width="150" Height="150">
-        <Path>$URL_PREFIX/path/to/default-image.jpg</Path>
+        <Path>$URL_PREFIX/assets/rbccm/images/imagine-images/nik-modi-imagine-carousel.webp</Path>
         <Description>Default Portrait</Description>
       </Image>
     </Datum>
