@@ -1,0 +1,183 @@
+/* ============================================================
+ * BASE = MOBILE (0–767px)
+ * ============================================================ */
+
+/* ---------- Shared Slick arrow button base ---------- */
+
+#macro-views-slider .slick-prev,
+#macro-views-slider .slick-next,
+#market-views-slider .slick-prev,
+#market-views-slider .slick-next {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+#macro-views-slider .rbccm-slider__arrow-icon svg,
+#market-views-slider .rbccm-slider__arrow-icon svg {
+  display: block;
+}
+
+/* On mobile we show the mobile SVG, hide desktop SVG */
+#macro-views-slider .rbccm-slider__arrow-icon--desktop,
+#market-views-slider .rbccm-slider__arrow-icon--desktop {
+  display: none;
+}
+
+#macro-views-slider .rbccm-slider__arrow-icon--mobile,
+#market-views-slider .rbccm-slider__arrow-icon--mobile {
+  display: inline-block;
+}
+
+/* ---------- Macro views: mobile layout (arrows + dots) ---------- */
+
+#macro-views-slider .slick-slider {
+  /* space for dots + arrows under the card */
+  padding-bottom: 64px;
+}
+
+#macro-views-slider .slick-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex !important;
+  gap: 8px;
+}
+
+/* Dots basic look (tweak as needed) */
+#macro-views-slider .slick-dots li button {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+#macro-views-slider .slick-dots li button:before {
+  content: "";
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid #0051A5;
+  opacity: 1;
+}
+
+#macro-views-slider .slick-dots li.slick-active button:before {
+  background-color: #0051A5;
+}
+
+/* Arrows flanking dots on mobile */
+#macro-views-slider .slick-prev,
+#macro-views-slider .slick-next {
+  position: absolute;
+  bottom: 16px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* adjust these to match design spacing */
+#macro-views-slider .slick-prev {
+  right: 50%;
+  margin-right: 72px;
+}
+
+#macro-views-slider .slick-next {
+  left: 50%;
+  margin-left: 72px;
+}
+
+/* ---------- Market views: mobile "See all stories" behavior ---------- */
+
+/* Hidden extras on mobile */
+#market-views-slider .market-views__extra {
+  display: none !important;
+}
+
+/* Button we inject via JS */
+#market-views-slider .market-views__see-all-trigger {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-top: 24px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* Visual button using ::after so label can be toggled in CSS */
+#market-views-slider .market-views__see-all-trigger::after {
+  content: "See all stories";
+  display: block;
+  text-align: center;
+  padding: 14px 24px;
+  background-color: #0051A5;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* When JS adds .is-expanded, change label */
+#market-views-slider .market-views__see-all-trigger.is-expanded::after {
+  content: "Show fewer stories";
+}
+
+/* Focus outline for accessibility */
+#market-views-slider .market-views__see-all-trigger:focus-visible::after {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+
+
+/* ============================================================
+ * DESKTOP / TABLET ENHANCEMENT (>=768px)
+ * ============================================================ */
+
+@media (min-width: 768px) {
+
+  /* Show desktop SVG arrows, hide mobile ones */
+  #macro-views-slider .rbccm-slider__arrow-icon--desktop,
+  #market-views-slider .rbccm-slider__arrow-icon--desktop {
+    display: inline-block;
+  }
+
+  #macro-views-slider .rbccm-slider__arrow-icon--mobile,
+  #market-views-slider .rbccm-slider__arrow-icon--mobile {
+    display: none;
+  }
+
+  /* Macro views: you can reposition desktop arrows if needed */
+  #macro-views-slider .slick-prev,
+  #macro-views-slider .slick-next {
+    bottom: auto;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  #macro-views-slider .slick-prev {
+    left: -32px; /* tweak as needed */
+    right: auto;
+    margin-right: 0;
+  }
+
+  #macro-views-slider .slick-next {
+    right: -32px; /* tweak as needed */
+    left: auto;
+    margin-left: 0;
+  }
+
+  /* Market views: desktop shows all tiles, no See all button */
+  #market-views-slider .market-views__see-all-trigger {
+    display: none;
+  }
+
+  #market-views-slider .market-views__extra {
+    /* JS removes this class on desktop, but this is a safety */
+    display: block !important;
+  }
+}
