@@ -166,3 +166,28 @@
   }
 
 })(jQuery);
+
+What sets RBC Capital Markets apart? 
+
+We help the world’s leading organizations achieve their financial goals with innovative products and services, forward-looking advisory, and excellence in execution. From origination and structuring through to sales, trading, and risk management, we deliver capital solutions that support client ambitions. 
+
+Global Investment Banking
+
+
+
+We combine cross-border market capabilities with industry specific expertise to finance operations and strategic acquisitions.
+
+
+Global Markets
+
+
+With diverse asset class and currency expertise, we deliver insights and solutions on a range of trading and hedging activities.
+
+Corporate Banking
+
+
+For corporate clients, we leverage our global platform to provide lending and financing strategies with seamless execution.
+
+RBC Transactions
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus egestas in justo nec efficitur. Pellentesque sollicitudin nisi in rutrum suscipit morbi ut leo cursus accumsan ante.
