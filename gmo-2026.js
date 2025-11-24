@@ -11,7 +11,7 @@
   });
 
   // ------------------------------------
-  // MACRO VIEWS SLIDER (always slick)
+  // MACRO VIEWS SLIDER (always slick, 1-up)
   // ------------------------------------
   function initMacroViewsSlider() {
     var $container = $('#macro-views-slider');
@@ -75,7 +75,7 @@
     var $tiles = $row.children('[class*="col-"]');
     var totalSlides = $tiles.length;
 
-    // Create / reuse "See all stories" button
+    // Create / reuse "See all stories" button (mobile-only behavior)
     var $seeAll = $container.find('.slider-see-all');
     if (!$seeAll.length) {
       $seeAll = $('<button class="slider-see-all">See all stories</button>');
@@ -88,9 +88,9 @@
       $seeAll.hide();
     });
 
-    // ----- MOBILE LAYOUT (< 992px) -----
+    // ----- MOBILE LAYOUT (< 768px): unslick + 3 + see-all -----
     function applyMobileLayout() {
-      console.log('[market-views] applying MOBILE layout');
+      console.log('[market-views] applying MOBILE layout (<768)');
 
       // Unslick for mobile
       if ($row.hasClass('slick-initialized')) {
@@ -98,7 +98,7 @@
         $row.slick('unslick');
       }
 
-      // Show first 3, hide rest
+      // Show first 3, hide the rest (if more than 3)
       if (totalSlides > 3) {
         $tiles.each(function (index) {
           $(this).toggle(index < 3);
@@ -110,27 +110,34 @@
       }
     }
 
-    // ----- DESKTOP LAYOUT (≥ 992px) -----
-    function applyDesktopLayout() {
-      console.log('[market-views] applying DESKTOP layout');
+    // ----- TABLET + DESKTOP (>= 768px): slick on, 2-up tablet, 3-up desktop -----
+    function applySliderLayout() {
+      var width = window.innerWidth;
+      var isTablet = width >= 768 && width < 1024; // iPad range-ish
+      var slidesToShow = isTablet ? 2 : 3;
 
-      $tiles.show();
-      $seeAll.hide();
+      // Default scroll is 1 to avoid empty columns on last slide
+      var slidesToScroll = 1;
 
-      var slidesToShow = 3;
-      var slidesToScroll =
-        totalSlides >= 6 && totalSlides % 3 === 0 ? 3 : 1;
+      // If perfectly divisible into “pages”, we can scroll by page size
+      if (totalSlides >= slidesToShow * 2 && totalSlides % slidesToShow === 0) {
+        slidesToScroll = slidesToShow;
+      }
 
       console.log(
-        '[market-views] desktop Slick config:',
+        '[market-views] applying SLIDER layout (>=768)',
+        'width=' + width,
         'slidesToShow=' + slidesToShow,
         'slidesToScroll=' + slidesToScroll,
         'totalSlides=' + totalSlides
       );
 
-      // Initialize Slick
+      // Show everything, hide button on tablet/desktop
+      $tiles.show();
+      $seeAll.hide();
+
       if (!$row.hasClass('slick-initialized')) {
-        console.log('[market-views] initializing Slick (desktop)');
+        console.log('[market-views] initializing Slick (tablet/desktop)');
         $row.slick({
           arrows: true,
           dots: true,
@@ -139,26 +146,26 @@
           slidesToScroll: slidesToScroll
         });
       } else {
-        // Update settings if already active
+        // Update Slick settings when crossing breakpoints
         $row.slick('slickSetOption', 'slidesToShow', slidesToShow, true);
         $row.slick('slickSetOption', 'slidesToScroll', slidesToScroll, true);
       }
     }
 
     function handleLayout() {
-      var isMobile = window.innerWidth < 992; // UPDATED BREAKPOINT
+      var isMobile = window.innerWidth < 768;
 
       if (isMobile) {
         applyMobileLayout();
       } else {
-        applyDesktopLayout();
+        applySliderLayout(); // tablet + desktop
       }
     }
 
     // Initial layout
     handleLayout();
 
-    // Debounced resize listener
+    // Re-evaluate on resize (debounced)
     var resizeTimer;
     $(window).on('resize.marketViews', function () {
       clearTimeout(resizeTimer);
