@@ -88,36 +88,35 @@
       $seeAll.hide();
     });
 
+    // ----- MOBILE LAYOUT (< 992px) -----
     function applyMobileLayout() {
       console.log('[market-views] applying MOBILE layout');
 
-      // Ensure Slick is removed on mobile
+      // Unslick for mobile
       if ($row.hasClass('slick-initialized')) {
         console.log('[market-views] unslicking for mobile');
         $row.slick('unslick');
       }
 
-      // Show first 3, hide the rest (if more than 3)
+      // Show first 3, hide rest
       if (totalSlides > 3) {
         $tiles.each(function (index) {
           $(this).toggle(index < 3);
         });
         $seeAll.show();
       } else {
-        // Nothing to hide
         $tiles.show();
         $seeAll.hide();
       }
     }
 
+    // ----- DESKTOP LAYOUT (≥ 992px) -----
     function applyDesktopLayout() {
       console.log('[market-views] applying DESKTOP layout');
 
-      // Show everything
       $tiles.show();
       $seeAll.hide();
 
-      // Decide how many to scroll
       var slidesToShow = 3;
       var slidesToScroll =
         totalSlides >= 6 && totalSlides % 3 === 0 ? 3 : 1;
@@ -129,7 +128,7 @@
         'totalSlides=' + totalSlides
       );
 
-      // Initialise Slick only once
+      // Initialize Slick
       if (!$row.hasClass('slick-initialized')) {
         console.log('[market-views] initializing Slick (desktop)');
         $row.slick({
@@ -140,15 +139,14 @@
           slidesToScroll: slidesToScroll
         });
       } else {
-        // If already initialized (e.g., coming back from resize),
-        // make sure settings are updated
+        // Update settings if already active
         $row.slick('slickSetOption', 'slidesToShow', slidesToShow, true);
         $row.slick('slickSetOption', 'slidesToScroll', slidesToScroll, true);
       }
     }
 
     function handleLayout() {
-      var isMobile = window.innerWidth < 768;
+      var isMobile = window.innerWidth < 992; // UPDATED BREAKPOINT
 
       if (isMobile) {
         applyMobileLayout();
@@ -160,7 +158,7 @@
     // Initial layout
     handleLayout();
 
-    // Re-evaluate on resize (debounced)
+    // Debounced resize listener
     var resizeTimer;
     $(window).on('resize.marketViews', function () {
       clearTimeout(resizeTimer);
@@ -169,37 +167,3 @@
   }
 
 })(jQuery);
-
-/* Base arrow button reset so pseudo-element can control size */
-.slick-prev,
-.slick-next {
-  width: 40px;              /* tweak to match design */
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* NEXT (right) arrow using your SVG */
-.slick-next:before {
-  content: "";
-  display: block;
-  width: 10px;
-  height: 17px;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='17' viewBox='0 0 10 17' fill='none'><path d='M0.353516 0.353516L8.35356 8.35356L0.353516 16.3536' stroke='%230051A5'/></svg>");
-}
-
-/* PREV (left) arrow – reuse same SVG, flip it */
-.slick-prev:before {
-  content: "";
-  display: block;
-  width: 10px;
-  height: 17px;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='17' viewBox='0 0 10 17' fill='none'><path d='M0.353516 0.353516L8.35356 8.35356L0.353516 16.3536' stroke='%230051A5'/></svg>");
-  transform: scaleX(-1);
-  transform-origin: center;
-}
