@@ -1,5 +1,5 @@
 // views-sliders.js
-// Macro Views, Market Views, GMO Sliders
+// Macro & Market Views sliders + GMO "What sets us apart" cards
 // Requires: jQuery + Slick
 
 (function ($) {
@@ -8,12 +8,12 @@
   $(function () {
     initMacroViewsSlider();
     initMarketViewsSlider();
-    initRbccmGmoSlider();    // <— NEW SLIDER
+    initGmoCardsSlider(); // NEW
   });
 
-  // -------------------------------------------------------
-  // MACRO VIEWS (Always Slick)
-  // -------------------------------------------------------
+  // -----------------------------
+  // MACRO VIEWS (always slick)
+  // -----------------------------
   function initMacroViewsSlider() {
     var $container = $('#macro-views-slider');
     if (!$container.length) return;
@@ -21,11 +21,12 @@
     var $row = $container.children('.row').first();
     if (!$row.length) return;
 
+    // 6/6 -> 4/8 before Slick
     fixMacroColumns($row);
 
     if ($row.hasClass('slick-initialized')) return;
 
-    console.log('[macro-views] initializing Slick');
+    console.log('[macro-views] initializing Slick (all viewports)');
 
     $row.slick({
       arrows: true,
@@ -41,16 +42,16 @@
       var $col = $(this);
 
       if ($col.find('.img-stretch').length) {
-        $col.removeClass('col-sm-6').addClass('col-sm-4');
+        $col.removeClass('col-sm-6').addClass('col-sm-4'); // image
       } else if ($col.find('.white-box-text').length) {
-        $col.removeClass('col-sm-6').addClass('col-sm-8');
+        $col.removeClass('col-sm-6').addClass('col-sm-8'); // text
       }
     });
   }
 
-  // -------------------------------------------------------
-  // MARKET VIEWS (Mobile-first)
-  // -------------------------------------------------------
+  // -----------------------------
+  // MARKET VIEWS (mobile-first)
+  // -----------------------------
   function initMarketViewsSlider() {
     var $container = $('#market-views-slider');
     if (!$container.length) return;
@@ -58,20 +59,28 @@
     var $row = $container.children('.row').first();
     if (!$row.length) return;
 
+    // Grab all potential tiles
     var $tiles = $row.children('[class*="col-"]');
 
-    // Remove empty bogus tiles
+    // Filter out truly empty tiles (e.g. bogus <br> slides)
     var $validTiles = $tiles.filter(function () {
-      return $(this).find('a.white-box, .white-box-text, .img-stretch').length > 0;
+      var $col = $(this);
+      var hasContent = $col.find('a.white-box, .white-box-text, .img-stretch').length > 0;
+      return hasContent;
     });
 
+    // Remove the empties so Slick never sees them
     $tiles.not($validTiles).remove();
+
     $tiles = $validTiles;
-
     var totalSlides = $tiles.length;
-    if (!totalSlides) return;
 
-    // See all stories button
+    if (!totalSlides) {
+      console.warn('[market-views] no valid tiles found');
+      return;
+    }
+
+    // See all stories button (mobile only)
     var $seeAll = $container.find('.slider-see-all');
     if (!$seeAll.length) {
       $seeAll = $('<button class="slider-see-all">See all stories</button>');
@@ -79,19 +88,22 @@
     }
 
     $seeAll.off('click.sliderSeeAll').on('click.sliderSeeAll', function () {
-      console.log('[market-views] see all clicked');
+      console.log('[market-views] "See all stories" clicked');
       $tiles.show();
       $seeAll.hide();
     });
 
     function applyMobileLayout() {
-      console.log('[market-views] MOBILE');
+      console.log('[market-views] applying MOBILE layout');
 
-      if ($row.hasClass('slick-initialized')) $row.slick('unslick');
+      if ($row.hasClass('slick-initialized')) {
+        console.log('[market-views] unslicking for mobile');
+        $row.slick('unslick');
+      }
 
       if (totalSlides > 3) {
-        $tiles.each(function (i) {
-          $(this).toggle(i < 3);
+        $tiles.each(function (index) {
+          $(this).toggle(index < 3);
         });
         $seeAll.show();
       } else {
@@ -101,15 +113,23 @@
     }
 
     function applyDesktopLayout() {
-      console.log('[market-views] DESKTOP');
+      console.log('[market-views] applying DESKTOP layout');
 
       $tiles.show();
       $seeAll.hide();
 
       var slidesToShow = 3;
-      var slidesToScroll = 1;
+      var slidesToScroll = 1; // always 1 so we never land on an empty slot
+
+      console.log(
+        '[market-views] desktop Slick config:',
+        'slidesToShow=' + slidesToShow,
+        'slidesToScroll=' + slidesToScroll,
+        'totalSlides=' + totalSlides
+      );
 
       if (!$row.hasClass('slick-initialized')) {
+        console.log('[market-views] initializing Slick (desktop)');
         $row.slick({
           arrows: true,
           dots: true,
@@ -124,10 +144,13 @@
     }
 
     function handleLayout() {
-      var isMobile = window.innerWidth < 992;  // BREAKPOINT UPDATED PER REQUEST
+      var isMobile = window.innerWidth < 992; // 0–991 = "mobile/tablet"
 
-      if (isMobile) applyMobileLayout();
-      else applyDesktopLayout();
+      if (isMobile) {
+        applyMobileLayout();
+      } else {
+        applyDesktopLayout();
+      }
     }
 
     handleLayout();
@@ -139,207 +162,64 @@
     });
   }
 
-  // -------------------------------------------------------
-  // NEW GMO SLIDER — "What Sets Us Apart"
-  // -------------------------------------------------------
-  function initRbccmGmoSlider() {
-    var $block = $('.rbccm-gmo');
-    if (!$block.length) return;
+  // -------------------------------------------
+  // GMO: "What sets us apart" cards slider
+  // rbccm-gmo__cards -> 1 col mobile/tablet, 3 cols desktop, infinite
+  // -------------------------------------------
+  function initGmoCardsSlider() {
+    var $cards = $('.rbccm-gmo__cards');
+    if (!$cards.length) {
+      return;
+    }
 
-    var $track = $block.find('.rbccm-gmo__cards').first();
-    if (!$track.length || $track.hasClass('slick-initialized')) return;
+    // Avoid double init
+    if ($cards.hasClass('slick-initialized')) {
+      return;
+    }
 
-    console.log('[gmo] initialize');
+    console.log('[gmo-cards] initializing Slick');
 
-    // Mark dividers correctly on change
-    $track.on('init', function (e, slick) {
-      updateGmoVisibleDividers(slick);
-    });
-
-    $track.on('afterChange', function (e, slick) {
-      updateGmoVisibleDividers(slick);
-    });
-
-    // Init Slick (desktop default = 3)
-    $track.slick({
+    $cards.slick({
       arrows: true,
       dots: true,
-      infinite: false,
-      slidesToShow: 3,
+      infinite: true,         // <— wraps around
+      slidesToShow: 3,        // desktop default (≥1024)
       slidesToScroll: 1,
+      // mobile/tablet: 1 column
       responsive: [
         {
-          breakpoint: 1024,   // Tablet (2 columns)
+          breakpoint: 1024,   // <= 1024px
           settings: {
-            slidesToShow: 2
-          }
-        },
-        {
-          breakpoint: 768,    // Mobile (1 column)
-          settings: {
-            slidesToShow: 1
+            slidesToShow: 1,
+            slidesToScroll: 1
           }
         }
       ]
     });
   }
 
-  // Mark the last visible slider to kill its right divider
-  function updateGmoVisibleDividers(slick) {
-    if (!slick) return;
-
-    var slidesToShow = slick.options.slidesToShow || 1;
-    var first = slick.currentSlide || 0;
-    var last = Math.min(first + slidesToShow - 1, slick.$slides.length - 1);
-
-    slick.$slides.find('.rbccm-gmo__card').removeClass('rbccm-gmo__card--last-visible');
-
-    slick.$slides.eq(last).find('.rbccm-gmo__card').addClass('rbccm-gmo__card--last-visible');
-  }
-
 })(jQuery);
 
-<section class="rbccm-transactions">
-  <div class="rbccm-transactions__overlay"></div>
-
-  <div class="rbccm-transactions__inner">
-    <div class="rbccm-transactions__content">
-      <h2 class="rbccm-transactions__title">RBC Transactions</h2>
-
-      <p class="rbccm-transactions__body">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus egestas in justo nec
-        efficitur. Pellentesque sollicitudin nisi in rutrum suscipit morbi ut leo cursus accumsan ante.
-      </p>
-    </div>
-
-    <div class="rbccm-transactions__cta-wrap">
-      <a href="#" class="rbccm-transactions__cta">
-        Learn more
-      </a>
-    </div>
-  </div>
-</section>
-
-/* ===== Base section ===== */
-
-.rbccm-transactions {
+/* Base link style */
+.rbccm-link {
   position: relative;
-  overflow: hidden;
-  color: #ffffff;
-  background-color: #003168; /* fallback solid */
-  background-image:
-    url("/assets/rbccm/images/your-spacey-lines-texture.jpg");
-  background-size: cover;
-  background-position: center;
-}
-
-/* Optional extra darkening overlay if you need more contrast */
-.rbccm-transactions__overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.15);
-  pointer-events: none;
-}
-
-.rbccm-transactions__inner {
-  position: relative; /* stay above overlay */
-  max-width: 1140px;
-  margin: 0 auto;
-  padding: 40px 24px 48px; /* mobile spacing */
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 24px;
-}
-
-/* ===== Text block ===== */
-
-.rbccm-transactions__content {
-  max-width: 40rem;
-}
-
-.rbccm-transactions__title {
-  margin: 0 0 16px;
-  font-family: "RBC Display", "Roboto", system-ui, -apple-system, sans-serif;
-  font-weight: 500;
-  font-size: 28px;
-  line-height: 1.2;
-  color: #ffd24d; /* RBC yellow for heading */
-}
-
-.rbccm-transactions__body {
-  margin: 0;
-  font-family: "Roboto", system-ui, -apple-system, sans-serif;
-  font-size: 18px;
-  line-height: 1.5;
-}
-
-/* ===== CTA ===== */
-
-.rbccm-transactions__cta-wrap {
-  /* on mobile the button spans full width */
-}
-
-.rbccm-transactions__cta {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 56px;
-  padding: 16px 24px;
-  border-radius: 0;
-  border: 1px solid transparent;
-  background: #0051a5; /* Bright blue */
-  color: #ffffff;
-  font-family: "Roboto", system-ui, -apple-system, sans-serif;
-  font-size: 18px;
-  font-weight: 500;
+  gap: 6px;                 /* space between text and arrow */
+  padding-bottom: 4px;     /* space between text and underline */
+  border-bottom: 1.5px solid #0051A5;
+  color: #0051A5;
   text-decoration: none;
-  text-align: center;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease;
+  font-weight: 500;
+  line-height: 1.3;
 }
 
-.rbccm-transactions__cta:hover,
-.rbccm-transactions__cta:focus-visible {
-  background: #003168;
-  border-color: #ffffff;
-  outline: none;
+/* SVG Arrow */
+.rbccm-link::after {
+  content: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='9' viewBox='0 0 6 9' fill='none'><path d='M1.64326 8.76752L5.71588 5.09649C5.80591 5.01694 5.87736 4.92229 5.92613 4.81802C5.97489 4.71374 6 4.60189 6 4.48893C6 4.37596 5.97489 4.26411 5.92613 4.15984C5.87736 4.05556 5.80591 3.96092 5.71588 3.88137L1.64326 0.25312C1.55396 0.172915 1.44773 0.109254 1.33068 0.0658105C1.21363 0.0223668 1.08809 0 0.961285 0C0.834485 0 0.708939 0.0223668 0.59189 0.0658105C0.474841 0.109254 0.368606 0.172915 0.279313 0.25312C0.100414 0.41345 0 0.630333 0 0.856402C0 1.08247 0.100414 1.29935 0.279313 1.45968L3.67957 4.48893L0.279313 7.51817C0.101861 7.67756 0.00182152 7.89268 0.000760555 8.11717C3.00407e-05 8.22979 0.0242591 8.34143 0.0720592 8.44569C0.119859 8.54995 0.19029 8.64478 0.279313 8.72473C0.365393 8.8078 0.469097 8.87485 0.584433 8.92201C0.699768 8.96916 0.824449 8.99549 0.951272 8.99947C1.07809 9.00345 1.20455 8.985 1.32332 8.94519C1.44209 8.90537 1.55083 8.84499 1.64326 8.76752Z' fill='%230051A5'/></svg>");
+  width: 6px;
+  height: 9px;
+  display: inline-block;
 }
 
-/* ===== Tablet (optional tweak 768–1023) ===== */
-
-@media (min-width: 768px) {
-  .rbccm-transactions__inner {
-    padding-inline: 40px;
-  }
-}
-
-/* ===== Desktop ≥1024px: 2-column layout with gaps like Figma ===== */
-
-@media (min-width: 1024px) {
-  .rbccm-transactions__inner {
-    padding: 80px 170px;         /* approx your 170 side / 40 top-bottom */
-    flex-direction: row;
-    align-items: center;
-    gap: 80px;                   /* space between text and button column */
-  }
-
-  .rbccm-transactions__content {
-    flex: 1 1 auto;
-  }
-
-  .rbccm-transactions__cta-wrap {
-    flex: 0 0 auto;
-    align-self: stretch;         /* so we can vertically center the button if needed */
-    display: flex;
-    align-items: center;
-  }
-
-  .rbccm-transactions__cta {
-    width: auto;
-    min-width: 260px;
-  }
-}
+<a href="#" class="rbccm-link">Learn More</a>
