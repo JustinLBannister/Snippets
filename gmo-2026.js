@@ -223,3 +223,23 @@
 }
 
 <a href="#" class="rbccm-link">Learn More</a>
+
+Hero:
+1. period
+2. yellow line <div id="f7c750">
+3. 15px instead of 16
+4. link pending - latest article
+5. Add breadcrumb
+
+Share
+1. Align right on mobile?
+
+Articles Market Views:
+1. Article Icons - Will change as well as add content into cards (currently 5 FPOs)
+2. 7 min read hover effect
+
+Sets Us Apart
+1. Sentence case
+2. Padding/alignment 
+3. Underline link
+4. Arrow acive on slider
