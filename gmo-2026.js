@@ -199,6 +199,147 @@
 
 })(jQuery);
 
-RBC Transactions
+<section class="rbccm-transactions">
+  <div class="rbccm-transactions__overlay"></div>
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus egestas in justo nec efficitur. Pellentesque sollicitudin nisi in rutrum suscipit morbi ut leo cursus accumsan ante.
+  <div class="rbccm-transactions__inner">
+    <div class="rbccm-transactions__content">
+      <h2 class="rbccm-transactions__title">RBC Transactions</h2>
+
+      <p class="rbccm-transactions__body">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus egestas in justo nec
+        efficitur. Pellentesque sollicitudin nisi in rutrum suscipit morbi ut leo cursus accumsan ante.
+      </p>
+    </div>
+
+    <div class="rbccm-transactions__cta-wrap">
+      <a href="#" class="rbccm-transactions__cta">
+        Learn more
+      </a>
+    </div>
+  </div>
+</section>
+
+/* ===== Base section ===== */
+
+.rbccm-transactions {
+  position: relative;
+  overflow: hidden;
+  color: #ffffff;
+  background-color: #003168; /* fallback solid */
+  background-image:
+    url("/assets/rbccm/images/your-spacey-lines-texture.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+/* Optional extra darkening overlay if you need more contrast */
+.rbccm-transactions__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+}
+
+.rbccm-transactions__inner {
+  position: relative; /* stay above overlay */
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 40px 24px 48px; /* mobile spacing */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 24px;
+}
+
+/* ===== Text block ===== */
+
+.rbccm-transactions__content {
+  max-width: 40rem;
+}
+
+.rbccm-transactions__title {
+  margin: 0 0 16px;
+  font-family: "RBC Display", "Roboto", system-ui, -apple-system, sans-serif;
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 1.2;
+  color: #ffd24d; /* RBC yellow for heading */
+}
+
+.rbccm-transactions__body {
+  margin: 0;
+  font-family: "Roboto", system-ui, -apple-system, sans-serif;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+/* ===== CTA ===== */
+
+.rbccm-transactions__cta-wrap {
+  /* on mobile the button spans full width */
+}
+
+.rbccm-transactions__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 56px;
+  padding: 16px 24px;
+  border-radius: 0;
+  border: 1px solid transparent;
+  background: #0051a5; /* Bright blue */
+  color: #ffffff;
+  font-family: "Roboto", system-ui, -apple-system, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  text-decoration: none;
+  text-align: center;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.rbccm-transactions__cta:hover,
+.rbccm-transactions__cta:focus-visible {
+  background: #003168;
+  border-color: #ffffff;
+  outline: none;
+}
+
+/* ===== Tablet (optional tweak 768–1023) ===== */
+
+@media (min-width: 768px) {
+  .rbccm-transactions__inner {
+    padding-inline: 40px;
+  }
+}
+
+/* ===== Desktop ≥1024px: 2-column layout with gaps like Figma ===== */
+
+@media (min-width: 1024px) {
+  .rbccm-transactions__inner {
+    padding: 80px 170px;         /* approx your 170 side / 40 top-bottom */
+    flex-direction: row;
+    align-items: center;
+    gap: 80px;                   /* space between text and button column */
+  }
+
+  .rbccm-transactions__content {
+    flex: 1 1 auto;
+  }
+
+  .rbccm-transactions__cta-wrap {
+    flex: 0 0 auto;
+    align-self: stretch;         /* so we can vertically center the button if needed */
+    display: flex;
+    align-items: center;
+  }
+
+  .rbccm-transactions__cta {
+    width: auto;
+    min-width: 260px;
+  }
+}
