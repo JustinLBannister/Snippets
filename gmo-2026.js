@@ -170,36 +170,21 @@
 
 })(jQuery);
 
-/* See All Stories Button — Market Views (Mobile Only) */
-.slider-see-all {
-  display: flex;
-  height: 50px;
-  padding: 10px;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  align-self: stretch;
+.hero-2026 {
+  /* 1) Base solid color (fallback + behind everything) */
+  background-color: var(--Blue-Dark-Blue, #003168);
 
-  /* Background color: var(--Blue-Bright-Blue, #0051A5) */
-  background: var(--Blue-Bright-Blue, #0051A5);
+  /* 2) Gradient + 3) Image as layered backgrounds */
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(0, 49, 104, 0.93) 25.48%,
+      rgba(0, 49, 104, 0.00) 100%
+    ),
+    url('/assets/rbccm/images/insights/2026/2026-outlook-hero-orb.png');
 
-  /* Typography */
-  color: var(--RBC-White, #FFF);
-  text-align: center;
-  font-family: Roboto, sans-serif;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: normal;
-
-  /* Behavior */
-  width: 100%;
-  border: none;
-  cursor: pointer;
-}
-
-/* Optional: Slight hover for desktop */
-@media (hover: hover) {
-  .slider-see-all:hover {
-    opacity: 0.9;
-  }
+  /* Make gradient cover the full hero, image sit bottom-right */
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, right bottom;
+  background-size: cover, auto 60%;   /* tweak 60% as needed */
 }
