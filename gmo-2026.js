@@ -170,21 +170,36 @@
 
 })(jQuery);
 
-.hero-2026 {
-  /* 1) Base solid color (fallback + behind everything) */
-  background-color: var(--Blue-Dark-Blue, #003168);
+/* Base arrow button reset so pseudo-element can control size */
+.slick-prev,
+.slick-next {
+  width: 40px;              /* tweak to match design */
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  /* 2) Gradient + 3) Image as layered backgrounds */
-  background-image:
-    linear-gradient(
-      90deg,
-      rgba(0, 49, 104, 0.93) 25.48%,
-      rgba(0, 49, 104, 0.00) 100%
-    ),
-    url('/assets/rbccm/images/insights/2026/2026-outlook-hero-orb.png');
+/* NEXT (right) arrow using your SVG */
+.slick-next:before {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 17px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='17' viewBox='0 0 10 17' fill='none'><path d='M0.353516 0.353516L8.35356 8.35356L0.353516 16.3536' stroke='%230051A5'/></svg>");
+}
 
-  /* Make gradient cover the full hero, image sit bottom-right */
-  background-repeat: no-repeat, no-repeat;
-  background-position: center, right bottom;
-  background-size: cover, auto 60%;   /* tweak 60% as needed */
+/* PREV (left) arrow – reuse same SVG, flip it */
+.slick-prev:before {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 17px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='17' viewBox='0 0 10 17' fill='none'><path d='M0.353516 0.353516L8.35356 8.35356L0.353516 16.3536' stroke='%230051A5'/></svg>");
+  transform: scaleX(-1);
+  transform-origin: center;
 }
