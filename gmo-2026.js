@@ -113,16 +113,11 @@
     // ----- TABLET + DESKTOP (>= 768px): slick on, 2-up tablet, 3-up desktop -----
     function applySliderLayout() {
       var width = window.innerWidth;
-      var isTablet = width >= 768 && width < 1024; // iPad range-ish
+      var isTablet = width >= 768 && width < 1024; // iPad-ish
       var slidesToShow = isTablet ? 2 : 3;
 
-      // Default scroll is 1 to avoid empty columns on last slide
+      // ✅ ALWAYS move 1 slide per click to avoid "empty card" artifacts
       var slidesToScroll = 1;
-
-      // If perfectly divisible into “pages”, we can scroll by page size
-      if (totalSlides >= slidesToShow * 2 && totalSlides % slidesToShow === 0) {
-        slidesToScroll = slidesToShow;
-      }
 
       console.log(
         '[market-views] applying SLIDER layout (>=768)',
@@ -174,21 +169,3 @@
   }
 
 })(jQuery);
-
-.slick-prev:before,
-.slick-next:before {
-  content: "";
-  display: block;
-  width: 14px;
-  height: 23px;
-  background-repeat: no-repeat;
-  background-size: contain;
-}
-
-.slick-prev:before {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='23' viewBox='0 0 14 23' fill='none'><path d='M1.06055 21.0607L11.0605 11.0607L1.06055 1.06067' stroke='%230051A5' stroke-width='3'/></svg>");
-}
-
-.slick-next:before {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='23' viewBox='0 0 14 23' fill='none'><path opacity='0.1' d='M12.1211 1.06067L2.12109 11.0607L12.1211 21.0607' stroke='black' stroke-width='3'/></svg>");
-}
