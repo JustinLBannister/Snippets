@@ -167,27 +167,210 @@
 
 })(jQuery);
 
-What sets RBC Capital Markets apart? 
+h2 What sets RBC Capital Markets apart? 
 
-We help the world’s leading organizations achieve their financial goals with innovative products and services, forward-looking advisory, and excellence in execution. From origination and structuring through to sales, trading, and risk management, we deliver capital solutions that support client ambitions. 
+p We help the world’s leading organizations achieve their financial goals with innovative products and services, forward-looking advisory, and excellence in execution. From origination and structuring through to sales, trading, and risk management, we deliver capital solutions that support client ambitions. 
 
-Global Investment Banking
-
-
-
-We combine cross-border market capabilities with industry specific expertise to finance operations and strategic acquisitions.
+h3 Global Investment Banking
 
 
-Global Markets
+
+p We combine cross-border market capabilities with industry specific expertise to finance operations and strategic acquisitions.
+
+learn more
+
+h3 Global Markets
 
 
-With diverse asset class and currency expertise, we deliver insights and solutions on a range of trading and hedging activities.
+p With diverse asset class and currency expertise, we deliver insights and solutions on a range of trading and hedging activities.
 
-Corporate Banking
+learnm more
+
+h3 Corporate Banking
 
 
-For corporate clients, we leverage our global platform to provide lending and financing strategies with seamless execution.
+p For corporate clients, we leverage our global platform to provide lending and financing strategies with seamless execution.
+learn more 
 
 RBC Transactions
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus egestas in justo nec efficitur. Pellentesque sollicitudin nisi in rutrum suscipit morbi ut leo cursus accumsan ante.
+
+<div class="container rbccm-gmo">
+
+  <!-- Block Header -->
+  <header class="rbccm-gmo__header">
+    <h2 class="rbccm-gmo__title">What sets RBC Capital Markets apart?</h2>
+
+    <p class="rbccm-gmo__intro">
+      We help the world’s leading organizations achieve their financial goals with
+      innovative products and services, forward-looking advisory, and excellence in
+      execution. From origination and structuring through to sales, trading, and
+      risk management, we deliver capital solutions that support client ambitions.
+    </p>
+  </header>
+
+  <!-- Cards container -->
+  <div class="rbccm-gmo__cards">
+
+    <!-- CARD 1 -->
+    <article class="rbccm-gmo__card">
+      <h3 class="rbccm-gmo__card-title">Global Investment Banking</h3>
+
+      <p class="rbccm-gmo__card-text">
+        We combine cross-border market capabilities with industry specific expertise
+        to finance operations and strategic acquisitions.
+      </p>
+
+      <a href="#" class="rbccm-gmo__card-link">Learn More</a>
+    </article>
+
+    <!-- CARD 2 -->
+    <article class="rbccm-gmo__card">
+      <h3 class="rbccm-gmo__card-title">Global Markets</h3>
+
+      <p class="rbccm-gmo__card-text">
+        With diverse asset class and currency expertise, we deliver insights and
+        solutions on a range of trading and hedging activities.
+      </p>
+
+      <a href="#" class="rbccm-gmo__card-link">Learn More</a>
+    </article>
+
+    <!-- CARD 3 -->
+    <article class="rbccm-gmo__card">
+      <h3 class="rbccm-gmo__card-title">Corporate Banking</h3>
+
+      <p class="rbccm-gmo__card-text">
+        For corporate clients, we leverage our global platform to provide lending
+        and financing strategies with seamless execution.
+      </p>
+
+      <a href="#" class="rbccm-gmo__card-link">Learn More</a>
+    </article>
+
+  </div>
+</div>
+
+/* --------------------------------------------------
+   Block Wrapper
+-------------------------------------------------- */
+.rbccm-gmo {
+  padding-block: 40px;
+}
+
+/* Header text */
+.rbccm-gmo__title {
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+.rbccm-gmo__intro {
+  font-size: 18px;
+  margin-bottom: 32px;
+  max-width: 650px;
+}
+
+/* --------------------------------------------------
+   Card Wrapper - Mobile (1 column)
+-------------------------------------------------- */
+.rbccm-gmo__cards {
+  display: block;
+}
+
+/* Card */
+.rbccm-gmo__card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-block: 24px;
+  position: relative;
+}
+
+/* Mobile divider between stacked cards */
+.rbccm-gmo__card + .rbccm-gmo__card {
+  border-top: 1px solid #CED1D9;
+}
+
+/* Card Title */
+.rbccm-gmo__card-title {
+  font-size: 24px;
+  color: #0051A5;
+  margin-bottom: 16px;
+}
+
+/* Card text */
+.rbccm-gmo__card-text {
+  font-size: 18px;
+  margin-bottom: 24px;
+}
+
+/* Link pinned to bottom */
+.rbccm-gmo__card-link {
+  margin-top: auto;
+  color: #0051A5;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.rbccm-gmo__card-link:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------
+   TABLET (768–1023)
+   2 columns with 80px gap (divider centered)
+-------------------------------------------------- */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .rbccm-gmo__cards {
+    display: flex;
+    gap: 80px;
+    padding-inline: 28px;
+  }
+
+  .rbccm-gmo__card {
+    flex: 1 1 0;
+    border: none;
+  }
+
+  /* Divider between col 1 and 2 */
+  .rbccm-gmo__card:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -40px;
+    width: 1px;
+    height: 100%;
+    background-color: #CED1D9;
+  }
+}
+
+/* --------------------------------------------------
+   DESKTOP (1024+)
+   3 columns with 80px gap and dividers
+-------------------------------------------------- */
+
+@media (min-width: 1024px) {
+  .rbccm-gmo__cards {
+    display: flex;
+    gap: 80px;
+    padding-inline: 28px;
+  }
+
+  .rbccm-gmo__card {
+    flex: 1 1 0;
+    border: none;
+  }
+
+  /* Divider between col 1 and 2, 2 and 3 */
+  .rbccm-gmo__card:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -40px;
+    width: 1px;
+    height: 100%;
+    background-color: #CED1D9;
+  }
+}
