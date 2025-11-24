@@ -1,100 +1,153 @@
-// macro-market-sliders.js
-// Requires: jQuery + Slick loaded before this file
-// Mobile-first slider logic with logging
+// views-sliders.js
+// Macro & Market views sliders – mobile-first behaviour
+// Requires jQuery and Slick
+
 (function ($) {
   $(function () {
 
-    var $macro = $('#macro-views-slider');
-    var $market = $('#market-views-slider');
+    initMacroViewsSlider();
+    initMarketViewsSlider();
 
-    initSlider($macro, 'macro');
-    initSlider($market, 'market');
-
-    function initSlider($container, name) {
-      if (!$container.length) return;
+    // ----------------------------
+    // MACRO VIEWS SLIDER
+    // ----------------------------
+    function initMacroViewsSlider() {
+      var $container = $('#macro-views-slider');
+      if (!$container.length) {
+        return;
+      }
 
       var $row = $container.children('.row').first();
-      if (!$row.length) return;
+      if (!$row.length) {
+        return;
+      }
 
-      console.log(`[${name}] FOUND slider row`, $row);
+      // Force 4/8 layout (image/text) before Slick reads widths
+      fixMacroColumns($row);
 
-      // "See all stories" button logic
+      // Only init once – macro is ALWAYS slicked (mobile + desktop)
+      if ($row.hasClass('slick-initialized')) {
+        return;
+      }
+
+      console.log('[macro-views] initializing Slick (all viewports)');
+
+      $row.slick({
+        arrows: true,
+        dots: true,
+        infinite: true,
+        slidesToShow: 1,
+        slidesToScroll: 1
+      });
+    }
+
+    // Turn col-sm-6 / col-xs-12 into 4/8 for macro cards
+    function fixMacroColumns($row) {
+      $row.find('.col-sm-6.col-xs-12').each(function () {
+        var $col = $(this);
+
+        if ($col.find('.img-stretch').length) {
+          // Image column → 4
+          $col.removeClass('col-sm-6').addClass('col-sm-4');
+        } else if ($col.find('.white-box-text').length) {
+          // Text column → 8
+          $col.removeClass('col-sm-6').addClass('col-sm-8');
+        }
+      });
+    }
+
+    // ----------------------------
+    // MARKET VIEWS SLIDER
+    // ----------------------------
+    function initMarketViewsSlider() {
+      var $container = $('#market-views-slider');
+      if (!$container.length) {
+        return;
+      }
+
+      var $row = $container.children('.row').first();
+      if (!$row.length) {
+        return;
+      }
+
       var $tiles = $row.children('[class*="col-"]');
       var totalSlides = $tiles.length;
 
-      // Create a "See all" button (hidden by default)
-      var $seeAll = $('<button class="slider-see-all">See all stories</button>');
-      $seeAll.on('click', function () {
-        console.log(`[${name}] "See all stories" CLICKED`);
+      // Create / reuse "See all stories" button (MARKET ONLY)
+      var $seeAll = $container.find('.slider-see-all');
+      if (!$seeAll.length) {
+        $seeAll = $('<button class="slider-see-all">See all stories</button>');
+        $container.append($seeAll);
+      }
+
+      $seeAll.off('click.sliderSeeAll').on('click.sliderSeeAll', function () {
+        console.log('[market-views] "See all stories" clicked');
         $tiles.show();
         $seeAll.hide();
       });
 
-      $container.append($seeAll);
+      function applyMobileLayout() {
+        console.log('[market-views] applying MOBILE layout');
 
-      function mobileInit() {
-        console.log(`[${name}] MOBILE INIT`);
-
-        // unslick if needed
+        // Ensure Slick is removed on mobile
         if ($row.hasClass('slick-initialized')) {
-          console.log(`[${name}] unslicking main slider for mobile`);
+          console.log('[market-views] unslicking for mobile');
           $row.slick('unslick');
         }
 
-        // hide slides after #3
+        // Show first 3, hide the rest
         if (totalSlides > 3) {
-          console.log(`[${name}] hiding slides 4+ for mobile`);
-          $tiles.each(function (i) {
-            if (i >= 3) $(this).hide();
+          $tiles.each(function (index) {
+            $(this).toggle(index < 3);
           });
           $seeAll.show();
         } else {
-          console.log(`[${name}] < 4 slides, nothing hidden`);
+          // Nothing to hide
+          $tiles.show();
           $seeAll.hide();
         }
       }
 
-      function desktopInit() {
-        console.log(`[${name}] DESKTOP INIT`);
+      function applyDesktopLayout() {
+        console.log('[market-views] applying DESKTOP layout');
 
-        // show all tiles
+        // Show everything
         $tiles.show();
         $seeAll.hide();
 
-        if ($row.hasClass('slick-initialized')) {
-          console.log(`[${name}] already slick — skip init`);
-          return;
+        // Initialise Slick only once
+        if (!$row.hasClass('slick-initialized')) {
+          console.log('[market-views] initializing Slick (desktop)');
+          $row.slick({
+            arrows: true,
+            dots: true,
+            infinite: true,
+            slidesToShow: 1,
+            slidesToScroll: 1
+          });
         }
-
-        console.log(`[${name}] initializing slick (desktop)`);
-
-        $row.slick({
-          arrows: true,
-          dots: true,
-          infinite: true,
-          slidesToShow: 1,
-          slidesToScroll: 1
-        });
       }
 
-      function handleResize() {
-        var w = window.innerWidth;
-        if (w < 768) {
-          mobileInit();
+      function handleLayout() {
+        var isMobile = window.innerWidth < 768;
+
+        if (isMobile) {
+          applyMobileLayout();
         } else {
-          desktopInit();
+          applyDesktopLayout();
         }
       }
 
-      // run immediately
-      handleResize();
+      // Initial layout
+      handleLayout();
 
-      // re-run on resize
+      // Re-evaluate on resize (debounced)
       var resizeTimer;
-      $(window).on('resize', function () {
+      $(window).on('resize.marketViews', function () {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(handleResize, 150);
+        resizeTimer = setTimeout(handleLayout, 150);
       });
     }
+
   });
 })(jQuery);
