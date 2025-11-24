@@ -117,16 +117,33 @@
       $tiles.show();
       $seeAll.hide();
 
+      // Decide how many to scroll
+      var slidesToShow = 3;
+      var slidesToScroll =
+        totalSlides >= 6 && totalSlides % 3 === 0 ? 3 : 1;
+
+      console.log(
+        '[market-views] desktop Slick config:',
+        'slidesToShow=' + slidesToShow,
+        'slidesToScroll=' + slidesToScroll,
+        'totalSlides=' + totalSlides
+      );
+
       // Initialise Slick only once
       if (!$row.hasClass('slick-initialized')) {
-        console.log('[market-views] initializing Slick (desktop, 3-up)');
+        console.log('[market-views] initializing Slick (desktop)');
         $row.slick({
           arrows: true,
           dots: true,
           infinite: true,
-          slidesToShow: 3,
-          slidesToScroll: 3
+          slidesToShow: slidesToShow,
+          slidesToScroll: slidesToScroll
         });
+      } else {
+        // If already initialized (e.g., coming back from resize),
+        // make sure settings are updated
+        $row.slick('slickSetOption', 'slidesToShow', slidesToShow, true);
+        $row.slick('slickSetOption', 'slidesToScroll', slidesToScroll, true);
       }
     }
 
