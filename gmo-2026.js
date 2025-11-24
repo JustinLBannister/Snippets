@@ -169,3 +169,37 @@
   }
 
 })(jQuery);
+
+/* See All Stories Button — Market Views (Mobile Only) */
+.slider-see-all {
+  display: flex;
+  height: 50px;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
+
+  /* Background color: var(--Blue-Bright-Blue, #0051A5) */
+  background: var(--Blue-Bright-Blue, #0051A5);
+
+  /* Typography */
+  color: var(--RBC-White, #FFF);
+  text-align: center;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: normal;
+
+  /* Behavior */
+  width: 100%;
+  border: none;
+  cursor: pointer;
+}
+
+/* Optional: Slight hover for desktop */
+@media (hover: hover) {
+  .slider-see-all:hover {
+    opacity: 0.9;
+  }
+}
