@@ -169,3 +169,33 @@
   }
 
 })(jQuery);
+
+/* Remove Slick's default font arrows */
+.slick-prev:before,
+.slick-next:before {
+  content: "" !important;
+  display: block;
+  width: 19px;
+  height: 38px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  flex-shrink: 0;
+  opacity: 1;
+}
+
+/* PREV ARROW (←) */
+.slick-prev:before {
+  background-image: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='19' height='38' viewBox='0 0 21 40' fill='none'>\
+<path d='M0.530273 0.530273L19.5303 19.5303L0.530273 38.5303' stroke='%230051A5' stroke-width='1.5'/>\
+</svg>");
+  transform: rotate(180deg); /* flip for left arrow */
+}
+
+/* NEXT ARROW (→) */
+.slick-next:before {
+  background-image: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='19' height='38' viewBox='0 0 21 40' fill='none'>\
+<path d='M0.530273 0.530273L19.5303 19.5303L0.530273 38.5303' stroke='%230051A5' stroke-width='1.5'/>\
+</svg>");
+}
