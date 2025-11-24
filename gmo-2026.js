@@ -200,11 +200,56 @@
 
 })(jQuery);
 
-<!-- NEW Breadcrumbs -->
-    <nav class="rbccm-hero__breadcrumbs" aria-label="Breadcrumb">
-      <ol class="rbccm-breadcrumbs">
-        <li><a href="/">Home</a></li>
-        <li><a href="/imagine/">RBC Imagine</a></li>
-        <li aria-current="page">Think further forward</li>
-      </ol>
-    </nav>
+/* ============================
+   RBC Hero Breadcrumbs
+   BEM: rbccm-hero__breadcrumbs
+   ============================ */
+
+.rbccm-hero__breadcrumbs {
+  padding: 0;
+  margin: 0 0 16px 0; /* adjust based on hero spacing */
+  font-family: inherit;
+}
+
+/* <ol> — flex horizontal layout */
+.rbccm-hero__breadcrumbs ol {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; /* minimal spacing before/after pipe */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #ffffff;
+}
+
+/* <li> link style */
+.rbccm-hero__breadcrumbs li a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Hover (optional, matches RBC links) */
+.rbccm-hero__breadcrumbs li a:hover {
+  text-decoration: underline;
+}
+
+/* Pipe separator */
+.rbccm-hero__breadcrumbs li + li::before {
+  content: "|";
+  color: #ffffffd0;     /* slightly muted pipe */
+  margin: 0 0.5rem;     /* left/right spacing around pipe */
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Responsive adjustment (optional) */
+@media (max-width: 480px) {
+  .rbccm-hero__breadcrumbs li a {
+    font-size: 13px;
+  }
+  .rbccm-hero__breadcrumbs li + li::before {
+    margin: 0 0.35rem;
+  }
+}
