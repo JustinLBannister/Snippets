@@ -954,3 +954,15 @@ $(function () {
     initImagineHeroTeaser();
   }
 })();
+
+<div id="imagine-teaser-mount"
+     data-hero-video="/assets/rbccm/images/imagine-images/imagine-2026-hero.mp4"
+     data-hero-loop="true"
+     data-hero-fade="false">
+</div>
+
+<div id="imagine-teaser-mount"
+     data-hero-video="/assets/rbccm/images/imagine-images/imagine-2026-hero.mp4"
+     data-hero-loop="true"
+     data-hero-fade="false">
+</div>
