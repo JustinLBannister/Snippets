@@ -966,3 +966,5 @@ $(function () {
      data-hero-loop="true"
      data-hero-fade="false">
 </div>
+
+<div class="rbccm-hero__video-bg"><!-- JS will inject the teaser <video> here --><div id="gmo-teaser-mount" data-hero-video="/assets/rbccm/video/upload/global-market-outlook-2026-hero.mp4" data-hero-loop="true" data-hero-fade="false"></div></div>
