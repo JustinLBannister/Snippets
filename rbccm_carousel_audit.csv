@@ -1,0 +1,25 @@
+Top Level,Second Level,Section,Content,Carousel Type,Variant Notes
+Homepage,,Hero,Hero banner,Bootstrap,Standard Bootstrap hero
+Homepage,,Discover our global impact stories,Story cards,Slick,Homepage Slick variant
+Insights,,Second content section,Mixed content,Owl,Standard Owl
+About Us,,Statistics,Stats numbers,Slick,Standard Slick
+About Us,,Signature case studies,Case studies,Slick,Standard Slick
+Expertise,GIB,Our team,Team members,Owl,Standard Owl
+Expertise,Corporate Banking,Our team,Team members,Owl,New Owl variation
+Expertise,Sustainable Finance,Connect with us,Team/contact,Slick,Styled like Owl (hybrid Slick variant)
+Expertise,Energy Transition,Specialist coverage,Logo slider,Bootstrap,Logo Bootstrap variant
+Expertise,Energy Transition,Select deals and client execution,Deals,Slick,Standard Slick
+Expertise,Energy Transition,Transition in action,Stories,Slick,Standard Slick
+Expertise,Energy Transition,Energy Transition leadership,Leadership grid,Owl,Standard Owl
+Expertise,RBC Research,Industry-recognized leadership,Awards,Slick,Standard Slick
+Expertise,RBC Research,Discover more innovative ideas,Research promos,Slick,Standard Slick
+Expertise,Elements,Research Powered by RBC Elements,Cards,Slick,Standard Slick
+Expertise,Transactions,Case studies,Deals,Slick,Standard Slick
+Insights,European Insights,Top case studies,Case studies,Slick,Standard Slick
+Insights,European Insights,Our purpose in action,Stories,Slick,Standard Slick
+Insights,Podcasts,Markets in motion,Podcast episodes,Owl,Podcast Owl variant
+Insights,Imagine,Testimonials,Testimonials,Slick,New Slick variant
+Insights,Strategic Alternatives,Empowering clients’ success,Business sectors,Slick,Standard Slick
+Insights,Strategic Alternatives,Listen & subscribe to RBC podcasts,Podcast slider,Owl,Same as Markets in Motion
+About Us,Diversity & Inclusion,Voices of our global leaders,Leader stories,Slick,Standard Slick
+About Us,Diversity & Inclusion,Employee Resource Groups,Roundabout,Bootstrap,Roundabout variant
