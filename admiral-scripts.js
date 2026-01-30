@@ -1,0 +1,593 @@
+    // ===== DEPARTMENT DATA (tabs only - members come from hidden div) =====
+    let activeBioState = null; // Track active bio: { deptId, memberIndex }
+    
+    const departments = [
+      { id: 'corporate-broking', label: 'Corporate Broking\n& Advisory', labelPosition: 'top', tabLabel: 'Corporate Broking & Advisory', showOnWheel: true },
+      { id: 'fig-expertise', label: 'FIG Expertise', labelPosition: 'top-right', tabLabel: 'FIG Expertise', showOnWheel: true },
+      { id: 'equity-sales', label: 'Equity\nSales', labelPosition: 'right', tabLabel: 'Equity Sales', showOnWheel: true },
+      { id: 'equity-trading', label: 'Equity\nTrading', labelPosition: 'right', tabLabel: 'Equity Trading', showOnWheel: true },
+      { id: 'research', label: 'Research', labelPosition: 'right', tabLabel: 'Unique Research Offering', showOnWheel: true },
+      { id: 'corporate-banking', label: 'Corporate\nBanking', labelPosition: 'bottom', tabLabel: 'Corporate Banking', showOnWheel: true },
+      { id: 'hedging-risk', label: 'Hedging &\nRisk Solution', labelPosition: 'bottom', tabLabel: 'Hedging & Risk Solution', showOnWheel: true },
+      { id: 'balance-sheet', label: 'Balance Sheet\nAdvisory / DCM', labelPosition: 'bottom-left', tabLabel: 'Balance Sheet Advisory / DCM', showOnWheel: true },
+      { id: 'equity-debt-capital', label: 'ECM', labelPosition: 'left', tabLabel: 'Equity & Debt Capital Markets', showOnWheel: true },
+      { id: 'fig-portfolio', label: 'FIG Portfolio\nAdvisory', labelPosition: 'left', tabLabel: 'FIG Portfolio Advisory', showOnWheel: true },
+      { id: 'ma-defence', label: 'M&A and\nDefence', labelPosition: 'top-left', tabLabel: 'M&A and Defence', showOnWheel: true },
+      { id: 'continental-europe', label: null, labelPosition: null, tabLabel: 'Continental Europe', showOnWheel: false }
+    ];
+
+    // ===== GET TEAM MEMBERS FROM HIDDEN DATA DIV =====
+    function getTeamMembers(teamId) {
+      const dataDiv = document.getElementById('team-data');
+      const members = dataDiv.querySelectorAll(`.team-member[data-team="${teamId}"]`);
+      
+      const memberArray = Array.from(members).map(member => {
+        const bioItems = member.querySelectorAll('ul li');
+        const bioImagesStr = member.dataset.bioImages || '';
+        const bioImages = bioImagesStr ? bioImagesStr.split(',').map(img => img.trim()).filter(img => img) : [];
+        
+        return {
+          name: member.dataset.name,
+          title: member.dataset.title,
+          dept: member.dataset.dept,
+          photo: member.dataset.photo,
+          order: parseInt(member.dataset.order) || 999,
+          videoId: member.dataset.videoId || '',
+          videoType: member.dataset.videoType || 'vimeo',
+          vimeoHash: member.dataset.vimeoHash || '',
+          bioImages: bioImages,
+          bio: Array.from(bioItems).map(li => li.textContent)
+        };
+      });
+      
+      // Sort by order
+      return memberArray.sort((a, b) => a.order - b.order);
+    }
+
+    // ===== POSITION NODES ON WHEEL =====
+    function positionNodes() {
+      const container = document.querySelector('.value-wheel__container');
+      const ring = document.querySelector('.value-wheel__ring');
+      const nodesContainer = document.getElementById('nodes');
+      
+      // Preserve current active node ID before rebuilding
+      const activeNode = nodesContainer.querySelector('.value-wheel__node--active');
+      const activeNodeId = activeNode ? activeNode.dataset.id : null;
+      
+      nodesContainer.innerHTML = '';
+      
+      const containerRect = container.getBoundingClientRect();
+      const ringRect = ring.getBoundingClientRect();
+      
+      const centerX = containerRect.width / 2;
+      const centerY = containerRect.height / 2;
+      
+      // Radius is half the ring width (nodes sit on the ring)
+      const radius = ringRect.width / 2;
+
+      // Only show departments that have showOnWheel: true
+      const wheelDepartments = departments.filter(dept => dept.showOnWheel);
+
+      wheelDepartments.forEach((dept, index) => {
+        const angle = (index / wheelDepartments.length) * 2 * Math.PI - Math.PI / 2;
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+
+        const node = document.createElement('a');
+        node.href = '#teams';
+        node.className = 'value-wheel__node';
+        
+        // Restore active state if this was the active node
+        if (dept.id === activeNodeId) {
+          node.classList.add('value-wheel__node--active');
+        }
+        
+        node.dataset.id = dept.id;
+        node.style.left = `${x}px`;
+        node.style.top = `${y}px`;
+        
+        const labelText = dept.label.replace(/\n/g, '<br>');
+        node.innerHTML = `
+          <div class="value-wheel__node-circle"></div>
+          <span class="value-wheel__node-label value-wheel__node-label--${dept.labelPosition}">${labelText}</span>
+        `;
+        
+        node.addEventListener('click', (e) => {
+          e.preventDefault();
+          activateTab(dept.id);
+          document.getElementById('teams').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        nodesContainer.appendChild(node);
+      });
+    }
+
+    // ===== CREATE TABS AND PANELS =====
+    function createTabsAndPanels() {
+      const tablist = document.getElementById('tablist');
+
+      departments.forEach((dept, index) => {
+        // Create tab
+        const tab = document.createElement('button');
+        tab.className = `rbccm-themes__tab${index === 0 ? ' is-active' : ''}`;
+        tab.setAttribute('role', 'tab');
+        tab.setAttribute('aria-expanded', index === 0 ? 'true' : 'false');
+        tab.setAttribute('aria-controls', `panel-${dept.id}`);
+        tab.dataset.panel = dept.id;
+        tab.innerHTML = `
+          ${dept.tabLabel}
+          <svg class="rbccm-themes__chevron" xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none" aria-hidden="true">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M16.59 15.555L12 10.9317L7.41 15.555L6 14.1316L12 8.07493L18 14.1316L16.59 15.555Z" fill="currentColor"/>
+          </svg>
+        `;
+        tab.addEventListener('click', (e) => {
+          e.preventDefault();
+          handleTabClick(tab);
+        });
+        tablist.appendChild(tab);
+
+        // Create panel - content will be populated on tab click
+        const panel = document.createElement('div');
+        panel.className = `rbccm-themes__panel${index === 0 ? ' is-active' : ''}`;
+        panel.setAttribute('role', 'tabpanel');
+        panel.id = `panel-${dept.id}`;
+        panel.dataset.panel = dept.id;
+        panel.innerHTML = '<div class="rbccm-team__grid"></div>';
+        tablist.appendChild(panel);
+
+        // Populate first panel on load
+        if (index === 0) {
+          populatePanel(dept.id);
+        }
+      });
+
+      // Handle responsive behavior
+      handleResponsive();
+      window.addEventListener('resize', debounce(handleResponsive, 250));
+
+      // Bio link click handlers (delegated)
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('rbccm-team__link--bio')) {
+          e.preventDefault();
+          const deptId = e.target.dataset.deptId;
+          const memberIndex = parseInt(e.target.dataset.memberIndex);
+          showBio(deptId, memberIndex, e.target);
+        }
+      });
+
+      // Close bio button (desktop)
+      document.querySelector('.rbccm-bio__close').addEventListener('click', () => {
+        document.getElementById('bio-section').classList.remove('is-active');
+        // Remove active class from all cards
+        document.querySelectorAll('.rbccm-team__card.is-active').forEach(card => {
+          card.classList.remove('is-active');
+        });
+        // Close all inline bios
+        document.querySelectorAll('.rbccm-team__inline-bio.is-active').forEach(bio => {
+          bio.classList.remove('is-active');
+        });
+        // Clear active bio state
+        activeBioState = null;
+      });
+
+      // Video link click handlers (delegated)
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('rbccm-team__link--video')) {
+          e.preventDefault();
+          const deptId = e.target.dataset.deptId;
+          const memberIndex = parseInt(e.target.dataset.memberIndex);
+          const videoId = e.target.dataset.videoId;
+          const videoType = e.target.dataset.videoType;
+          const vimeoHash = e.target.dataset.vimeoHash;
+          showVideoModal(deptId, memberIndex, videoId, videoType, vimeoHash);
+        }
+      });
+
+      // Close video modal
+      document.querySelector('.rbccm-video-modal__close').addEventListener('click', closeVideoModal);
+      document.querySelector('.rbccm-video-modal__overlay').addEventListener('click', closeVideoModal);
+
+      // Close modal on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeVideoModal();
+        }
+      });
+    }
+
+    // ===== SHOW VIDEO MODAL =====
+    function showVideoModal(deptId, memberIndex, videoId, videoType, vimeoHash) {
+      const members = getTeamMembers(deptId);
+      const member = members[memberIndex];
+      
+      if (!member) return;
+      
+      document.getElementById('video-modal-name').textContent = member.name;
+      
+      const playerContainer = document.getElementById('video-modal-player');
+      let embedHtml = '';
+      
+      switch(videoType) {
+        case 'youtube':
+          embedHtml = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+          break;
+        case 'vimeo':
+          const hashParam = vimeoHash ? `?h=${vimeoHash}&autoplay=1` : '?autoplay=1';
+          embedHtml = `<iframe src="https://player.vimeo.com/video/${videoId}${hashParam}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+          break;
+        default:
+          // No video available
+          embedHtml = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#666;">Video coming soon</div>`;
+      }
+      
+      playerContainer.innerHTML = embedHtml;
+      document.getElementById('video-modal').classList.add('is-active');
+      document.body.style.overflow = 'hidden'; // Prevent background scroll
+    }
+
+    // ===== CLOSE VIDEO MODAL =====
+    function closeVideoModal() {
+      const modal = document.getElementById('video-modal');
+      modal.classList.remove('is-active');
+      document.getElementById('video-modal-player').innerHTML = ''; // Stop video
+      document.body.style.overflow = ''; // Restore scroll
+    }
+
+    // ===== POPULATE PANEL WITH TEAM MEMBERS =====
+    function populatePanel(deptId) {
+      const panel = document.getElementById(`panel-${deptId}`);
+      const grid = panel.querySelector('.rbccm-team__grid');
+      const members = getTeamMembers(deptId);
+
+      if (members.length === 0) {
+        grid.innerHTML = '<p style="color: #666; text-align: center; padding: 40px;">Team members coming soon.</p>';
+        return;
+      }
+
+      // Create cards
+      const membersHTML = members.map((member, mIndex) => `
+        <div class="rbccm-team__card" data-member-index="${mIndex}" data-dept-id="${deptId}">
+          <div class="rbccm-team__photo">${member.photo ? `<img src="${member.photo}" alt="${member.name}">` : 'FPO'}</div>
+          <div class="rbccm-team__name">${member.name}</div>
+          ${member.title ? `<div class="rbccm-team__title">${member.title}</div>` : ''}
+          <div class="rbccm-team__dept">${member.dept}</div>
+          <div class="rbccm-team__links">
+            <a href="#" class="rbccm-team__link rbccm-team__link--bio" data-member-index="${mIndex}" data-dept-id="${deptId}">Biography</a>
+            <a href="#" class="rbccm-team__link rbccm-team__link--video" data-member-index="${mIndex}" data-dept-id="${deptId}" data-video-id="${member.videoId}" data-video-type="${member.videoType}" data-vimeo-hash="${member.vimeoHash || ''}">Video</a>
+          </div>
+        </div>
+      `).join('');
+
+      // Add single inline bio element at the end
+      const inlineBioHTML = `
+        <div class="rbccm-team__inline-bio" data-dept-id="${deptId}">
+          <button class="rbccm-team__inline-bio__close" aria-label="Close bio">
+            <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 23 23" fill="none">
+              <line x1="1.41421" y1="1" x2="22" y2="21.5858" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <line x1="22" y1="1.41421" x2="1.41421" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <div class="rbccm-team__inline-bio__text">
+            <h3 class="rbccm-team__inline-bio__name"></h3>
+            <ul class="rbccm-team__inline-bio__list"></ul>
+          </div>
+          <div class="rbccm-team__inline-bio__slider-wrapper">
+            <div class="rbccm-team__inline-bio__slider"></div>
+          </div>
+          <div class="rbccm-team__inline-bio__bar"></div>
+        </div>
+      `;
+
+      grid.innerHTML = membersHTML + inlineBioHTML;
+
+      // Add click handler for inline bio close button
+      const closeBtn = grid.querySelector('.rbccm-team__inline-bio__close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const bioEl = grid.querySelector('.rbccm-team__inline-bio');
+          bioEl.classList.remove('is-active');
+          // Remove active class from all cards
+          grid.querySelectorAll('.rbccm-team__card.is-active').forEach(card => {
+            card.classList.remove('is-active');
+          });
+          // Clear active bio state
+          activeBioState = null;
+        });
+      }
+
+      // Restore bio state if it exists for this department
+      if (activeBioState && activeBioState.deptId === deptId) {
+        const bioLink = grid.querySelector(`.rbccm-team__link--bio[data-member-index="${activeBioState.memberIndex}"][data-dept-id="${deptId}"]`);
+        if (bioLink) {
+          // Use setTimeout to ensure DOM is ready
+          setTimeout(() => {
+            showBio(activeBioState.deptId, activeBioState.memberIndex, bioLink);
+          }, 50);
+        }
+      }
+    }
+
+    // ===== SHOW BIO =====
+    function showBio(deptId, memberIndex, clickedElement) {
+      const members = getTeamMembers(deptId);
+      const member = members[memberIndex];
+      
+      if (!member) return;
+
+      const isMobile = window.matchMedia('(max-width: 991px)').matches;
+      const card = clickedElement.closest('.rbccm-team__card');
+      const grid = card.closest('.rbccm-team__grid');
+      
+      // Remove active class from all cards
+      document.querySelectorAll('.rbccm-team__card.is-active').forEach(c => {
+        c.classList.remove('is-active');
+      });
+      
+      // Close all inline bios
+      document.querySelectorAll('.rbccm-team__inline-bio.is-active').forEach(bio => {
+        bio.classList.remove('is-active');
+      });
+      
+      // Save active bio state
+      activeBioState = { deptId, memberIndex };
+
+      if (isMobile) {
+        // Mobile: show inline bio below the row
+        const inlineBio = grid.querySelector('.rbccm-team__inline-bio');
+        if (inlineBio) {
+          // Get all cards
+          const cards = Array.from(grid.querySelectorAll('.rbccm-team__card'));
+          
+          // Get the clicked card's vertical position
+          const cardRect = card.getBoundingClientRect();
+          const cardTop = cardRect.top;
+          
+          // Find the last card in the same row (same top position)
+          let lastCardInRow = card;
+          for (let i = 0; i < cards.length; i++) {
+            const otherCardRect = cards[i].getBoundingClientRect();
+            // Cards are in the same row if their tops are within 10px of each other
+            if (Math.abs(otherCardRect.top - cardTop) < 10) {
+              lastCardInRow = cards[i];
+            }
+          }
+          
+          // Move the bio element to be right after the last card in the row
+          lastCardInRow.after(inlineBio);
+          
+          // Update bio content
+          inlineBio.querySelector('.rbccm-team__inline-bio__name').textContent = member.name;
+          inlineBio.querySelector('.rbccm-team__inline-bio__list').innerHTML = 
+            member.bio.map(item => `<li>${item}</li>`).join('');
+          
+          // Update inline bio slider
+          const inlineSlider = inlineBio.querySelector('.rbccm-team__inline-bio__slider');
+          if (inlineSlider) {
+            // Destroy existing slick instance if any
+            if ($(inlineSlider).hasClass('slick-initialized')) {
+              $(inlineSlider).slick('unslick');
+            }
+            
+            // Build slider HTML with background-image divs
+            if (member.bioImages && member.bioImages.length > 0) {
+              inlineSlider.innerHTML = member.bioImages.map(img => `<div class="rbccm-team__inline-bio__slide" style="background-image: url('${img}')"></div>`).join('');
+              inlineSlider.classList.toggle('single-image', member.bioImages.length === 1);
+              
+              // Initialize slick
+              $(inlineSlider).slick({
+                dots: false,
+                infinite: false,
+                speed: 300,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                prevArrow: '<button type="button" class="slick-prev" aria-label="Previous"></button>',
+                nextArrow: '<button type="button" class="slick-next" aria-label="Next"></button>'
+              });
+            } else {
+              inlineSlider.innerHTML = '';
+            }
+          }
+          
+          card.classList.add('is-active');
+          inlineBio.classList.add('is-active');
+          
+          // Scroll to the bio
+          setTimeout(() => {
+            inlineBio.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 100);
+        }
+      } else {
+        // Desktop: show global bio section
+        card.classList.add('is-active');
+        
+        document.getElementById('bio-name').textContent = member.name;
+        const bioList = document.getElementById('bio-list');
+        bioList.innerHTML = member.bio.map(item => `<li>${item}</li>`).join('');
+        
+        // Update desktop slider
+        const bioSlider = document.getElementById('bio-slider');
+        
+        // Destroy existing slick instance if any
+        if ($(bioSlider).hasClass('slick-initialized')) {
+          $(bioSlider).slick('unslick');
+        }
+        
+        // Build slider HTML with background-image divs
+        if (member.bioImages && member.bioImages.length > 0) {
+          bioSlider.innerHTML = member.bioImages.map(img => `<div class="rbccm-bio__slide" style="background-image: url('${img}')"></div>`).join('');
+          bioSlider.classList.toggle('single-image', member.bioImages.length === 1);
+          document.querySelector('.rbccm-bio__slider-wrapper').style.display = 'block';
+          
+          // Initialize slick
+          $(bioSlider).slick({
+            dots: false,
+            infinite: false,
+            speed: 300,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            prevArrow: '<button type="button" class="slick-prev" aria-label="Previous"></button>',
+            nextArrow: '<button type="button" class="slick-next" aria-label="Next"></button>'
+          });
+        } else {
+          bioSlider.innerHTML = '';
+          document.querySelector('.rbccm-bio__slider-wrapper').style.display = 'none';
+        }
+        
+        document.getElementById('bio-section').classList.add('is-active');
+      }
+    }
+
+    // ===== HANDLE TAB CLICK =====
+    function handleTabClick(clickedTab) {
+      const targetPanel = clickedTab.dataset.panel;
+      const isDesktop = window.matchMedia('(min-width: 992px)').matches;
+
+      // Close bio when switching tabs
+      document.getElementById('bio-section').classList.remove('is-active');
+      // Remove active class from all cards
+      document.querySelectorAll('.rbccm-team__card.is-active').forEach(card => {
+        card.classList.remove('is-active');
+      });
+      // Close all inline bios
+      document.querySelectorAll('.rbccm-team__inline-bio.is-active').forEach(bio => {
+        bio.classList.remove('is-active');
+      });
+      // Clear active bio state when switching tabs
+      activeBioState = null;
+
+      if (isDesktop) {
+        // Desktop: traditional tab behavior
+        document.querySelectorAll('.rbccm-themes__tab').forEach(tab => {
+          tab.classList.remove('is-active');
+          tab.setAttribute('aria-expanded', 'false');
+        });
+        document.querySelectorAll('.rbccm-themes__panel').forEach(panel => {
+          panel.classList.remove('is-active');
+        });
+        clickedTab.classList.add('is-active');
+        clickedTab.setAttribute('aria-expanded', 'true');
+        const activePanel = document.querySelector(`[data-panel="${targetPanel}"].rbccm-themes__panel`);
+        if (activePanel) activePanel.classList.add('is-active');
+      } else {
+        // Mobile: accordion behavior - only one open at a time
+        const isActive = clickedTab.classList.contains('is-active');
+        
+        // Close all tabs first
+        document.querySelectorAll('.rbccm-themes__tab').forEach(tab => {
+          tab.classList.remove('is-active');
+          tab.setAttribute('aria-expanded', 'false');
+        });
+        
+        // If the clicked tab wasn't already active, open it
+        if (!isActive) {
+          clickedTab.classList.add('is-active');
+          clickedTab.setAttribute('aria-expanded', 'true');
+        }
+      }
+
+      // Populate the panel with team members (lazy load)
+      populatePanel(targetPanel);
+
+      // Update wheel nodes
+      setActiveNode(targetPanel);
+    }
+
+    // ===== HANDLE RESPONSIVE =====
+    function handleResponsive() {
+      const isDesktop = window.matchMedia('(min-width: 992px)').matches;
+      const tablist = document.getElementById('tablist');
+      const panelsContainer = document.getElementById('panels');
+      const panels = document.querySelectorAll('.rbccm-themes__panel');
+      const tabs = document.querySelectorAll('.rbccm-themes__tab');
+
+      if (isDesktop) {
+        // Move panels to desktop container
+        panels.forEach(panel => panelsContainer.appendChild(panel));
+        
+        // On desktop, ensure only one tab/panel is active
+        const activeTab = document.querySelector('.rbccm-themes__tab.is-active');
+        if (!activeTab) {
+          // No active tab, activate the first one
+          tabs[0]?.classList.add('is-active');
+          tabs[0]?.setAttribute('aria-expanded', 'true');
+          panels[0]?.classList.add('is-active');
+        } else {
+          // Make sure only the corresponding panel is active
+          const activePanelId = activeTab.dataset.panel;
+          panels.forEach(panel => {
+            if (panel.id === `panel-${activePanelId}`) {
+              panel.classList.add('is-active');
+            } else {
+              panel.classList.remove('is-active');
+            }
+          });
+        }
+      } else {
+        // Mobile: move panels back after their tabs
+        tabs.forEach((tab, index) => {
+          const panelId = tab.dataset.panel;
+          const panel = document.getElementById(`panel-${panelId}`);
+          if (panel && tab.nextElementSibling !== panel) {
+            tab.after(panel);
+          }
+        });
+        
+        // On mobile, remove is-active from all panels (CSS handles display via adjacent sibling)
+        panels.forEach(panel => panel.classList.remove('is-active'));
+        
+        // Keep only one tab active (or none)
+        const activeTabs = document.querySelectorAll('.rbccm-themes__tab.is-active');
+        if (activeTabs.length > 1) {
+          // Multiple active tabs, keep only the first one
+          activeTabs.forEach((tab, index) => {
+            if (index > 0) {
+              tab.classList.remove('is-active');
+              tab.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
+      }
+
+      // Restore bio state if it exists
+      if (activeBioState) {
+        const bioLink = document.querySelector(`.rbccm-team__link--bio[data-member-index="${activeBioState.memberIndex}"][data-dept-id="${activeBioState.deptId}"]`);
+        if (bioLink) {
+          setTimeout(() => {
+            showBio(activeBioState.deptId, activeBioState.memberIndex, bioLink);
+          }, 100);
+        }
+      }
+    }
+
+    // ===== SET ACTIVE NODE =====
+    function setActiveNode(id) {
+      document.querySelectorAll('.value-wheel__node').forEach(node => {
+        node.classList.toggle('value-wheel__node--active', node.dataset.id === id);
+      });
+    }
+
+    // ===== ACTIVATE TAB (from wheel click) =====
+    function activateTab(id) {
+      const tab = document.querySelector(`.rbccm-themes__tab[data-panel="${id}"]`);
+      if (tab) handleTabClick(tab);
+    }
+
+    // ===== DEBOUNCE =====
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+      };
+    }
+
+    // ===== INITIALIZE =====
+    document.addEventListener('DOMContentLoaded', () => {
+      positionNodes();
+      createTabsAndPanels();
+      if (departments.length > 0) {
+        setActiveNode(departments[0].id);
+      }
+      window.addEventListener('resize', debounce(positionNodes, 250));
+    });
