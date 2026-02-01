@@ -359,11 +359,11 @@
       gap: 32px;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 32px 0;
+      padding: 32px 0 60px 0;
     }
 
     .rbccm-team__card {
-      width: 276px;
+      width: 212px;
       flex-shrink: 0;
       text-align: left;
       position: relative;
@@ -372,8 +372,9 @@
     }
 
     .rbccm-team__photo {
-      width: 276px;
-      height: 263px;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 276 / 263;
       background: #e8e8e8;
       margin: 0 0 24px 0;
       display: flex;
@@ -1048,6 +1049,19 @@
       }
     }
 
+    /* Tablet: 2 columns top row, 1 centered bottom */
+    @media (max-width: 991px) and (min-width: 600px) {
+      .rbccm-team__grid {
+        gap: 24px;
+        max-width: 600px;
+      }
+
+      .rbccm-team__card {
+        width: calc(50% - 12px);
+        max-width: 276px;
+      }
+    }
+
     @media (max-width: 767px) {
       .value-wheel__node-label {
         font-size: 10px;
@@ -1065,7 +1079,10 @@
       .value-wheel__logo-divider {
         height: 40px;
       }
+    }
 
+    /* Mobile: 1 column */
+    @media (max-width: 599px) {
       .rbccm-team__grid {
         gap: 30px;
       }
@@ -1079,6 +1096,22 @@
         width: 100%;
         height: auto;
         aspect-ratio: 276 / 263;
+      }
+    }
+
+    /* ===== CORPORATE BROKING 5-CARD OVERRIDE (Desktop only) ===== */
+    @media (min-width: 992px) {
+      #panel-corporate-broking .rbccm-team__card {
+        width: 214px;
+      }
+
+      #panel-corporate-broking .rbccm-team__photo {
+        width: 214px;
+        height: 214px;
+      }
+
+      #panel-corporate-broking .rbccm-team__photo img {
+        object-position: center center;
       }
     }
 
@@ -1097,6 +1130,23 @@
     /* ===== APPROACH SECTION OVERRIDE ===== */
     .rbccm-approach {
       background: transparent;
+    }
+
+    .rbccm-approach__video {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+    }
+
+    .rbccm-approach__video > div {
+      width: 100%;
+      height: 100%;
+    }
+
+    .rbccm-approach__video iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
     }
 
     /* ===== STATS SECTION ===== */
@@ -1127,13 +1177,18 @@
     }
 
     .rbccm-stats__grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      display: flex;
       gap: 0;
       padding: 63px 0;
       background: #0F80C8;
-      max-width: 1284px;
-      margin: 0 auto;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .rbccm-stats__grid::-webkit-scrollbar {
+      display: none;
     }
 
     .rbccm-stats__item {
@@ -1143,16 +1198,17 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-around;
+      justify-content: flex-start;
+      flex: 0 0 auto;
+      min-width: 214px;
     }
 
     .rbccm-stats__item:last-child {
       border-right: 2px solid rgba(255, 255, 255, 0.35);
     }
 
-    /* 3rd and 4th column - 16px gap between number and desc */
-    .rbccm-stats__item:nth-child(3),
-    .rbccm-stats__item:nth-child(4) {
+    /* 3rd, 4th, 5th, 6th columns - 16px gap between number and desc */
+    .rbccm-stats__item:nth-child(n+3) {
       gap: 16px;
     }
 
@@ -1183,10 +1239,27 @@
       line-height: 120%;
     }
 
-    /* 3rd and 4th column larger numbers */
-    .rbccm-stats__item:nth-child(3) .rbccm-stats__number,
-    .rbccm-stats__item:nth-child(4) .rbccm-stats__number {
+    /* 3rd+ column larger numbers */
+    .rbccm-stats__item:nth-child(n+3) .rbccm-stats__number {
       font-size: 50px;
+    }
+
+    /* Progress bar */
+    .rbccm-stats__progress {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .rbccm-stats__progress-bar {
+      height: 100%;
+      background: #FFC72C;
+      border-radius: 2px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      transition: left 0.1s ease, width 0.1s ease;
     }
 
     /* Tablet and Mobile */
@@ -1200,42 +1273,20 @@
       }
 
       .rbccm-stats__grid {
-        grid-template-columns: repeat(2, 1fr);
-        padding: 47px 32px;
-        gap: 0;
+        padding: 47px 0;
       }
 
       .rbccm-stats__item {
         gap: 0;
-        border-left: none;
+        min-width: 200px;
+        padding: 0 24px;
       }
 
-      .rbccm-stats__item:last-child {
-        border-right: none;
+      .rbccm-stats__item:nth-child(n+3) {
+        gap: 16px;
       }
 
-      /* Odd items (1st, 3rd) get right border */
-      .rbccm-stats__item:nth-child(odd) {
-        border-right: 2px solid rgba(255, 255, 255, 0.35);
-      }
-
-      /* First two items get bottom border */
-      .rbccm-stats__item:nth-child(1),
-      .rbccm-stats__item:nth-child(2) {
-        border-bottom: 2px solid rgba(255, 255, 255, 0.35);
-        padding-bottom: 32px;
-      }
-
-      .rbccm-stats__item:nth-child(3),
-      .rbccm-stats__item:nth-child(4) {
-        gap: 0;
-        padding-top: 32px;
-      }
-
-      /* 3rd and 4th item number margin */
-      .rbccm-stats__item:nth-child(3) .rbccm-stats__number,
-      .rbccm-stats__item:nth-child(4) .rbccm-stats__number {
-        margin-bottom: 14px;
+      .rbccm-stats__item:nth-child(n+3) .rbccm-stats__number {
         font-size: 28px;
       }
 
@@ -1250,34 +1301,5 @@
 
       .rbccm-stats__desc {
         font-size: 20px;
-      }
-    }
-
-    /* Mobile: 1 column */
-    @media (max-width: 599px) {
-      .rbccm-stats__grid {
-        grid-template-columns: 1fr;
-        gap: 32px;
-      }
-
-      .rbccm-stats__item {
-        border-left: none;
-        border-right: none;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.35);
-        padding-bottom: 32px;
-      }
-
-      .rbccm-stats__item:nth-child(odd) {
-        border-right: none;
-      }
-
-      .rbccm-stats__item:nth-child(3),
-      .rbccm-stats__item:nth-child(4) {
-        padding-top: 0;
-      }
-
-      .rbccm-stats__item:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
       }
     }

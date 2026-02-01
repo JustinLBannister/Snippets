@@ -590,4 +590,53 @@
         setActiveNode(departments[0].id);
       }
       window.addEventListener('resize', debounce(positionNodes, 250));
+
+      // ===== STATS HORIZONTAL SCROLL =====
+      initStatsScroll();
     });
+
+    // ===== STATS SCROLL + PROGRESS BAR =====
+    function initStatsScroll() {
+      const grid = document.querySelector('.rbccm-stats__grid');
+      const progressBar = document.querySelector('.rbccm-stats__progress-bar');
+      if (!grid || !progressBar) return;
+
+      function centerGrid() {
+        const scrollWidth = grid.scrollWidth;
+        const clientWidth = grid.clientWidth;
+        if (scrollWidth > clientWidth) {
+          grid.scrollLeft = (scrollWidth - clientWidth) / 2;
+        }
+        updateProgressBar();
+      }
+
+      function updateProgressBar() {
+        const scrollWidth = grid.scrollWidth;
+        const clientWidth = grid.clientWidth;
+        const scrollLeft = grid.scrollLeft;
+        const maxScroll = scrollWidth - clientWidth;
+
+        if (maxScroll <= 0) {
+          // No overflow — fill the whole bar
+          progressBar.style.width = '100%';
+          progressBar.style.left = '0';
+          return;
+        }
+
+        const ratio = clientWidth / scrollWidth;
+        const barWidth = Math.max(ratio * 100, 15); // min 15% width
+        const scrollPercent = scrollLeft / maxScroll;
+        const barLeft = scrollPercent * (100 - barWidth);
+
+        progressBar.style.width = barWidth + '%';
+        progressBar.style.left = barLeft + '%';
+      }
+
+      grid.addEventListener('scroll', updateProgressBar);
+      window.addEventListener('resize', debounce(function() {
+        centerGrid();
+      }, 250));
+
+      // Center on load
+      centerGrid();
+    }
