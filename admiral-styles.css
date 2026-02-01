@@ -8,7 +8,7 @@
     body {
       overflow-x: hidden;
       background-color: #082043;
-      background-image: url('images/admiral-hero-bg.png');
+      background-image: url('/assets/rbccm/images/admiral/admiral-hero-bg.png');
       background-position: top right -620px;
       background-repeat: no-repeat;
       background-size: auto 350px;
