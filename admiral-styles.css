@@ -401,6 +401,10 @@
       overflow: visible;
     }
 
+    .rbccm-team__grid.bio-on-last-row {
+      padding-bottom: 0;
+    }
+
     .rbccm-team__card {
       width: 276px;
       flex-shrink: 0;
@@ -536,7 +540,6 @@
         bottom: 0;
         width: 100vw;
         background: #0051A5;
-        z-index: -1;
       }
 
       .rbccm-team__inline-bio.is-active::before {
@@ -1267,13 +1270,10 @@
 
     .rbccm-stats__grid {
       display: flex;
-      justify-content: center;
       gap: 0;
       padding: 63px 0;
       background: #0F80C8;
-      overflow-x: auto;
-      scroll-behavior: smooth;
-      -webkit-overflow-scrolling: touch;
+      overflow-x: hidden;
       scrollbar-width: none;
     }
 

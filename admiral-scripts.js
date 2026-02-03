@@ -301,6 +301,7 @@
           e.preventDefault();
           const bioEl = grid.querySelector('.rbccm-team__inline-bio');
           bioEl.classList.remove('is-active');
+          grid.classList.remove('bio-on-last-row');
           // Remove active class from all cards
           grid.querySelectorAll('.rbccm-team__card.is-active').forEach(card => {
             card.classList.remove('is-active');
@@ -370,6 +371,12 @@
         
         // Move the bio element to be right after the last card in the row
         lastCardInRow.after(inlineBio);
+        
+        // Check if bio is on the last row — remove grid bottom padding if so
+        const lastCard = cards[cards.length - 1];
+        const lastCardTop = lastCard.getBoundingClientRect().top;
+        const isLastRow = Math.abs(cardTop - lastCardTop) < 10;
+        grid.classList.toggle('bio-on-last-row', isLastRow);
         
         // Update bio content
         inlineBio.querySelector('.rbccm-team__inline-bio__name').textContent = member.name;
@@ -571,51 +578,130 @@
       initStatsScroll();
     });
 
-    // ===== STATS SCROLL + PROGRESS BAR =====
+    // ===== STATS TICKER + PROGRESS BAR =====
     function initStatsScroll() {
       const grid = document.querySelector('.rbccm-stats__grid');
       const progressBar = document.querySelector('.rbccm-stats__progress-bar');
-      if (!grid || !progressBar) return;
+      if (!grid) return;
 
-      function centerGrid() {
-        const scrollWidth = grid.scrollWidth;
-        const clientWidth = grid.clientWidth;
-        if (scrollWidth > clientWidth) {
-          grid.scrollLeft = (scrollWidth - clientWidth) / 2;
-        }
-        updateProgressBar();
+      // Duplicate items for seamless loop
+      const items = Array.from(grid.querySelectorAll('.rbccm-stats__item'));
+      const originalCount = items.length;
+      
+      // Clone items twice for seamless infinite scroll
+      for (let i = 0; i < 2; i++) {
+        items.forEach(item => {
+          const clone = item.cloneNode(true);
+          clone.setAttribute('aria-hidden', 'true');
+          grid.appendChild(clone);
+        });
       }
 
-      function updateProgressBar() {
-        const scrollWidth = grid.scrollWidth;
-        const clientWidth = grid.clientWidth;
-        const scrollLeft = grid.scrollLeft;
-        const maxScroll = scrollWidth - clientWidth;
-
-        if (maxScroll <= 0) {
-          // No overflow — fill the whole bar
-          progressBar.style.width = '100%';
-          progressBar.style.left = '0';
-          return;
-        }
-
-        const ratio = clientWidth / scrollWidth;
-        const barWidth = Math.max(ratio * 100, 15); // min 15% width
-        const scrollPercent = scrollLeft / maxScroll;
-        const barLeft = scrollPercent * (100 - barWidth);
-
-        progressBar.style.width = barWidth + '%';
-        progressBar.style.left = barLeft + '%';
-      }
-
-      grid.addEventListener('scroll', updateProgressBar);
-      window.addEventListener('resize', debounce(function() {
-        centerGrid();
-      }, 250));
-
-      // Center on load — use RAF + delay to ensure layout is complete
-      requestAnimationFrame(() => {
-        centerGrid();
-        setTimeout(centerGrid, 100);
+      // Measure one set width
+      let setWidth = 0;
+      items.forEach(item => {
+        setWidth += item.offsetWidth;
       });
+
+      // Animation state
+      let isPlaying = true;
+      let scrollPos = 0;
+      let animationId = null;
+      const speed = 0.5; // pixels per frame
+
+      function tick() {
+        if (!isPlaying) return;
+        scrollPos += speed;
+        
+        // Reset seamlessly when we've scrolled one full set
+        if (scrollPos >= setWidth) {
+          scrollPos -= setWidth;
+        }
+        
+        grid.scrollLeft = scrollPos;
+        
+        // Update progress bar
+        if (progressBar) {
+          const progress = (scrollPos % setWidth) / setWidth;
+          const barWidth = 25;
+          const barLeft = progress * (100 - barWidth);
+          progressBar.style.width = barWidth + '%';
+          progressBar.style.left = barLeft + '%';
+        }
+        
+        animationId = requestAnimationFrame(tick);
+      }
+
+      function play() {
+        isPlaying = true;
+        playBtn.setAttribute('aria-label', 'Pause ticker');
+        playBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="4" height="12" rx="1" fill="white"/><rect x="9" y="1" width="4" height="12" rx="1" fill="white"/></svg>`;
+        tick();
+      }
+
+      function pause() {
+        isPlaying = false;
+        if (animationId) cancelAnimationFrame(animationId);
+        playBtn.setAttribute('aria-label', 'Play ticker');
+        playBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polygon points="2,1 13,7 2,13" fill="white"/></svg>`;
+      }
+
+      // Create pause/play button
+      const playBtn = document.createElement('button');
+      playBtn.className = 'rbccm-stats__ticker-btn';
+      playBtn.setAttribute('aria-label', 'Pause ticker');
+      playBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="4" height="12" rx="1" fill="white"/><rect x="9" y="1" width="4" height="12" rx="1" fill="white"/></svg>`;
+      
+      // Insert button into the stats section
+      const statsSection = document.querySelector('.rbccm-stats');
+      statsSection.style.position = 'relative';
+      statsSection.appendChild(playBtn);
+
+      playBtn.addEventListener('click', () => {
+        if (isPlaying) {
+          pause();
+        } else {
+          play();
+        }
+      });
+
+      // Pause on hover
+      grid.addEventListener('mouseenter', () => {
+        if (isPlaying) pause();
+      });
+      grid.addEventListener('mouseleave', () => {
+        if (!isPlaying) play();
+      });
+
+      // Disable native scroll since we're animating
+      grid.style.overflowX = 'hidden';
+
+      // Style the button via JS
+      Object.assign(playBtn.style, {
+        position: 'absolute',
+        bottom: '18px',
+        right: '20px',
+        background: 'rgba(255,255,255,0.2)',
+        border: '1px solid rgba(255,255,255,0.4)',
+        borderRadius: '50%',
+        width: '32px',
+        height: '32px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        zIndex: '10',
+        padding: '0',
+        transition: 'background 0.2s'
+      });
+
+      playBtn.addEventListener('mouseenter', () => {
+        playBtn.style.background = 'rgba(255,255,255,0.35)';
+      });
+      playBtn.addEventListener('mouseleave', () => {
+        playBtn.style.background = 'rgba(255,255,255,0.2)';
+      });
+
+      // Start ticker
+      play();
     }
