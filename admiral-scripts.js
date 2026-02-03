@@ -1,4 +1,4 @@
-// ===== DEPARTMENT DATA (tabs only - members come from hidden div) =====
+    // ===== DEPARTMENT DATA (tabs only - members come from hidden div) =====
     let activeBioState = null; // Track active bio: { deptId, memberIndex }
     
     const departments = [
@@ -652,6 +652,9 @@
         centerGrid();
       }, 250));
 
-      // Center on load
-      centerGrid();
+      // Center on load — use RAF + delay to ensure layout is complete
+      requestAnimationFrame(() => {
+        centerGrid();
+        setTimeout(centerGrid, 100);
+      });
     }
