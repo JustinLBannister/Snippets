@@ -1145,20 +1145,7 @@
         height: auto;
         aspect-ratio: 276 / 263;
       }
-    }
-
-    /* ===== CORPORATE BROKING 5-CARD OVERRIDE (Desktop only) ===== */
-    @media (min-width: 992px) {
-      #panel-corporate-broking .rbccm-team__card {
-        width: 214px;
-      }
-
-      #panel-corporate-broking .rbccm-team__photo {
-        width: 214px;
-        height: 214px;
-      }
-
-      #panel-corporate-broking .rbccm-team__photo img {
+    }      #panel-corporate-broking .rbccm-team__photo img {
         object-position: center center;
       }
     }
