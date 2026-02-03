@@ -605,12 +605,70 @@
 
       // Animation state
       let isPlaying = true;
+      let wasPlayingBeforeHover = true;
       let scrollPos = 0;
       let animationId = null;
       const speed = 0.5; // pixels per frame
 
+      // Drag state
+      let isDragging = false;
+      let dragStartX = 0;
+      let dragStartScroll = 0;
+
+      // Progress bar state
+      let progressAnim = null;
+      let currentBarWidth = 25;
+      let currentBarLeft = 0;
+      let targetBarWidth = 25;
+      let targetBarLeft = 0;
+
+      function updateProgressBar() {
+        if (!progressBar) return;
+        const progress = (scrollPos % setWidth) / setWidth;
+        targetBarWidth = 25;
+        targetBarLeft = progress * (100 - targetBarWidth);
+        
+        // Detect wrap-around for elastic effect
+        if (targetBarLeft < currentBarLeft - 30) {
+          // Bar is wrapping — shrink out to right, then grow from left
+          elasticReset();
+          return;
+        }
+        
+        currentBarWidth = targetBarWidth;
+        currentBarLeft = targetBarLeft;
+        progressBar.style.width = currentBarWidth + '%';
+        progressBar.style.left = currentBarLeft + '%';
+      }
+
+      function elasticReset() {
+        if (!progressBar) return;
+        // Phase 1: shrink to nothing on the right
+        progressBar.style.transition = 'width 0.3s ease-in, left 0.3s ease-in';
+        progressBar.style.left = '100%';
+        progressBar.style.width = '0%';
+        
+        setTimeout(() => {
+          // Phase 2: appear at left and grow
+          progressBar.style.transition = 'none';
+          progressBar.style.left = '0%';
+          progressBar.style.width = '0%';
+          
+          requestAnimationFrame(() => {
+            progressBar.style.transition = 'width 0.3s ease-out';
+            progressBar.style.width = '25%';
+            currentBarLeft = 0;
+            currentBarWidth = 25;
+            
+            setTimeout(() => {
+              progressBar.style.transition = '';
+            }, 300);
+          });
+        }, 300);
+      }
+
       function tick() {
-        if (!isPlaying) return;
+        if (!isPlaying || isDragging) return;
         scrollPos += speed;
         
         // Reset seamlessly when we've scrolled one full set
@@ -619,16 +677,7 @@
         }
         
         grid.scrollLeft = scrollPos;
-        
-        // Update progress bar
-        if (progressBar) {
-          const progress = (scrollPos % setWidth) / setWidth;
-          const barWidth = 25;
-          const barLeft = progress * (100 - barWidth);
-          progressBar.style.width = barWidth + '%';
-          progressBar.style.left = barLeft + '%';
-        }
-        
+        updateProgressBar();
         animationId = requestAnimationFrame(tick);
       }
 
@@ -657,24 +706,88 @@
       statsSection.style.position = 'relative';
       statsSection.appendChild(playBtn);
 
-      playBtn.addEventListener('click', () => {
+      playBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         if (isPlaying) {
+          wasPlayingBeforeHover = false;
           pause();
         } else {
+          wasPlayingBeforeHover = true;
           play();
         }
       });
 
-      // Pause on hover
+      // Hover: pause auto-scroll, enable drag
       grid.addEventListener('mouseenter', () => {
+        wasPlayingBeforeHover = isPlaying;
         if (isPlaying) pause();
+        grid.style.cursor = 'grab';
       });
+
       grid.addEventListener('mouseleave', () => {
-        if (!isPlaying) play();
+        if (isDragging) {
+          isDragging = false;
+          grid.style.cursor = 'grab';
+        }
+        if (wasPlayingBeforeHover) play();
+      });
+
+      // Drag to scroll
+      grid.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        dragStartX = e.pageX;
+        dragStartScroll = scrollPos;
+        grid.style.cursor = 'grabbing';
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const dx = dragStartX - e.pageX;
+        scrollPos = dragStartScroll + dx;
+        
+        // Keep within bounds
+        while (scrollPos < 0) scrollPos += setWidth;
+        while (scrollPos >= setWidth) scrollPos -= setWidth;
+        
+        grid.scrollLeft = scrollPos;
+        updateProgressBar();
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        grid.style.cursor = 'grab';
+      });
+
+      // Touch drag support
+      let touchStartX = 0;
+      let touchStartScroll = 0;
+
+      grid.addEventListener('touchstart', (e) => {
+        wasPlayingBeforeHover = isPlaying;
+        if (isPlaying) pause();
+        touchStartX = e.touches[0].pageX;
+        touchStartScroll = scrollPos;
+      }, { passive: true });
+
+      grid.addEventListener('touchmove', (e) => {
+        const dx = touchStartX - e.touches[0].pageX;
+        scrollPos = touchStartScroll + dx;
+        while (scrollPos < 0) scrollPos += setWidth;
+        while (scrollPos >= setWidth) scrollPos -= setWidth;
+        grid.scrollLeft = scrollPos;
+        updateProgressBar();
+      }, { passive: true });
+
+      grid.addEventListener('touchend', () => {
+        if (wasPlayingBeforeHover) play();
       });
 
       // Disable native scroll since we're animating
       grid.style.overflowX = 'hidden';
+      grid.style.userSelect = 'none';
+      grid.style.webkitUserSelect = 'none';
 
       // Style the button via JS
       Object.assign(playBtn.style, {
