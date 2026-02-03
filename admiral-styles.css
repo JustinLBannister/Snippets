@@ -1,35 +1,72 @@
-    /* ===== BASE STYLES ===== */
+/* ===== BASE STYLES ===== */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
+    #ls-canvas {
+      background: transparent !important;
+  }
+
     body {
       overflow-x: hidden;
-      background-color: #082043;
-      background-image: url('/assets/rbccm/images/admiral/admiral-hero-bg.png');
-      background-position: top right -620px;
-      background-repeat: no-repeat;
-      background-size: auto 350px;
+      background-color: #082043 !important;
+      background-image: url('/assets/rbccm/images/admiral/admiral-hero-bg.webp') !important;
+      background-position: top right -620px !important;
+      background-repeat: no-repeat !important;
+      background-size: auto 350px !important;
     }
 
     @media (min-width: 768px) {
       body {
-        background-position: top right -340px;
+        background-position: top right -340px !important;
       }
     }
 
     @media (min-width: 1200px) {
       body {
-        background-position: top right;
+        background-position: top right !important;
       }
     }
 
     @media (min-width: 1400px) {
       body {
-        background-size: contain;
+        background-size: contain !important;
       }
+    }
+
+    /* ===== HERO ADMIRAL LOGO ===== */
+    .rbccm-hero__admiral-logo {
+      margin-bottom: 16px;
+    }
+
+    .rbccm-hero__admiral-logo img {
+      height: 30px;
+      width: auto;
+    }
+
+    @media (min-width: 768px) {
+      .rbccm-hero__admiral-logo img {
+        height: 36px;
+      }
+    }
+
+    /* ===== APPROACH CEO LINK ===== */
+    .rbccm-approach__ceo-link {
+      display: inline-block;
+      margin-top: 16px;
+      color: #FFF;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 120%;
+      text-decoration: underline;
+      transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .rbccm-approach__ceo-link:hover {
+      color: #FFC72C;
     }
 
     /* ===== VALUE WHEEL BLOCK ===== */
@@ -269,7 +306,7 @@
     /* ===== TAB LIST - Desktop grid, Mobile vertical ===== */
     .rbccm-themes__tablist {
       display: flex;
-      grid-template-columns: repeat(12, 1fr);
+      grid-template-columns: repeat(13, 1fr);
       gap: 0px;
       border-bottom: 3px solid #DADADA;
       margin: 0 auto;
@@ -289,7 +326,7 @@
       text-align: center;
       color: #003168;
       font-family: Roboto, Arial, sans-serif;
-      font-size: 14px;
+      font-size: 13px;
       font-style: normal;
       font-weight: 400;
       line-height: 120%;
@@ -363,7 +400,7 @@
     }
 
     .rbccm-team__card {
-      width: 212px;
+      width: 276px;
       flex-shrink: 0;
       text-align: left;
       position: relative;
@@ -374,7 +411,7 @@
     .rbccm-team__photo {
       width: 100%;
       height: auto;
-      aspect-ratio: 276 / 263;
+      aspect-ratio: 85 / 81;
       background: #e8e8e8;
       margin: 0 0 24px 0;
       display: flex;
@@ -458,7 +495,7 @@
     .rbccm-team__card.is-active::after {
       content: '';
       position: absolute;
-      bottom: -38px;
+      bottom: -68px;
       left: 50%;
       transform: translateX(-50%);
       width: 0;
@@ -582,6 +619,7 @@
       font-size: 18px;
       font-weight: 700;
       margin-bottom: 16px;
+      color: white;
     }
 
     .rbccm-team__inline-bio__list {
@@ -593,6 +631,7 @@
     .rbccm-team__inline-bio__list li {
       margin-bottom: 12px;
       line-height: 1.5;
+      color: white;
     }
 
     .rbccm-team__inline-bio__close {
@@ -705,6 +744,15 @@
       font-weight: 400;
       line-height: 120%;
       margin-bottom: 15px;
+    }
+
+    .rbccm-bio__lead {
+      color: #FFC72C;
+      font-family: Roboto;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 800;
+      line-height: 120%;
     }
 
     /* Bio Slider Styles */
@@ -1052,8 +1100,8 @@
     /* Tablet: 2 columns top row, 1 centered bottom */
     @media (max-width: 991px) and (min-width: 600px) {
       .rbccm-team__grid {
-        gap: 24px;
-        max-width: 600px;
+        gap: 32px;
+        width: 100%;
       }
 
       .rbccm-team__card {
@@ -1193,7 +1241,7 @@
 
     .rbccm-stats__item {
       text-align: center;
-      padding: 0 32px;
+      padding: 0 61px;
       border-left: 2px solid rgba(255, 255, 255, 0.35);
       display: flex;
       flex-direction: column;
@@ -1278,8 +1326,8 @@
 
       .rbccm-stats__item {
         gap: 0;
-        min-width: 200px;
-        padding: 0 24px;
+        min-width: 214px;
+        padding: 0 61px;
       }
 
       .rbccm-stats__item:nth-child(n+3) {

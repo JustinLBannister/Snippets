@@ -2,6 +2,7 @@
     let activeBioState = null; // Track active bio: { deptId, memberIndex }
     
     const departments = [
+      { id: 'firm-sponsorship', label: null, labelPosition: null, tabLabel: 'Firm Sponsorship', showOnWheel: false },
       { id: 'corporate-broking', label: 'Corporate Broking\n& Advisory', labelPosition: 'top', tabLabel: 'Corporate Broking & Advisory', showOnWheel: true },
       { id: 'fig-expertise', label: 'FIG Expertise', labelPosition: 'top-right', tabLabel: 'FIG Expertise', showOnWheel: true },
       { id: 'equity-sales', label: 'Equity\nSales', labelPosition: 'right', tabLabel: 'Equity Sales', showOnWheel: true },
@@ -10,11 +11,22 @@
       { id: 'corporate-banking', label: 'Corporate\nBanking', labelPosition: 'bottom', tabLabel: 'Corporate Banking', showOnWheel: true },
       { id: 'hedging-risk', label: 'Hedging &\nRisk Solution', labelPosition: 'bottom', tabLabel: 'Hedging & Risk Solution', showOnWheel: true },
       { id: 'balance-sheet', label: 'Balance Sheet\nAdvisory / DCM', labelPosition: 'bottom-left', tabLabel: 'Balance Sheet Advisory / DCM', showOnWheel: true },
-      { id: 'equity-debt-capital', label: 'ECM', labelPosition: 'left', tabLabel: 'Equity & Debt Capital Markets', showOnWheel: true },
+      { id: 'equity-debt-capital', label: 'ECM', labelPosition: 'left', tabLabel: 'Equity Capital Markets', showOnWheel: true },
       { id: 'fig-portfolio', label: 'FIG Portfolio\nAdvisory', labelPosition: 'left', tabLabel: 'FIG Portfolio Advisory', showOnWheel: true },
       { id: 'ma-defence', label: 'M&A and\nDefence', labelPosition: 'top-left', tabLabel: 'M&A and Defence', showOnWheel: true },
-      { id: 'continental-europe', label: null, labelPosition: null, tabLabel: 'Continental Europe', showOnWheel: false }
+      { id: 'continental-europe', label: 'Continental\nEurope', labelPosition: 'top-left', tabLabel: 'Continental Europe', showOnWheel: true }
     ];
+
+    // ===== FORMAT BIO ITEM (yellow lead text before colon) =====
+    function formatBioItem(item) {
+      const colonIndex = item.indexOf(':');
+      if (colonIndex > -1 && colonIndex < 40) {
+        const lead = item.substring(0, colonIndex + 1);
+        const rest = item.substring(colonIndex + 1);
+        return `<li><strong class="rbccm-bio__lead">${lead}</strong>${rest}</li>`;
+      }
+      return `<li>${item}</li>`;
+    }
 
     // ===== GET TEAM MEMBERS FROM HIDDEN DATA DIV =====
     function getTeamMembers(teamId) {
@@ -253,7 +265,7 @@
           <div class="rbccm-team__dept">${member.dept}</div>
           <div class="rbccm-team__links">
             <a href="#" class="rbccm-team__link rbccm-team__link--bio" data-member-index="${mIndex}" data-dept-id="${deptId}">Biography</a>
-            <a href="#" class="rbccm-team__link rbccm-team__link--video" data-member-index="${mIndex}" data-dept-id="${deptId}" data-video-id="${member.videoId}" data-video-type="${member.videoType}" data-vimeo-hash="${member.vimeoHash || ''}">Video</a>
+            ${member.videoId ? `<a href="#" class="rbccm-team__link rbccm-team__link--video" data-member-index="${mIndex}" data-dept-id="${deptId}" data-video-id="${member.videoId}" data-video-type="${member.videoType}" data-vimeo-hash="${member.vimeoHash || ''}">Video</a>` : ''}
           </div>
         </div>
       `).join('');
@@ -359,7 +371,7 @@
           // Update bio content
           inlineBio.querySelector('.rbccm-team__inline-bio__name').textContent = member.name;
           inlineBio.querySelector('.rbccm-team__inline-bio__list').innerHTML = 
-            member.bio.map(item => `<li>${item}</li>`).join('');
+            member.bio.map(item => formatBioItem(item)).join('');
           
           // Update inline bio slider
           const inlineSlider = inlineBio.querySelector('.rbccm-team__inline-bio__slider');
@@ -403,7 +415,7 @@
         
         document.getElementById('bio-name').textContent = member.name;
         const bioList = document.getElementById('bio-list');
-        bioList.innerHTML = member.bio.map(item => `<li>${item}</li>`).join('');
+        bioList.innerHTML = member.bio.map(item => formatBioItem(item)).join('');
         
         // Update desktop slider
         const bioSlider = document.getElementById('bio-slider');
