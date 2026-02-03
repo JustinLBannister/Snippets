@@ -289,7 +289,6 @@
           <div class="rbccm-team__inline-bio__slider-wrapper">
             <div class="rbccm-team__inline-bio__slider"></div>
           </div>
-          <div class="rbccm-team__inline-bio__bar"></div>
         </div>
       `;
 
