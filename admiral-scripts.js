@@ -1,4 +1,4 @@
-    // ===== DEPARTMENT DATA (tabs only - members come from hidden div) =====
+// ===== DEPARTMENT DATA (tabs only - members come from hidden div) =====
     let activeBioState = null; // Track active bio: { deptId, memberIndex }
     
     const departments = [
@@ -117,6 +117,9 @@
     // ===== CREATE TABS AND PANELS =====
     function createTabsAndPanels() {
       const tablist = document.getElementById('tablist');
+      const panelsContainer = document.getElementById('panels');
+      tablist.innerHTML = '';
+      panelsContainer.innerHTML = '';
 
       departments.forEach((dept, index) => {
         // Create tab
@@ -145,7 +148,7 @@
         panel.id = `panel-${dept.id}`;
         panel.dataset.panel = dept.id;
         panel.innerHTML = '<div class="rbccm-team__grid"></div>';
-        tablist.appendChild(panel);
+        panelsContainer.appendChild(panel);
 
         // Populate first panel on load
         if (index === 0) {
