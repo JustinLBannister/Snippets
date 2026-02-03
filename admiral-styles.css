@@ -598,6 +598,34 @@
       display: none;
     }
 
+    /* Desktop inline bio enhancements */
+    @media (min-width: 992px) {
+      .rbccm-team__inline-bio {
+        padding: 85px 46px 64px 25px;
+      }
+
+      .rbccm-team__inline-bio__slider-wrapper {
+        flex: 0 0 370px;
+        max-width: 370px;
+      }
+
+      .rbccm-team__inline-bio__slide {
+        height: 370px;
+      }
+
+      .rbccm-team__inline-bio.is-active {
+        gap: 90px;
+      }
+
+      .rbccm-team__inline-bio__bar {
+        display: block;
+        width: 100%;
+        flex-basis: 100%;
+        height: 12px;
+        background: #0F80C8;
+      }
+    }
+
     @media (max-width: 991px) {
       .rbccm-team__inline-bio {
         width: calc(100% + 64px);
@@ -651,28 +679,26 @@
       z-index: 10;
     }
 
+    @media (min-width: 992px) {
+      .rbccm-team__inline-bio__close {
+        top: 30px;
+        right: 5px;
+      }
+    }
+
     .rbccm-team__inline-bio__close svg {
       width: 22px;
       height: 23px;
       display: block;
     }
 
-    /* Desktop: show global bio, hide inline bio */
-    @media (min-width: 992px) {
-      .rbccm-team__inline-bio {
-        display: none !important;
-      }
-    }
-
-    /* Mobile: hide global bio, use inline bio */
-    @media (max-width: 991px) {
-      .rbccm-bio {
-        display: none !important;
-      }
-    }
-
-    /* ===== BIO EXPANDABLE SECTION ===== */
+    /* Hide global bio section - inline bios used on all screen sizes */
     .rbccm-bio {
+      display: none !important;
+    }
+
+    /* ===== BIO EXPANDABLE SECTION (legacy, hidden) ===== */
+    .rbccm-bio--legacy {
       background: #0051A5;
       color: white;
       margin: 0;

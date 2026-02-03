@@ -330,7 +330,6 @@
       
       if (!member) return;
 
-      const isMobile = window.matchMedia('(max-width: 991px)').matches;
       const card = clickedElement.closest('.rbccm-team__card');
       const grid = card.closest('.rbccm-team__grid');
       
@@ -343,113 +342,76 @@
       document.querySelectorAll('.rbccm-team__inline-bio.is-active').forEach(bio => {
         bio.classList.remove('is-active');
       });
+
+      // Close global bio section (legacy desktop)
+      document.getElementById('bio-section').classList.remove('is-active');
       
       // Save active bio state
       activeBioState = { deptId, memberIndex };
 
-      if (isMobile) {
-        // Mobile: show inline bio below the row
-        const inlineBio = grid.querySelector('.rbccm-team__inline-bio');
-        if (inlineBio) {
-          // Get all cards
-          const cards = Array.from(grid.querySelectorAll('.rbccm-team__card'));
-          
-          // Get the clicked card's vertical position
-          const cardRect = card.getBoundingClientRect();
-          const cardTop = cardRect.top;
-          
-          // Find the last card in the same row (same top position)
-          let lastCardInRow = card;
-          for (let i = 0; i < cards.length; i++) {
-            const otherCardRect = cards[i].getBoundingClientRect();
-            // Cards are in the same row if their tops are within 10px of each other
-            if (Math.abs(otherCardRect.top - cardTop) < 10) {
-              lastCardInRow = cards[i];
-            }
+      // Show inline bio below the row (both mobile and desktop)
+      const inlineBio = grid.querySelector('.rbccm-team__inline-bio');
+      if (inlineBio) {
+        // Get all cards
+        const cards = Array.from(grid.querySelectorAll('.rbccm-team__card'));
+        
+        // Get the clicked card's vertical position
+        const cardRect = card.getBoundingClientRect();
+        const cardTop = cardRect.top;
+        
+        // Find the last card in the same row (same top position)
+        let lastCardInRow = card;
+        for (let i = 0; i < cards.length; i++) {
+          const otherCardRect = cards[i].getBoundingClientRect();
+          // Cards are in the same row if their tops are within 10px of each other
+          if (Math.abs(otherCardRect.top - cardTop) < 10) {
+            lastCardInRow = cards[i];
+          }
+        }
+        
+        // Move the bio element to be right after the last card in the row
+        lastCardInRow.after(inlineBio);
+        
+        // Update bio content
+        inlineBio.querySelector('.rbccm-team__inline-bio__name').textContent = member.name;
+        inlineBio.querySelector('.rbccm-team__inline-bio__list').innerHTML = 
+          member.bio.map(item => formatBioItem(item)).join('');
+        
+        // Update inline bio slider
+        const inlineSlider = inlineBio.querySelector('.rbccm-team__inline-bio__slider');
+        if (inlineSlider) {
+          // Destroy existing slick instance if any
+          if ($(inlineSlider).hasClass('slick-initialized')) {
+            $(inlineSlider).slick('unslick');
           }
           
-          // Move the bio element to be right after the last card in the row
-          lastCardInRow.after(inlineBio);
-          
-          // Update bio content
-          inlineBio.querySelector('.rbccm-team__inline-bio__name').textContent = member.name;
-          inlineBio.querySelector('.rbccm-team__inline-bio__list').innerHTML = 
-            member.bio.map(item => formatBioItem(item)).join('');
-          
-          // Update inline bio slider
-          const inlineSlider = inlineBio.querySelector('.rbccm-team__inline-bio__slider');
-          if (inlineSlider) {
-            // Destroy existing slick instance if any
-            if ($(inlineSlider).hasClass('slick-initialized')) {
-              $(inlineSlider).slick('unslick');
-            }
+          // Build slider HTML with background-image divs
+          if (member.bioImages && member.bioImages.length > 0) {
+            inlineSlider.innerHTML = member.bioImages.map(img => `<div class="rbccm-team__inline-bio__slide" style="background-image: url('${img}')"></div>`).join('');
+            inlineSlider.classList.toggle('single-image', member.bioImages.length === 1);
             
-            // Build slider HTML with background-image divs
-            if (member.bioImages && member.bioImages.length > 0) {
-              inlineSlider.innerHTML = member.bioImages.map(img => `<div class="rbccm-team__inline-bio__slide" style="background-image: url('${img}')"></div>`).join('');
-              inlineSlider.classList.toggle('single-image', member.bioImages.length === 1);
-              
-              // Initialize slick
-              $(inlineSlider).slick({
-                dots: false,
-                infinite: false,
-                speed: 300,
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                prevArrow: '<button type="button" class="slick-prev" aria-label="Previous"></button>',
-                nextArrow: '<button type="button" class="slick-next" aria-label="Next"></button>'
-              });
-            } else {
-              inlineSlider.innerHTML = '';
-            }
+            // Initialize slick
+            $(inlineSlider).slick({
+              dots: false,
+              infinite: false,
+              speed: 300,
+              slidesToShow: 1,
+              slidesToScroll: 1,
+              prevArrow: '<button type="button" class="slick-prev" aria-label="Previous"></button>',
+              nextArrow: '<button type="button" class="slick-next" aria-label="Next"></button>'
+            });
+          } else {
+            inlineSlider.innerHTML = '';
           }
-          
-          card.classList.add('is-active');
-          inlineBio.classList.add('is-active');
-          
-          // Scroll to the bio
-          setTimeout(() => {
-            inlineBio.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          }, 100);
         }
-      } else {
-        // Desktop: show global bio section
+        
         card.classList.add('is-active');
+        inlineBio.classList.add('is-active');
         
-        document.getElementById('bio-name').textContent = member.name;
-        const bioList = document.getElementById('bio-list');
-        bioList.innerHTML = member.bio.map(item => formatBioItem(item)).join('');
-        
-        // Update desktop slider
-        const bioSlider = document.getElementById('bio-slider');
-        
-        // Destroy existing slick instance if any
-        if ($(bioSlider).hasClass('slick-initialized')) {
-          $(bioSlider).slick('unslick');
-        }
-        
-        // Build slider HTML with background-image divs
-        if (member.bioImages && member.bioImages.length > 0) {
-          bioSlider.innerHTML = member.bioImages.map(img => `<div class="rbccm-bio__slide" style="background-image: url('${img}')"></div>`).join('');
-          bioSlider.classList.toggle('single-image', member.bioImages.length === 1);
-          document.querySelector('.rbccm-bio__slider-wrapper').style.display = 'block';
-          
-          // Initialize slick
-          $(bioSlider).slick({
-            dots: false,
-            infinite: false,
-            speed: 300,
-            slidesToShow: 1,
-            slidesToScroll: 1,
-            prevArrow: '<button type="button" class="slick-prev" aria-label="Previous"></button>',
-            nextArrow: '<button type="button" class="slick-next" aria-label="Next"></button>'
-          });
-        } else {
-          bioSlider.innerHTML = '';
-          document.querySelector('.rbccm-bio__slider-wrapper').style.display = 'none';
-        }
-        
-        document.getElementById('bio-section').classList.add('is-active');
+        // Scroll to the bio
+        setTimeout(() => {
+          inlineBio.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
       }
     }
 
