@@ -124,9 +124,9 @@
       departments.forEach((dept, index) => {
         // Create tab
         const tab = document.createElement('button');
-        tab.className = `rbccm-themes__tab${index === 1 ? ' is-active' : ''}`;
+        tab.className = 'rbccm-themes__tab';
         tab.setAttribute('role', 'tab');
-        tab.setAttribute('aria-expanded', index === 0 ? 'true' : 'false');
+        tab.setAttribute('aria-expanded', 'false');
         tab.setAttribute('aria-controls', `panel-${dept.id}`);
         tab.dataset.panel = dept.id;
         tab.innerHTML = `
@@ -143,17 +143,12 @@
 
         // Create panel - content will be populated on tab click
         const panel = document.createElement('div');
-        panel.className = `rbccm-themes__panel${index === 1 ? ' is-active' : ''}`;
+        panel.className = 'rbccm-themes__panel';
         panel.setAttribute('role', 'tabpanel');
         panel.id = `panel-${dept.id}`;
         panel.dataset.panel = dept.id;
         panel.innerHTML = '<div class="rbccm-team__grid"></div>';
         panelsContainer.appendChild(panel);
-
-        // Populate first panel on load
-        if (index === 0) {
-          populatePanel(dept.id);
-        }
       });
 
       // Handle responsive behavior
@@ -572,9 +567,13 @@
     document.addEventListener('DOMContentLoaded', () => {
       positionNodes();
       createTabsAndPanels();
-      if (departments.length > 1) {
-        setActiveNode(departments[1].id);
+      
+      // Activate Corporate Broking tab (index 1) on load
+      const defaultTab = document.querySelector('.rbccm-themes__tab[data-panel="corporate-broking"]');
+      if (defaultTab) {
+        handleTabClick(defaultTab);
       }
+      
       window.addEventListener('resize', debounce(positionNodes, 250));
 
       // ===== STATS HORIZONTAL SCROLL =====
