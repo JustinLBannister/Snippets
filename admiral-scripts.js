@@ -133,7 +133,7 @@
           photo: member.dataset.photo,
           order: parseInt(member.dataset.order) || 999,
           videoId: member.dataset.videoId || '',
-          videoType: member.dataset.videoType || 'vimeo',
+          videoType: member.dataset.videoType || '',
           vimeoHash: member.dataset.vimeoHash || '',
           bioImages: bioImages,
           bio: Array.from(bioItems).map(li => li.textContent)
@@ -313,6 +313,9 @@
           const hashParam = vimeoHash ? `?h=${vimeoHash}&autoplay=1` : '?autoplay=1';
           embedHtml = `<iframe src="https://player.vimeo.com/video/${videoId}${hashParam}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
           break;
+        case 'brightcove':
+          embedHtml = `<iframe src="https://players.brightcove.net/6021289101001/eY0NaFfEF_default/index.html?videoId=${videoId}" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen></iframe>`;
+          break;
         default:
           // No video available
           embedHtml = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#666;">Video coming soon</div>`;
@@ -351,7 +354,7 @@
           <div class="rbccm-team__dept">${member.dept}</div>
           <div class="rbccm-team__links">
             <a href="#" class="rbccm-team__link rbccm-team__link--bio" data-member-index="${mIndex}" data-dept-id="${deptId}">Biography</a>
-            ${member.videoId ? `<a href="#" class="rbccm-team__link rbccm-team__link--video" data-member-index="${mIndex}" data-dept-id="${deptId}" data-video-id="${member.videoId}" data-video-type="${member.videoType}" data-vimeo-hash="${member.vimeoHash || ''}">Video</a>` : ''}
+            ${member.videoId ? `<a href="#" class="rbccm-team__link rbccm-team__link--video" data-member-index="${mIndex}" data-dept-id="${deptId}" data-video-id="${member.videoId}" data-video-type="${member.videoType}">Video</a>` : ''}
           </div>
         </div>
       `).join('');
