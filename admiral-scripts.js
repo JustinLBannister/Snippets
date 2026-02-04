@@ -11,7 +11,7 @@
       { id: 'corporate-banking', label: 'Corporate\nBanking', labelPosition: 'bottom', tabLabel: 'Corporate Banking', showOnWheel: true },
       { id: 'hedging-risk', label: 'Hedging &\nRisk Solution', labelPosition: 'bottom', tabLabel: 'Hedging & Risk Solution', showOnWheel: true },
       { id: 'balance-sheet', label: 'Balance Sheet\nAdvisory / DCM', labelPosition: 'bottom-left', tabLabel: 'Balance Sheet Advisory / DCM', showOnWheel: true },
-      { id: 'equity-debt-capital', label: 'ECM', labelPosition: 'left', tabLabel: 'Equity Capital Markets', showOnWheel: true },
+      { id: 'equity-debt-capital', label: 'Equity Capital\nMarkets', labelPosition: 'left', tabLabel: 'Equity Capital Markets', showOnWheel: true },
       { id: 'fig-portfolio', label: 'FIG Portfolio\nAdvisory', labelPosition: 'left', tabLabel: 'FIG Portfolio Advisory', showOnWheel: true },
       { id: 'ma-defence', label: 'M&A and\nDefence', labelPosition: 'top-left', tabLabel: 'M&A and Defence', showOnWheel: true },
       { id: 'continental-europe', label: 'Continental\nEurope', labelPosition: 'top-left', tabLabel: 'Continental Europe', showOnWheel: true }
