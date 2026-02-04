@@ -572,8 +572,8 @@
     document.addEventListener('DOMContentLoaded', () => {
       positionNodes();
       createTabsAndPanels();
-      if (departments.length > 0) {
-        setActiveNode(departments[0].id);
+      if (departments.length > 1) {
+        setActiveNode(departments[1].id);
       }
       window.addEventListener('resize', debounce(positionNodes, 250));
 
