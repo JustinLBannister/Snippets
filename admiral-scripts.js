@@ -1,3 +1,91 @@
+    // ===== PASSWORD PROTECTION =====
+    (function() {
+      const PASS_HASH = 'admiral2026'; // Change this to your desired password
+      const STORAGE_KEY = 'admiral_auth';
+      const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+
+      // Check if already authenticated this session
+      try {
+        const stored = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '{}');
+        if (stored.authenticated && (Date.now() - stored.timestamp) < SESSION_DURATION) {
+          // Already authenticated, skip gate
+          return;
+        }
+      } catch(e) {}
+
+      // Hide page content
+      document.documentElement.style.overflow = 'hidden';
+      
+      // Create overlay
+      const overlay = document.createElement('div');
+      overlay.id = 'admiral-auth-gate';
+      overlay.innerHTML = `
+        <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:#003168;z-index:999999;display:flex;align-items:center;justify-content:center;font-family:Roboto,Arial,sans-serif;">
+          <div style="background:#fff;border-radius:8px;padding:48px 40px;max-width:400px;width:90%;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.3);">
+            <img src="/assets/rbccm/images/logos/rbc-capital-markets.svg" alt="RBC Capital Markets" style="height:40px;margin-bottom:24px;" onerror="this.style.display='none'">
+            <h2 style="color:#003168;font-size:20px;font-weight:500;margin:0 0 8px 0;">Restricted Access</h2>
+            <p style="color:#666;font-size:14px;margin:0 0 24px 0;">Please enter the password to continue.</p>
+            <input type="password" id="admiral-auth-input" placeholder="Enter password" style="width:100%;padding:12px 16px;border:2px solid #ddd;border-radius:4px;font-size:16px;box-sizing:border-box;outline:none;transition:border-color 0.2s;" />
+            <p id="admiral-auth-error" style="color:#d32f2f;font-size:13px;margin:8px 0 0 0;min-height:20px;"></p>
+            <button id="admiral-auth-submit" style="margin-top:16px;background:#003168;color:#fff;border:none;border-radius:4px;padding:12px 32px;font-size:16px;font-weight:500;cursor:pointer;width:100%;transition:background 0.2s;">Continue</button>
+          </div>
+        </div>
+      `;
+
+      // Insert as first thing in body
+      if (document.body) {
+        document.body.prepend(overlay);
+        initAuthListeners();
+      } else {
+        document.addEventListener('DOMContentLoaded', () => {
+          document.body.prepend(overlay);
+          initAuthListeners();
+        });
+      }
+
+      function initAuthListeners() {
+        const input = document.getElementById('admiral-auth-input');
+        const btn = document.getElementById('admiral-auth-submit');
+        const error = document.getElementById('admiral-auth-error');
+
+        input.focus();
+
+        input.addEventListener('focus', () => { input.style.borderColor = '#003168'; });
+        input.addEventListener('blur', () => { input.style.borderColor = '#ddd'; });
+
+        function attempt() {
+          if (input.value === PASS_HASH) {
+            // Authenticated
+            try {
+              sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ authenticated: true, timestamp: Date.now() }));
+            } catch(e) {}
+            overlay.querySelector('div > div').style.transform = 'scale(0.95)';
+            overlay.querySelector('div > div').style.opacity = '0';
+            overlay.querySelector('div').style.transition = 'opacity 0.3s';
+            overlay.querySelector('div').style.opacity = '0';
+            setTimeout(() => {
+              overlay.remove();
+              document.documentElement.style.overflow = '';
+            }, 300);
+          } else {
+            error.textContent = 'Incorrect password. Please try again.';
+            input.style.borderColor = '#d32f2f';
+            input.value = '';
+            input.focus();
+          }
+        }
+
+        btn.addEventListener('click', attempt);
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') attempt();
+          error.textContent = '';
+        });
+
+        btn.addEventListener('mouseenter', () => { btn.style.background = '#004a99'; });
+        btn.addEventListener('mouseleave', () => { btn.style.background = '#003168'; });
+      }
+    })();
+
     // ===== DEPARTMENT DATA (tabs only - members come from hidden div) =====
     let activeBioState = null; // Track active bio: { deptId, memberIndex }
     
