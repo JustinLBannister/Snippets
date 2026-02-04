@@ -522,6 +522,10 @@
       document.querySelectorAll('.rbccm-team__inline-bio.is-active').forEach(bio => {
         bio.classList.remove('is-active');
       });
+      // Remove bio-on-last-row from all grids
+      document.querySelectorAll('.rbccm-team__grid.bio-on-last-row').forEach(grid => {
+        grid.classList.remove('bio-on-last-row');
+      });
       // Clear active bio state when switching tabs
       activeBioState = null;
 
