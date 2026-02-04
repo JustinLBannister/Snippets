@@ -94,7 +94,7 @@
     }
 
     .value-wheel__title {
-      color: #FFF;
+      color: #FFC72C;
       text-align: center;
       font-family: "RBCDisplay", Georgia, Times, serif;
       font-size: 32px;
@@ -651,12 +651,12 @@
     /* Desktop inline bio enhancements */
     @media (min-width: 992px) {
       .rbccm-team__inline-bio__slider-wrapper {
-        flex: 0 0 370px;
-        max-width: 370px;
+        flex: 0 0 390px;
+        max-width: 390px;
       }
 
       .rbccm-team__inline-bio__slide {
-        height: 370px;
+        height: 390px;
       }
 
       .rbccm-team__inline-bio.is-active {
@@ -1299,7 +1299,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       flex: 0 0 auto;
       min-width: 214px;
     }
@@ -1308,8 +1308,8 @@
       border-right: 2px solid rgba(255, 255, 255, 0.35);
     }
 
-    /* 3rd, 4th, 5th, 6th columns - 16px gap between number and desc */
-    .rbccm-stats__item:nth-child(n+3) {
+    /* Big number items (#1, #2, #3, ~100) */
+    .rbccm-stats__item--big {
       gap: 16px;
     }
 
@@ -1340,8 +1340,8 @@
       line-height: 120%;
     }
 
-    /* 3rd+ column larger numbers */
-    .rbccm-stats__item:nth-child(n+3) .rbccm-stats__number {
+    /* Big number items - larger font */
+    .rbccm-stats__item--big .rbccm-stats__number {
       font-size: 50px;
     }
 
@@ -1383,11 +1383,11 @@
         padding: 0 61px;
       }
 
-      .rbccm-stats__item:nth-child(n+3) {
+      .rbccm-stats__item--big {
         gap: 16px;
       }
 
-      .rbccm-stats__item:nth-child(n+3) .rbccm-stats__number {
+      .rbccm-stats__item--big .rbccm-stats__number {
         font-size: 28px;
       }
 

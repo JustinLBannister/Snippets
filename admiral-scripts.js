@@ -124,7 +124,7 @@
       departments.forEach((dept, index) => {
         // Create tab
         const tab = document.createElement('button');
-        tab.className = `rbccm-themes__tab${index === 0 ? ' is-active' : ''}`;
+        tab.className = `rbccm-themes__tab${index === 1 ? ' is-active' : ''}`;
         tab.setAttribute('role', 'tab');
         tab.setAttribute('aria-expanded', index === 0 ? 'true' : 'false');
         tab.setAttribute('aria-controls', `panel-${dept.id}`);
@@ -143,7 +143,7 @@
 
         // Create panel - content will be populated on tab click
         const panel = document.createElement('div');
-        panel.className = `rbccm-themes__panel${index === 0 ? ' is-active' : ''}`;
+        panel.className = `rbccm-themes__panel${index === 1 ? ' is-active' : ''}`;
         panel.setAttribute('role', 'tabpanel');
         panel.id = `panel-${dept.id}`;
         panel.dataset.panel = dept.id;
@@ -385,6 +385,7 @@
         
         // Update inline bio slider
         const inlineSlider = inlineBio.querySelector('.rbccm-team__inline-bio__slider');
+        const sliderWrapper = inlineBio.querySelector('.rbccm-team__inline-bio__slider-wrapper');
         if (inlineSlider) {
           // Destroy existing slick instance if any
           if ($(inlineSlider).hasClass('slick-initialized')) {
@@ -393,6 +394,7 @@
           
           // Build slider HTML with background-image divs
           if (member.bioImages && member.bioImages.length > 0) {
+            if (sliderWrapper) sliderWrapper.style.display = '';
             inlineSlider.innerHTML = member.bioImages.map(img => `<div class="rbccm-team__inline-bio__slide" style="background-image: url('${img}')"></div>`).join('');
             inlineSlider.classList.toggle('single-image', member.bioImages.length === 1);
             
@@ -408,6 +410,7 @@
             });
           } else {
             inlineSlider.innerHTML = '';
+            if (sliderWrapper) sliderWrapper.style.display = 'none';
           }
         }
         
