@@ -434,6 +434,10 @@
       flex-direction: column;
     }
 
+    .rbccm-team__info {
+      flex: 1;
+    }
+
     .rbccm-team__photo {
       width: 100%;
       height: auto;
@@ -484,6 +488,7 @@
       font-style: normal;
       font-weight: 400;
       line-height: 19px;
+      min-height: 19px;
       margin: 0;
     }
 

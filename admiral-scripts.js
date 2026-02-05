@@ -96,8 +96,8 @@
       { id: 'equity-sales', label: 'Equity\nSales', labelPosition: 'right', tabLabel: 'Equity Sales', showOnWheel: true },
       { id: 'equity-trading', label: 'Equity\nTrading', labelPosition: 'right', tabLabel: 'Equity Trading', showOnWheel: true },
       { id: 'research', label: 'Research', labelPosition: 'right', tabLabel: 'Unique Research Offering', showOnWheel: true },
-      { id: 'corporate-banking', label: 'Corporate\nBanking', labelPosition: 'bottom', tabLabel: 'Corporate Banking', showOnWheel: true },
-      { id: 'hedging-risk', label: 'Hedging &\nRisk Solution', labelPosition: 'bottom', tabLabel: 'Hedging & Risk Solution', showOnWheel: true },
+      { id: 'corporate-banking', label: 'Corporate\nBanking', labelPosition: 'bottom-right', tabLabel: 'Corporate Banking', showOnWheel: true },
+      { id: 'hedging-risk', label: 'Hedging &\nRisk Solution', labelPosition: 'bottom-left', tabLabel: 'Hedging & Risk Solution', showOnWheel: true },
       { id: 'balance-sheet', label: 'Balance Sheet\nAdvisory / DCM', labelPosition: 'bottom-left', tabLabel: 'Balance Sheet Advisory / DCM', showOnWheel: true },
       { id: 'equity-debt-capital', label: 'Equity Capital\nMarkets', labelPosition: 'left', tabLabel: 'Equity Capital Markets', showOnWheel: true },
       { id: 'fig-portfolio', label: 'FIG Portfolio\nAdvisory', labelPosition: 'left', tabLabel: 'FIG Portfolio Advisory', showOnWheel: true },
@@ -349,9 +349,11 @@
       const membersHTML = members.map((member, mIndex) => `
         <div class="rbccm-team__card" data-member-index="${mIndex}" data-dept-id="${deptId}">
           <div class="rbccm-team__photo">${member.photo ? `<img src="${member.photo}" alt="${member.name}">` : 'FPO'}</div>
-          <div class="rbccm-team__name">${member.name}</div>
-          ${member.title ? `<div class="rbccm-team__title">${member.title}</div>` : ''}
-          <div class="rbccm-team__dept">${member.dept}</div>
+          <div class="rbccm-team__info">
+            <div class="rbccm-team__name">${member.name}</div>
+            ${member.title ? `<div class="rbccm-team__title">${member.title}</div>` : ''}
+            <div class="rbccm-team__dept">${member.dept}</div>
+          </div>
           <div class="rbccm-team__links">
             <a href="#" class="rbccm-team__link rbccm-team__link--bio" data-member-index="${mIndex}" data-dept-id="${deptId}">Biography</a>
             ${member.videoId ? `<a href="#" class="rbccm-team__link rbccm-team__link--video" data-member-index="${mIndex}" data-dept-id="${deptId}" data-video-id="${member.videoId}" data-video-type="${member.videoType}">Video</a>` : ''}
