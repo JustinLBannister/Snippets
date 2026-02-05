@@ -279,7 +279,7 @@
 
     /* Label positioning classes */
     .value-wheel__node-label--top { bottom: 55px; left: 50%; transform: translateX(-50%); text-align: center; }
-    .value-wheel__node-label--bottom { top: 55px; left: 50%; transform: translateX(-50%); }
+    .value-wheel__node-label--bottom { top: 55px; left: 50%; transform: translateX(-50%); text-align: center; }
     .value-wheel__node-label--left { right: 55px; top: 50%; transform: translateY(-50%); text-align: right; }
     .value-wheel__node-label--right { left: 55px; top: 50%; transform: translateY(-50%); }
     .value-wheel__node-label--top-left { bottom: 45px; right: 45px; text-align: right; }

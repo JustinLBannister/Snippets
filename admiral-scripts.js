@@ -97,7 +97,7 @@
       { id: 'equity-trading', label: 'Equity\nTrading', labelPosition: 'right', tabLabel: 'Equity Trading', showOnWheel: true },
       { id: 'research', label: 'Research', labelPosition: 'right', tabLabel: 'Unique Research Offering', showOnWheel: true },
       { id: 'corporate-banking', label: 'Corporate\nBanking', labelPosition: 'bottom-right', tabLabel: 'Corporate Banking', showOnWheel: true },
-      { id: 'hedging-risk', label: 'Hedging &\nRisk Solution', labelPosition: 'bottom-left', tabLabel: 'Hedging & Risk Solution', showOnWheel: true },
+      { id: 'hedging-risk', label: 'Hedging &\nRisk Solution', labelPosition: 'bottom', tabLabel: 'Hedging & Risk Solution', showOnWheel: true },
       { id: 'balance-sheet', label: 'Balance Sheet\nAdvisory / DCM', labelPosition: 'bottom-left', tabLabel: 'Balance Sheet Advisory / DCM', showOnWheel: true },
       { id: 'equity-debt-capital', label: 'Equity Capital\nMarkets', labelPosition: 'left', tabLabel: 'Equity Capital Markets', showOnWheel: true },
       { id: 'fig-portfolio', label: 'FIG Portfolio\nAdvisory', labelPosition: 'left', tabLabel: 'FIG Portfolio Advisory', showOnWheel: true },
