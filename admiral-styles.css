@@ -435,6 +435,7 @@
     }
 
     .rbccm-team__info {
+      /* flex: 1; */
     }
 
     .rbccm-team__photo {
@@ -546,40 +547,41 @@
       position: relative;
     }
 
-    /* Desktop: inline bio uses pseudo-elements to extend bg to viewport edges */
+    /* Inline bio uses pseudo-elements to extend bg to viewport edges - all devices */
+    .rbccm-team__inline-bio.is-active {
+      position: relative;
+      z-index: 1;
+    }
+
+    .rbccm-team__inline-bio.is-active::before,
+    .rbccm-team__inline-bio.is-active::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100vw;
+      background: #0051A5;
+      z-index: 0;
+    }
+
+    .rbccm-team__inline-bio.is-active::before {
+      right: 100%;
+    }
+
+    .rbccm-team__inline-bio.is-active::after {
+      left: 100%;
+    }
+
+    /* Ensure wings are visible beyond grid */
+    .rbccm-themes__panels,
+    .rbccm-themes__panel,
+    .rbccm-themes__panel.is-active,
+    .rbccm-team__grid {
+      overflow: visible;
+    }
+
+    /* Desktop: larger padding for inline bio */
     @media (min-width: 992px) {
-      .rbccm-team__inline-bio.is-active {
-        position: relative;
-        z-index: 1;
-      }
-
-      .rbccm-team__inline-bio.is-active::before,
-      .rbccm-team__inline-bio.is-active::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 100vw;
-        background: #0051A5;
-        z-index: 0;
-      }
-
-      .rbccm-team__inline-bio.is-active::before {
-        right: 100%;
-      }
-
-      .rbccm-team__inline-bio.is-active::after {
-        left: 100%;
-      }
-
-      /* Ensure wings are visible beyond grid */
-      .rbccm-themes__panels,
-      .rbccm-themes__panel,
-      .rbccm-themes__panel.is-active,
-      .rbccm-team__grid {
-        overflow: visible;
-      }
-
       .rbccm-team__inline-bio {
         padding: 85px 25px 64px;
         box-sizing: border-box;
