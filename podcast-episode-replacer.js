@@ -2,9 +2,6 @@
 (function() {
     console.log('Creating custom podcast overlay...');
     
-    let overlayCreated = false;
-    let buttonBound = false;
-    
     function getFirstEpisodeUrl() {
         const selectors = [
             '.insights-stories.initial .story-podcast-playing iframe[src*="captivate.fm"]',
@@ -20,6 +17,14 @@
             }
         }
         return null;
+    }
+    
+    function waitForDOM(callback) {
+        if (document.body) {
+            callback();
+        } else {
+            setTimeout(() => waitForDOM(callback), 100);
+        }
     }
     
     function createPodcastOverlay(episodeUrl) {
@@ -79,35 +84,30 @@
         
         if (document.body) {
             document.body.appendChild(wrapperLink);
-            overlayCreated = true;
             console.log('Podcast overlay created with episode:', episodeUrl);
+            return wrapperLink;
         }
+        return null;
     }
     
-    function getHeroButton() {
-        return document.querySelector('.hero-cta .btn-play-audio');
-    }
-    
-    function setupButton() {
-        if (buttonBound) return true;
+    function setupButton(episodeUrl) {
+        const button = document.querySelector('.hero-cta .btn-play-audio');
+        if (!button) {
+            console.log('Hero button not found yet');
+            return false;
+        }
         
-        const button = getHeroButton();
-        if (!button) return false;
+        console.log('Found hero button:', button);
         
-        console.log('Found hero button, replacing...');
-        
-        // Clone to strip all existing handlers
         const newButton = button.cloneNode(true);
         newButton.removeAttribute('aria-controls');
-        newButton.removeAttribute('id');
         button.parentNode.replaceChild(newButton, button);
         
-        // Add our handler on the clean clone
         newButton.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             
-            console.log('Hero play button clicked');
+            console.log('Hero play button clicked - showing overlay');
             
             // Hide original player if it exists
             const originalPlayer = document.getElementById('podcast-player-container');
@@ -115,13 +115,13 @@
                 originalPlayer.style.display = 'none';
             }
             
-            // Create overlay on demand if not ready yet
-            if (!overlayCreated) {
-                const episodeUrl = getFirstEpisodeUrl();
-                if (episodeUrl) {
-                    createPodcastOverlay(episodeUrl);
+            // Create overlay on demand if content loaded late
+            if (!document.getElementById('custom-podcast-overlay')) {
+                const url = episodeUrl || getFirstEpisodeUrl();
+                if (url) {
+                    createPodcastOverlay(url);
                 } else {
-                    console.error('Still no episode found');
+                    console.error('No episode found');
                     return;
                 }
             }
@@ -131,54 +131,32 @@
                 overlay.style.display = 'block';
                 console.log('Podcast overlay now visible');
             }
+            
+            return false;
         });
         
-        buttonBound = true;
-        console.log('Hero button replaced and handler attached');
+        console.log('Hero button handler attached');
         return true;
     }
     
-    function init() {
+    waitForDOM(() => {
         const episodeUrl = getFirstEpisodeUrl();
-        if (episodeUrl && !overlayCreated) {
+        if (episodeUrl) {
             createPodcastOverlay(episodeUrl);
         }
-        setupButton();
-    }
-    
-    // Watch for button and content to appear
-    const observer = new MutationObserver(function() {
-        if (!buttonBound && getHeroButton()) {
-            console.log('MutationObserver caught hero button');
-            setupButton();
-        }
-        if (!overlayCreated) {
-            const episodeUrl = getFirstEpisodeUrl();
-            if (episodeUrl) {
-                console.log('MutationObserver found episode content');
-                createPodcastOverlay(episodeUrl);
+        
+        let attempts = 0;
+        function trySetup() {
+            if (setupButton(episodeUrl)) {
+                console.log('Custom podcast player ready!');
+            } else if (attempts < 20) {
+                attempts++;
+                console.log(`Button setup attempt ${attempts}/20, retrying...`);
+                setTimeout(trySetup, 500);
+            } else {
+                console.error('Could not find hero button after 20 attempts');
             }
         }
-        if (overlayCreated && buttonBound) {
-            observer.disconnect();
-        }
+        trySetup();
     });
-    
-    function startObserving() {
-        if (document.body) {
-            observer.observe(document.body, { childList: true, subtree: true });
-            setTimeout(() => observer.disconnect(), 30000);
-        } else {
-            setTimeout(startObserving, 50);
-        }
-    }
-    startObserving();
-    
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-    
-    window.addEventListener('load', init);
 })();
