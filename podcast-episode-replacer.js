@@ -88,12 +88,24 @@
         const button = document.querySelector('.btn-play-audio');
         if (!button) return false;
         
+        // Clone button to remove existing handlers
         const newButton = button.cloneNode(true);
+        
+        // Remove aria-controls so original delegated JS doesn't recognize it
+        newButton.removeAttribute('aria-controls');
+        
         button.parentNode.replaceChild(newButton, button);
         
         newButton.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
+            
+            // Hide the original player container if it exists
+            const originalPlayer = document.getElementById('podcast-player-container');
+            if (originalPlayer) {
+                originalPlayer.style.display = 'none';
+            }
+            
             const overlay = document.getElementById('custom-podcast-overlay');
             if (overlay) overlay.style.display = 'block';
             return false;
