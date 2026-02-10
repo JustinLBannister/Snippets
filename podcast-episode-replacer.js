@@ -40,7 +40,7 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            z-index: 10;
+            z-index: 99999;
             display: none;
             text-decoration: none;
         `;
@@ -90,6 +90,20 @@
         return null;
     }
     
+    function hideOriginalPlayer() {
+        // Hide the original podcast player wrapper if it exists
+        const originalWrapper = document.querySelector('.podcast-player-wrapper');
+        if (originalWrapper) {
+            originalWrapper.style.display = 'none';
+            console.log('Hidden original .podcast-player-wrapper');
+        }
+        const originalContainer = document.getElementById('podcast-player-container');
+        if (originalContainer) {
+            originalContainer.style.display = 'none';
+            console.log('Hidden original #podcast-player-container');
+        }
+    }
+    
     function setupButton(episodeUrl) {
         const button = document.querySelector('.hero-cta .btn-play-audio');
         if (!button) {
@@ -109,11 +123,8 @@
             
             console.log('Hero play button clicked - showing overlay');
             
-            // Hide original player if it exists
-            const originalPlayer = document.getElementById('podcast-player-container');
-            if (originalPlayer) {
-                originalPlayer.style.display = 'none';
-            }
+            // Hide any original player elements
+            hideOriginalPlayer();
             
             // Create overlay on demand if content loaded late
             if (!document.getElementById('custom-podcast-overlay')) {
@@ -131,6 +142,11 @@
                 overlay.style.display = 'block';
                 console.log('Podcast overlay now visible');
             }
+            
+            // Check again after a short delay in case original player gets injected after click
+            setTimeout(hideOriginalPlayer, 100);
+            setTimeout(hideOriginalPlayer, 300);
+            setTimeout(hideOriginalPlayer, 500);
             
             return false;
         });
