@@ -2,14 +2,23 @@
 (function() {
     console.log('Creating custom podcast overlay...');
     
-    // Find the first Captivate episode URL from the insights stories listing
+    let overlayCreated = false;
+    let buttonBound = false;
+    
     function getFirstEpisodeUrl() {
-        const firstIframe = document.querySelector('.insights-stories.initial .story-podcast-playing iframe[src*="captivate.fm"]');
-        if (firstIframe) {
-            console.log('Found first episode URL:', firstIframe.src);
-            return firstIframe.src;
+        const selectors = [
+            '.insights-stories.initial .story-podcast-playing iframe[src*="captivate.fm"]',
+            '.insights-stories .story-podcast-playing iframe[src*="captivate.fm"]',
+            '.story-podcast-playing iframe[src*="captivate.fm"]'
+        ];
+        
+        for (let i = 0; i < selectors.length; i++) {
+            const iframe = document.querySelector(selectors[i]);
+            if (iframe && iframe.src) {
+                console.log('Found episode URL via selector ' + (i + 1) + ':', iframe.src);
+                return iframe.src;
+            }
         }
-        console.warn('No Captivate episode found in .insights-stories.initial');
         return null;
     }
     
@@ -70,92 +79,115 @@
         
         if (document.body) {
             document.body.appendChild(wrapperLink);
+            overlayCreated = true;
             console.log('Podcast overlay created with episode:', episodeUrl);
-            return wrapperLink;
         }
-        return null;
+    }
+    
+    // Only target the hero button inside .hero-cta
+    function getHeroButton() {
+        return document.querySelector('.hero-cta .btn-play-audio');
     }
     
     function setupButton() {
-        const button = document.querySelector('.btn-play-audio');
-        if (!button) {
-            console.log('Button .btn-play-audio not found in DOM yet');
-            return false;
-        }
+        if (buttonBound) return true;
         
-        console.log('Found button:', button);
+        const button = getHeroButton();
+        if (!button) return false;
         
-        // Clone button to remove existing handlers
-        const newButton = button.cloneNode(true);
+        console.log('Found hero button, intercepting...');
         
-        // Remove aria-controls so original delegated JS doesn't recognize it
-        newButton.removeAttribute('aria-controls');
-        
-        button.parentNode.replaceChild(newButton, button);
-        
-        newButton.addEventListener('click', function(e) {
+        button.addEventListener('click', function(e) {
             e.preventDefault();
-            e.stopPropagation();
+            e.stopImmediatePropagation();
             
-            console.log('Start listening clicked - showing overlay');
+            console.log('Hero play button clicked (intercepted)');
             
-            // Hide the original player container if it exists
             const originalPlayer = document.getElementById('podcast-player-container');
             if (originalPlayer) {
                 originalPlayer.style.display = 'none';
+            }
+            
+            if (!overlayCreated) {
+                const episodeUrl = getFirstEpisodeUrl();
+                if (episodeUrl) {
+                    createPodcastOverlay(episodeUrl);
+                } else {
+                    console.error('Still no episode found');
+                    return;
+                }
             }
             
             const overlay = document.getElementById('custom-podcast-overlay');
             if (overlay) {
                 overlay.style.display = 'block';
                 console.log('Podcast overlay now visible');
-            } else {
-                console.error('Could not find #custom-podcast-overlay');
             }
-            return false;
-        });
+        }, true);
         
-        console.log('Button handler attached successfully');
+        button.removeAttribute('aria-controls');
+        
+        buttonBound = true;
+        console.log('Hero button intercepted successfully');
         return true;
     }
     
-    // Use DOMContentLoaded + fallback retries for maximum reliability
+    // Document-level intercept scoped to hero button only
+    document.addEventListener('click', function(e) {
+        const heroButton = e.target.closest('.hero-cta .btn-play-audio');
+        if (heroButton) {
+            e.stopImmediatePropagation();
+        }
+    }, true);
+    
     function init() {
         const episodeUrl = getFirstEpisodeUrl();
-        if (!episodeUrl) {
-            console.error('No episode found - podcast overlay not created');
-            return;
+        if (episodeUrl && !overlayCreated) {
+            createPodcastOverlay(episodeUrl);
         }
-        
-        createPodcastOverlay(episodeUrl);
-        
-        let attempts = 0;
-        function trySetup() {
-            if (setupButton()) {
-                console.log('Custom podcast player ready!');
-            } else if (attempts < 20) {
-                attempts++;
-                console.log(`Button setup attempt ${attempts}/20, retrying in 500ms...`);
-                setTimeout(trySetup, 500);
-            } else {
-                console.error('Could not find .btn-play-audio after 20 attempts');
-            }
-        }
-        trySetup();
+        setupButton();
     }
     
-    // Try both DOMContentLoaded and window load for best coverage
+    const buttonObserver = new MutationObserver(function() {
+        if (!buttonBound && getHeroButton()) {
+            console.log('MutationObserver caught hero button appearing');
+            setupButton();
+        }
+    });
+    
+    const contentObserver = new MutationObserver(function() {
+        if (!overlayCreated) {
+            const episodeUrl = getFirstEpisodeUrl();
+            if (episodeUrl) {
+                console.log('MutationObserver found episode content');
+                createPodcastOverlay(episodeUrl);
+            }
+        }
+        if (overlayCreated && buttonBound) {
+            contentObserver.disconnect();
+            buttonObserver.disconnect();
+        }
+    });
+    
+    function startObserving() {
+        if (document.body) {
+            buttonObserver.observe(document.body, { childList: true, subtree: true });
+            contentObserver.observe(document.body, { childList: true, subtree: true });
+            setTimeout(() => {
+                buttonObserver.disconnect();
+                contentObserver.disconnect();
+            }, 30000);
+        } else {
+            setTimeout(startObserving, 50);
+        }
+    }
+    startObserving();
+    
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
         init();
     }
     
-    // Also try on window load as a safety net
-    window.addEventListener('load', function() {
-        if (!document.querySelector('.btn-play-audio[data-custom-bound]')) {
-            console.log('Window load: retrying button setup...');
-            init();
-        }
-    });
+    window.addEventListener('load', init);
 })();
