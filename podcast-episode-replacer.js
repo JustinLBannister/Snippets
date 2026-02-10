@@ -84,7 +84,6 @@
         }
     }
     
-    // Only target the hero button inside .hero-cta
     function getHeroButton() {
         return document.querySelector('.hero-cta .btn-play-audio');
     }
@@ -95,19 +94,28 @@
         const button = getHeroButton();
         if (!button) return false;
         
-        console.log('Found hero button, intercepting...');
+        console.log('Found hero button, replacing...');
         
-        button.addEventListener('click', function(e) {
+        // Clone to strip all existing handlers
+        const newButton = button.cloneNode(true);
+        newButton.removeAttribute('aria-controls');
+        newButton.removeAttribute('id');
+        button.parentNode.replaceChild(newButton, button);
+        
+        // Add our handler on the clean clone
+        newButton.addEventListener('click', function(e) {
             e.preventDefault();
-            e.stopImmediatePropagation();
+            e.stopPropagation();
             
-            console.log('Hero play button clicked (intercepted)');
+            console.log('Hero play button clicked');
             
+            // Hide original player if it exists
             const originalPlayer = document.getElementById('podcast-player-container');
             if (originalPlayer) {
                 originalPlayer.style.display = 'none';
             }
             
+            // Create overlay on demand if not ready yet
             if (!overlayCreated) {
                 const episodeUrl = getFirstEpisodeUrl();
                 if (episodeUrl) {
@@ -123,22 +131,12 @@
                 overlay.style.display = 'block';
                 console.log('Podcast overlay now visible');
             }
-        }, true);
-        
-        button.removeAttribute('aria-controls');
+        });
         
         buttonBound = true;
-        console.log('Hero button intercepted successfully');
+        console.log('Hero button replaced and handler attached');
         return true;
     }
-    
-    // Document-level intercept scoped to hero button only
-    document.addEventListener('click', function(e) {
-        const heroButton = e.target.closest('.hero-cta .btn-play-audio');
-        if (heroButton) {
-            e.stopImmediatePropagation();
-        }
-    }, true);
     
     function init() {
         const episodeUrl = getFirstEpisodeUrl();
@@ -148,14 +146,12 @@
         setupButton();
     }
     
-    const buttonObserver = new MutationObserver(function() {
+    // Watch for button and content to appear
+    const observer = new MutationObserver(function() {
         if (!buttonBound && getHeroButton()) {
-            console.log('MutationObserver caught hero button appearing');
+            console.log('MutationObserver caught hero button');
             setupButton();
         }
-    });
-    
-    const contentObserver = new MutationObserver(function() {
         if (!overlayCreated) {
             const episodeUrl = getFirstEpisodeUrl();
             if (episodeUrl) {
@@ -164,19 +160,14 @@
             }
         }
         if (overlayCreated && buttonBound) {
-            contentObserver.disconnect();
-            buttonObserver.disconnect();
+            observer.disconnect();
         }
     });
     
     function startObserving() {
         if (document.body) {
-            buttonObserver.observe(document.body, { childList: true, subtree: true });
-            contentObserver.observe(document.body, { childList: true, subtree: true });
-            setTimeout(() => {
-                buttonObserver.disconnect();
-                contentObserver.disconnect();
-            }, 30000);
+            observer.observe(document.body, { childList: true, subtree: true });
+            setTimeout(() => observer.disconnect(), 30000);
         } else {
             setTimeout(startObserving, 50);
         }
