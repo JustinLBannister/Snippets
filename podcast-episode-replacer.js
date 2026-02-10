@@ -13,14 +13,6 @@
         return null;
     }
     
-    function waitForDOM(callback) {
-        if (document.body) {
-            callback();
-        } else {
-            setTimeout(() => waitForDOM(callback), 100);
-        }
-    }
-    
     function createPodcastOverlay(episodeUrl) {
         const existing = document.getElementById('custom-podcast-overlay');
         if (existing) existing.remove();
@@ -86,7 +78,12 @@
     
     function setupButton() {
         const button = document.querySelector('.btn-play-audio');
-        if (!button) return false;
+        if (!button) {
+            console.log('Button .btn-play-audio not found in DOM yet');
+            return false;
+        }
+        
+        console.log('Found button:', button);
         
         // Clone button to remove existing handlers
         const newButton = button.cloneNode(true);
@@ -100,6 +97,8 @@
             e.preventDefault();
             e.stopPropagation();
             
+            console.log('Start listening clicked - showing overlay');
+            
             // Hide the original player container if it exists
             const originalPlayer = document.getElementById('podcast-player-container');
             if (originalPlayer) {
@@ -107,14 +106,21 @@
             }
             
             const overlay = document.getElementById('custom-podcast-overlay');
-            if (overlay) overlay.style.display = 'block';
+            if (overlay) {
+                overlay.style.display = 'block';
+                console.log('Podcast overlay now visible');
+            } else {
+                console.error('Could not find #custom-podcast-overlay');
+            }
             return false;
         });
         
+        console.log('Button handler attached successfully');
         return true;
     }
     
-    waitForDOM(() => {
+    // Use DOMContentLoaded + fallback retries for maximum reliability
+    function init() {
         const episodeUrl = getFirstEpisodeUrl();
         if (!episodeUrl) {
             console.error('No episode found - podcast overlay not created');
@@ -127,11 +133,29 @@
         function trySetup() {
             if (setupButton()) {
                 console.log('Custom podcast player ready!');
-            } else if (attempts < 5) {
+            } else if (attempts < 20) {
                 attempts++;
+                console.log(`Button setup attempt ${attempts}/20, retrying in 500ms...`);
                 setTimeout(trySetup, 500);
+            } else {
+                console.error('Could not find .btn-play-audio after 20 attempts');
             }
         }
         trySetup();
+    }
+    
+    // Try both DOMContentLoaded and window load for best coverage
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+    
+    // Also try on window load as a safety net
+    window.addEventListener('load', function() {
+        if (!document.querySelector('.btn-play-audio[data-custom-bound]')) {
+            console.log('Window load: retrying button setup...');
+            init();
+        }
     });
 })();
