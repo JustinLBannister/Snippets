@@ -1,11 +1,18 @@
-// Custom podcast overlay player with hardcoded episode
+// Custom podcast overlay player - dynamically finds first episode from listing
 (function() {
     console.log('Creating custom podcast overlay...');
     
-    // Hardcoded episode URL
-    const episodeUrl = 'https://player.captivate.fm/episode/c5ceca3b-a4f5-4edf-ad41-f8d5ad6cac5f/';
+    // Find the first Captivate episode URL from the insights stories listing
+    function getFirstEpisodeUrl() {
+        const firstIframe = document.querySelector('.insights-stories.initial .story-podcast-playing iframe[src*="captivate.fm"]');
+        if (firstIframe) {
+            console.log('Found first episode URL:', firstIframe.src);
+            return firstIframe.src;
+        }
+        console.warn('No Captivate episode found in .insights-stories.initial');
+        return null;
+    }
     
-    // Wait for DOM to be ready
     function waitForDOM(callback) {
         if (document.body) {
             callback();
@@ -14,15 +21,10 @@
         }
     }
     
-    // Create the overlay player
-    function createPodcastOverlay() {
-        // Remove existing overlay if present
+    function createPodcastOverlay(episodeUrl) {
         const existing = document.getElementById('custom-podcast-overlay');
-        if (existing) {
-            existing.remove();
-        }
+        if (existing) existing.remove();
         
-        // Create wrapper link
         const wrapperLink = document.createElement('a');
         wrapperLink.href = 'javascript:void(0)';
         wrapperLink.setAttribute('aria-label', 'Player');
@@ -37,7 +39,6 @@
             text-decoration: none;
         `;
         
-        // Create overlay container
         const overlay = document.createElement('div');
         overlay.className = 'story-podcast-playing';
         overlay.style.cssText = `
@@ -46,18 +47,15 @@
             padding: 0;
         `;
         
-        // Create close button with proper styling
         const closeButton = document.createElement('button');
         closeButton.setAttribute('aria-label', 'Close Player');
         closeButton.className = 'btn-close-player close-btn';
         
-        // Create close button image
         const closeImg = document.createElement('img');
         closeImg.src = '/assets/rbccm/images/campaign/player-x.svg';
         closeImg.alt = 'Close';
         closeButton.appendChild(closeImg);
         
-        // Create iframe
         const iframe = document.createElement('iframe');
         iframe.width = '100%';
         iframe.height = '200';
@@ -66,88 +64,62 @@
         iframe.allow = 'autoplay';
         iframe.src = episodeUrl;
         
-        // Close button functionality
         closeButton.onclick = function(e) {
             e.preventDefault();
             e.stopPropagation();
             wrapperLink.style.display = 'none';
-            iframe.src = ''; // Stop playback
-            setTimeout(() => {
-                iframe.src = episodeUrl; // Reset for next play
-            }, 100);
+            iframe.src = '';
+            setTimeout(() => { iframe.src = episodeUrl; }, 100);
         };
         
-        // Assemble structure
         overlay.appendChild(closeButton);
         overlay.appendChild(iframe);
         wrapperLink.appendChild(overlay);
         
-        // Safely append to body
         if (document.body) {
             document.body.appendChild(wrapperLink);
-            console.log('Podcast overlay created and added to DOM');
+            console.log('Podcast overlay created with episode:', episodeUrl);
             return wrapperLink;
-        } else {
-            console.error('document.body not available');
-            return null;
         }
-        
-        console.log('Podcast overlay created');
-        return overlay;
+        return null;
     }
     
-    // Set up button handler
     function setupButton() {
         const button = document.querySelector('.btn-play-audio');
-        if (!button) {
-            console.log('Button .btn-play-audio not found');
-            return false;
-        }
+        if (!button) return false;
         
-        console.log('Found button:', button);
-        
-        // Clone button to remove existing handlers
         const newButton = button.cloneNode(true);
         button.parentNode.replaceChild(newButton, button);
         
-        // Add click handler
         newButton.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            
-            console.log('Start listening clicked - showing overlay');
-            
             const overlay = document.getElementById('custom-podcast-overlay');
-            if (overlay) {
-                overlay.style.display = 'block';
-                console.log('Podcast overlay now visible');
-            }
-            
+            if (overlay) overlay.style.display = 'block';
             return false;
         });
         
-        console.log('Button handler attached');
         return true;
     }
     
-    // Initialize with DOM safety
     waitForDOM(() => {
-        createPodcastOverlay();
+        const episodeUrl = getFirstEpisodeUrl();
+        if (!episodeUrl) {
+            console.error('No episode found - podcast overlay not created');
+            return;
+        }
         
-        // Setup button with retry
+        createPodcastOverlay(episodeUrl);
+        
         let attempts = 0;
         function trySetup() {
             if (setupButton()) {
                 console.log('Custom podcast player ready!');
             } else if (attempts < 5) {
                 attempts++;
-                console.log(`Button setup attempt ${attempts} failed, retrying...`);
                 setTimeout(trySetup, 500);
-            } else {
-                console.log('Could not find button after 5 attempts');
             }
         }
-        
         trySetup();
     });
 })();
